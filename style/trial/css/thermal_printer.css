@@ -1,0 +1,20 @@
+@media print {
+
+    body {
+
+        width: 10cm;
+        height: 9.8cm;
+        margin: 0mm;
+        padding: 0mm;
+    }
+
+    .ticket {
+
+        width: 9.6cm;
+        height: 9.6cm;
+        margin: 0mm;
+        padding: 0mm;
+    }
+
+}
+

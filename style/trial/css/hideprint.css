@@ -1,0 +1,60 @@
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    table {
+        border: solid #000 !important;
+        border-width: 1px 0 0 1px !important;
+    }
+    th, td {
+        border: solid #000 !important;
+        border-width: 0 1px 1px 0 !important;
+    }
+
+    .removeprint {
+        display: none
+    }
+
+    table td.removeprint {
+        display: none
+    }
+
+    table th.removeprint {
+        display: none
+    }
+
+    .hideprint {
+        display: none;
+    }
+    .footer{
+        display: none;
+    }
+
+    #invoices{
+        text-align: right;
+        display: block;
+        z-index: 10;
+    }
+    .smallprint{
+        font-size: 10px !important;
+    }
+    #tabs_history li{
+        display: none;
+    }
+    #tabs_history {
+        border: none;
+    }
+    .ui-widget.ui-widget-content{
+        border: none;
+        margin: 0px;
+        padding: 0px;
+    }
+    .ui-tabs .ui-tabs-panel{
+        border: none;
+        margin: 0px;
+        padding: 0px;
+
+    }
+
+}
