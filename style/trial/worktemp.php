@@ -253,6 +253,15 @@ function template_header_work()
                                    تسليمات اليوم
                                </a>
                               </li>
+                              <li >
+            <a href="outorder.php?action=show_outorder">
+                <i class="menu-icon glyphicon  glyphicon-home blue"></i>
+                <span class="menu-text"> التسليمات </span>
+            </a>
+
+            <b class="arrow"></b>
+        </li>
+
                               
 
                                ';
@@ -803,7 +812,7 @@ function template_out_order()
         
                 <tr>
                 <td >تاريخ التسليم </td>
-                <td>' . date("Y-m-d") . '</td>                              
+                <td>' . date("Y-m-d", strtotime($r['create_date'])) . '</td>                              
                 </tr>
         
                 <tr>

@@ -60,7 +60,7 @@ function show_row_option($ro)
     // }
 
     if ($_SESSION['user_type'] == "5" && $rou['order_status'] != '3' && isset($_GET['action'])) {
-        $x .= '    <button  class="btn btn-success btn-xs" style="width:30px; height:30; margin:2px;"  onclick="deliver_order(\'' . $rou['order_id'] . '\');">
+        $x .= '    <button  class="btn btn-success btn-xs" style="width:30px; height:30; margin:2px;"  onclick="deliver_order(\'' . $rou['order_id'] . '\',\''.$rou['order_status'] .'\');">
 																 <i class="fa fa-check bigger-125 icon-only" ></i>
 																 													</button>';
     }

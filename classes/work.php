@@ -178,10 +178,27 @@ class work
 
     public function deliver_order($order_id)
     {
-        //   mysql_query("update orders_package_work set status = 3 , end_time = '" . date('Y-m-d H:i:s') . "' " . $sql . " where  order_id = '" . $order_id . "'  ") or die (mysql_error());
-        //    mysql_query("update orders_package set package_status = '2' where order_id = '" . $order_id . "'  ") or die (mysql_error());
+        $o = mysql_query("select * from orders where order_id = '" . $order_id . "'  ");
+        $oDetails = mysql_fetch_assoc($o);
         
-        $query = mysql_query("update orders set order_status = '3' , actual_delivery_date = '" . date("Y-m-d H:i:s") . "'  where order_id = '" . $order_id . "' ");
+        $q = mysql_query("SELECT GROUP_CONCAT(id) as items  FROM orders_package where order_id = '".$order_id."' and package_status = '1' ");
+        $qDetails = mysql_fetch_assoc($q);
+        $outOrder = array();
+        $outOrder['account_id'] = $oDetails['account_id'];
+        $outOrder['status'] = 1;
+        $outOrder['items'] = $qDetails['items'];
+        $outOrder['create_date'] = date('Y-m-d H:i:s');
+        $outOrder['finishe_date'] = date('Y-m-d H:i:s');
+        $outOrder['added_by'] = $_SESSION['user_id'];
+        $outOrder['added_name'] = $_SESSION['name'];
+        $osql =  $this->db->make_insert('out_orders', $outOrder);
+
+        mysql_query($osql) or die(mysql_error());
+
+
+        mysql_query("update orders_package_work set status = 3 , end_time = '" . date('Y-m-d H:i:s') . "' " . $sql . " where status != 3 and  operation in (6,5) and order_id = '" . $order_id . "'  ") or die(mysql_error());
+        mysql_query("update orders_package set package_status = '2' where order_id = '" . $order_id . "' and package_status != '2'  ") or die(mysql_error());
+        $query = mysql_query("update orders set order_status = '3' , actual_delivery_date = '" . date("Y-m-d H:i:s") . "'  where order_status != '3' and order_id = '" . $order_id . "' ");
 
         if ($query) {
             return true;
@@ -399,7 +416,7 @@ class work
             $msql = ' and account.billing_code = \''.$billing_code.'\' ';
         }
 
-        $query = mysql_query("select out_orders.*, account.account_company from  out_orders inner join account on (account.account_id = out_orders.account_id) where out_orders.status = '" . $status . "' and out_orders.finished = '" . $finished . "' $msql order by id desc ");
+        $query = mysql_query("select out_orders.*, account.account_company from  out_orders inner join account on (account.account_id = out_orders.account_id) where out_orders.status = '" . $status . "' and out_orders.finished = '" . $finished . "' $msql order by id desc limit 50");
 
         while ($row = mysql_fetch_assoc($query)) {
             $res[] = $row;

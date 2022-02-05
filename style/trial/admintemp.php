@@ -440,9 +440,19 @@ function template_header_admin()
                 </a>
 
                 <b class="arrow"></b>
-            </li>';
+            </li>
+            
+            ';
             }
-            $x .= '	<li class="">
+            $x .= '                    <li class="">
+            <a href="outorder.php?action=show_outorder">
+                <i class="menu-icon glyphicon  glyphicon-home blue"></i>
+                <span class="menu-text"> التسليمات </span>
+            </a>
+
+            <b class="arrow"></b>
+        </li>
+        	<li class="">
                                 <a href="' . SITEURL . '/administrator/index.php?action=addorder">
                                     <i class="menu-icon fa fa-car blue"></i>
                                     <span class="menu-text"> ' . $lang[23] . ' </span>

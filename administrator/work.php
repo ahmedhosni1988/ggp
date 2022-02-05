@@ -364,7 +364,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
                         $workClass->check_finish($order_id);
                     }
 
-                    $q = mysql_query("update out_orders set status= '1' , finishe_date = '" . date("Y-m-d H:i:s") . "'  where id='" . $_POST['out_id'] . "' ") or die(mysql_error());
+                    $q = mysql_query("update out_orders set status= '1' , added_by = '".$_SESSION['user_id']."' ,  added_name = '".$_SESSION['name']."' , finishe_date = '" . date("Y-m-d H:i:s") . "'  where id='" . $_POST['out_id'] . "' ") or die(mysql_error());
                     //location log
                   
                     $logger->compareAndLogV2($order_id, "طلبية", $_SESSION['user_id'], $_SESSION['name'], 'تسليم', array(), array());

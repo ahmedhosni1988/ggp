@@ -236,7 +236,8 @@ function cancel_package(package_id) {
 }
 
 
-function deliver_order(order_id) {
+function deliver_order(order_id,order_status) {
+
 
     var req = $.ajax({
         type: "POST",
@@ -245,7 +246,7 @@ function deliver_order(order_id) {
     });
 
     req.done(function (msg) {
-        //	alert(msg);
+        	alert(msg);
         location.reload();
         //$("#orders__"+package_id).remove();
     });

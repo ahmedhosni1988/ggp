@@ -149,6 +149,7 @@ class work
 
     public function deliver_order($order_id)
     {
+        
         mysql_query("update orders_package_work set status = 3 , end_time = '" . date('Y-m-d H:i:s') . "' " . $sql . " where  order_id = '" . $order_id . "'  ") or die(mysql_error());
         mysql_query("update orders_package set package_status = '2' where order_id = '" . $order_id . "'  ") or die(mysql_error());
         
