@@ -120,6 +120,7 @@ class template
 
                 template_footer();
                 break;
+                
                 case 14:
                 template_overall_header();
                 template_header_work();

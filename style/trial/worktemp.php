@@ -193,6 +193,28 @@ function template_header_work()
 
 
                                 ';
+    } elseif ($_SESSION['user_type'] == "7") {
+        echo '
+        <li>
+    <a href="work.php?action=pointing">
+        <i class="ace-icon fa fa-user bigger-110 blue"></i>
+        تشغيل بالصور
+    </a>
+   </li>
+   <li>
+   <a href="work.php">
+       <i class="ace-icon fa fa-user bigger-110 blue"></i>
+       تشغيل عادى
+   </a>
+  </li>
+  <li>
+  <a href="search.php?action=mangesearch&style=operation">
+      <i class="ace-icon fa fa-user bigger-110 blue"></i>
+    بحث
+  </a>
+ </li>
+
+   ';
     } else {
         echo '
                                 <li>
@@ -416,8 +438,8 @@ function template_pointing()
 
 
 </style>
-<script type="text/javascript" src="'.SITEURL.'/'.STYLE.'/jscript/scanner.js"></script>
-<script type="text/javascript" src="'.SITEURL.'/'.STYLE.'/jscript/order.js"></script>
+<script type="text/javascript" src="'.SITEURL.'/'.STYLE.'/jscript/scanner.js?v='.date('YmdHiS').'"></script>
+<script type="text/javascript" src="'.SITEURL.'/'.STYLE.'/jscript/order.js?v='.date('YmdHiS').'"></script>
 <div class="row">
 <div  class="col-xs-4"> 
 <h3 class="header smaller lighter green">البحث</h3>

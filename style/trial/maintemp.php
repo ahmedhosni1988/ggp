@@ -1459,6 +1459,8 @@ function template_footer()
                     });
         
                     </script>
+
+                    <div id="myCarousel"></div>
                                 
         </body>
         

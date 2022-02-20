@@ -405,6 +405,8 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
                     $query = mysql_query("update orders_package_work set user_id = '".$_SESSION['user_id']."' , status = 3 , end_time = '" . date('Y-m-d H:i:s') . "'  " . $sql . " where operation = '" . $_POST['operation'] . "'  and package_id = '" . $package_id[$i] . "'  ") or die(mysql_error());
 
+
+                    
                     //location log
                     $op= $db->get_table("status where id = '".$_POST['operation']."'");
                     $part =$db->get_table("orders_package where id = '".$package_id[$i]."'");
@@ -426,6 +428,12 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
                     } else {
                         echo "in 2";
                         $workClass->package_next_operation($package_id[$i]);
+                    }
+
+                    if ($_POST['operation'] == '3') {
+                        if ($part[0]['glassPointing'] == 'ربع') {
+                            $query = mysql_query("update orders_package_work set user_id = '".$_SESSION['user_id']."' , status = 3 , end_time = '" . date('Y-m-d H:i:s') . "'  " . $sql . " where operation = '7'  and package_id = '" . $package_id[$i] . "'  ") or die(mysql_error());
+                        }
                     }
                     echo '</br>package_id => '.$package_id[$i] . 'operation => '.$_POST['operation'] .'</br>';
                 }

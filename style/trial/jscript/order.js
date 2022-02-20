@@ -246,8 +246,9 @@ function deliver_order(order_id,order_status) {
     });
 
     req.done(function (msg) {
-        	alert(msg);
-        location.reload();
+        	alert('تم تسليم الطلبيه');
+      //  location.reload();
+
         //$("#orders__"+package_id).remove();
     });
 

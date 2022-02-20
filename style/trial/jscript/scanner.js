@@ -18,7 +18,7 @@ var button = [
 ];
 
 
-if (userstatus == 2 || (userstatus == 3 & image_only == 0)) {
+if (userstatus == 2 || userstatus == 7 || (userstatus == 3 & image_only == 0)) {
 
     button.push({
         text: "ترحيل ",
@@ -256,6 +256,26 @@ $(document).scannerDetection({
             msg.trim();
 
             if (msg != false) {
+                var res = '';
+                res = JSON.parse(msg);
+                if ($("#auto_search_items").length) {
+
+
+                    var myitem = res.easy_order_id + "-" + res.part_order;
+                    auto_search1(myitem);
+                    return;
+                } else {
+    
+                    if ($('#ScannerDialoge').dialog('isOpen') == true) {
+    
+    
+                    } else {
+                        $('#ScannerDialoge').dialog('open');
+    
+    
+                    }
+                }
+
 
                 if ($('#ScannerDialoge').dialog('isOpen') == true) {
 
@@ -267,8 +287,7 @@ $(document).scannerDetection({
                 }
 
 
-                var res = '';
-                res = JSON.parse(msg);
+       
                 // alert(added_item.indexOf(res.id));
 
                 //alert(added_item.length);

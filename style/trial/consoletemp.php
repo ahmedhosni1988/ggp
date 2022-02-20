@@ -642,7 +642,7 @@ function template_admin_edit_order()
 
 
 ';
-    if ($_SESSION['user_type'] == 'manmanger') {
+    if ($_SESSION['user_type'] == 'manmanger' && $_SESSION['user_name'] == 'galal') {
         echo '
         <div class="form-group">
         <label class="col-sm-3 control-label">' . $lang[17] . '</label>
@@ -756,7 +756,7 @@ function template_admin_edit_order()
 </div>
 </div>';
 
-    if ($_SESSION['user_type'] == 'manmanger') {
+    if ($_SESSION['user_type'] == 'manmanger' && $_SESSION['user_name'] == 'galal') {
         echo '
 <div class="form-group">
 <label class="col-sm-3 control-label">تغير رقم التشغيل</label>

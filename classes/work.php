@@ -443,7 +443,7 @@ class work
             $sql = "select out_orders.*, account.account_company from  out_orders  
             inner join account on (account.account_id = out_orders.account_id)
             join orders_package on find_in_set(orders_package.id, out_orders.items) > 0 
-            where orders_package.order_id = '".$order_id."' $msql group by out_orders.id,account.account_company";
+            where orders_package.easy_order_id = '".$order_id."' $msql group by out_orders.id,account.account_company";
         }
 
 
