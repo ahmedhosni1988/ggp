@@ -4,12 +4,11 @@ class Excel
 {
     public $excelobj;
 
-    public function Excel($excelobj)
+    public function __construct($excelobj)
     {
         $this->excelobj = $excelobj;
     }
-
-
+        
     public function set_stock_header()
     {
         $this->excelobj->getActiveSheet()->setCellValue("A" . "1", "السمك");

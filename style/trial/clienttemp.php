@@ -804,9 +804,9 @@ function template_print_invoice()
     $invoiceoption_rb9 = $c_setting["co_invoiceoption_rb9"];
 
 
-    $rc = mysql_query("select * from account where account_id ='$account_id'") or die(mysql_error());
-    $customer = mysql_fetch_array($rc);
-    mysql_free_result($rc);
+    $rc = mysqli_query($mycon,"select * from account where account_id ='$account_id'") or die(mysqli_error($mycon));
+    $customer = mysqli_fetch_array($rc);
+    mysqli_free_result($rc);
     //$clid  = $customer["id"];
     $name = $customer["account_company"];
     $addr = $customer["account_address"];

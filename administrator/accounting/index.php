@@ -53,7 +53,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
     switch ($action) {
 
         case 'orders':
-            $console = new console(8);
+            $console = new console(8, $db);
             $console->set_allowtotal("0");
             $console->set_ND("Y");
             if (isset($_GET['pageno'])) {
@@ -124,14 +124,14 @@ left join users on (users.user_id = orders.user_id)
 
         
     case 'show_outorder':
-        $res = $workClass->get_out_orders('0', '1',$_SESSION['billing_code']);
-        $newtempAll->load_template('out_order_view',  1, 'accounting_menu');
+        $res = $workClass->get_out_orders('0', '1', $_SESSION['billing_code']);
+        $newtempAll->load_template('out_order_view', 1, 'accounting_menu');
         break;
 
 
     case 'finish_out_order_all':
         if (isset($_POST['out_id'])) {
-            $q = mysql_query("update out_orders set status= '2' , finished = '1'   where id='" . $_POST['out_id'] . "' ") or die (mysql_error());
+            $q = mysqli_query($mycon, "update out_orders set status= '2' , finished = '1'   where id='" . $_POST['out_id'] . "' ") or die(mysqli_error($mycon));
 
 
             echo "تم الانتهاء من امر التسليم";
@@ -141,7 +141,7 @@ left join users on (users.user_id = orders.user_id)
 
 
         case 'accounts':
-            $console = new console(10);
+            $console = new console(10, $db);
             $console->set_allowtotal("0");
             $console->set_ND("Y");
             if (isset($_GET['pageno'])) {
@@ -171,7 +171,7 @@ inner join billing_code on (billing_code.id = account.billing_code)
             $query = $grid_sql . " where  ".(isset($_GET['search']) ? $console->build_grid_search($coloums, $_GET['search_txt']) : '')." 1=1   $inputbillingsql  ".(isset($_POST['dir']) ? "order by  ".$table_name.".".$field_name." ".$dir."" : "order by account.account_id desc ");
 
 
-	//echo $query."<br>";
+    //echo $query."<br>";
 
             $data = $console->get_coloums_data($coloums, $query);
 

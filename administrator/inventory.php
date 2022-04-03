@@ -47,9 +47,9 @@ switch ($action) {
             $sql = $db->make_insert("inventory_bill", $bill);
             
             // echo $sql;
-            $res = mysql_query($sql) or die (mysql_error());
+            $res = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));
 
-            $bill_id = mysql_insert_id();
+            $bill_id = mysqli_insert_id($mycon);
             $logger->compareAndLogV2((int)$bill_id,"purchase", $_SESSION['user_id'],  $_SESSION['name'], "Add bill  ",array(),$bill);
 
             for ($j = 0; $j < count($_POST['item_id']); $j++) {
@@ -66,7 +66,7 @@ switch ($action) {
 
                     $sql = $db->make_insert("inventory_action", $invetory_details);
                     // echo $sql;
-                    $res = mysql_query($sql) or die (mysql_error());
+                    $res = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));
 
 
                     $invClass->update_inventory($_POST['item_id'][$j], $_POST['quantity'][$j], "1");
@@ -102,7 +102,7 @@ switch ($action) {
 
             $sql = $db->make_insert("inventory_items", $_POST);
             // echo $sql;
-            $res = mysql_query($sql) or die (mysql_error());
+            $res = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));
 
 
             if ($res) {
@@ -139,7 +139,7 @@ switch ($action) {
             } else {
                 $sql = $db->make_insert("inventory_items_color", $_POST);
                 //echo $sql;
-                $res = mysql_query($sql) or die (mysql_error());
+                $res = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));
                 // $res =  $company->add_services($service_name,$service_des,$service_short,$service_color,$service_cuttime,$service_order);
                 
 
@@ -174,13 +174,13 @@ switch ($action) {
             } else {
                 $sql = $db->make_insert("inventory_items_company", $_POST);
                 //echo $sql;
-                $res = mysql_query($sql) or die (mysql_error());
+                $res = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));
                 // $res =  $company->add_services($service_name,$service_des,$service_short,$service_color,$service_cuttime,$service_order);
 
 
                 if ($res) {
                     echo $lang[948];
-                    $logger->compareAndLogV2((int)mysql_insert_id(),"Company", $_SESSION['user_id'],  $_SESSION['name'], "Add ",array(),$_POST);
+                    $logger->compareAndLogV2((int)mysqli_insert_id($mycon),"Company", $_SESSION['user_id'],  $_SESSION['name'], "Add ",array(),$_POST);
 
                 } else {
                     echo $lang[153];
@@ -205,13 +205,13 @@ switch ($action) {
             } else {
                 $sql = $db->make_insert("inventory_items_size", $_POST);
                 //echo $sql;
-                $res = mysql_query($sql) or die (mysql_error());
+                $res = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));
                 // $res =  $company->add_services($service_name,$service_des,$service_short,$service_color,$service_cuttime,$service_order);
 
 
                 if ($res) {
                     echo $lang[948];
-                    $logger->compareAndLogV2((int)mysql_insert_id(),"Items", $_SESSION['user_id'],  $_SESSION['name'], "Add_size ",array(),$_POST);
+                    $logger->compareAndLogV2((int)mysqli_insert_id($mycon),"Items", $_SESSION['user_id'],  $_SESSION['name'], "Add_size ",array(),$_POST);
 
                 } else {
                     echo $lang[153];

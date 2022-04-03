@@ -33,7 +33,7 @@ switch ($action) {
 
                 setcookie("username", $cookiehash, time() + 3600 * 24 * 365, '/', SITEURL);
 
-                mysql_query("update users set cookies = '" . $cookiehash . "' where user_id = '" . $login['user_id'] . "'  ");
+                mysqli_query($mycon,"update users set cookies = '" . $cookiehash . "' where user_id = '" . $login['user_id'] . "'  ");
                 if (isset($_POST['language']) && $_POST['language'] != "") $_SESSION['language'] = $_POST['language'];
 
                 $user->set_login_sessions($login);

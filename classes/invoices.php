@@ -4,9 +4,9 @@ class invoices
 {
     public $db;
 
-    public function invoices($db)
+    public function __construct($db)
     {
-        $this->db = $db;
+        $this->db = $db->get_conn();
     }
 
 
@@ -24,27 +24,27 @@ class invoices
         $out_order = 0;
         $query = "";
 
-        $query = mysql_query("select orders_package.*,account.account_id,account.account_name from orders_package
+        $query = mysqli_query($this->db, "select orders_package.*,account.account_id,account.account_name from orders_package
                        inner join orders on (orders.order_id = orders_package.order_id) 
                        inner join account on (account.account_id = orders.account_id) 
-                       where orders_package.invoice_no = 0 and orders_package.order_id = '".$order_id."' ") or die(mysql_error());
+                       where orders_package.invoice_no = 0 and orders_package.order_id = '".$order_id."' ") or die(mysqli_error($this->db));
                    
         $order = 1;
 
-        if (mysql_num_rows($query) > 0) {
+        if (mysqli_num_rows($query) > 0) {
                         
 
                         ///shoud check if invoiced before or not
             $packageList = $package->get_package_id();
             $statusList = $db->get_table_by_id("status", "id", "statusname");
             $price_list = array();
-            $q = mysql_query("select * from package_status_price where account_id = 0") or die(mysql_error());
-            while ($r = mysql_fetch_array($q)) {
+            $q = mysqli_query($this->db, "select * from package_status_price where account_id = 0") or die(mysqli_error($this->db));
+            while ($r = mysqli_fetch_array($q)) {
                 $price_list[$r['package_id']][$r['status_id']] = $r['fee'];
             }
 
 
-            while ($row = mysql_fetch_array($query)) {
+            while ($row = mysqli_fetch_array($query)) {
 
     //var_dump($row);
                 ///cala
@@ -61,21 +61,21 @@ class invoices
                         $price = $price_list[$row['package_type']][$m[$j]];
                         $pactotal = $price * $meter;
     
-                        mysql_query("insert into orders_price (order_id,package_id,price,type,name,ratio) 
-            values ('".$row['order_id']."','".$row['id']."','".$pactotal."','".$m[$j]."','".$statusList[$m[$j]]."','".$meter."');") or die(mysql_error());
+                        mysqli_query($this->db, "insert into orders_price (order_id,package_id,price,type,name,ratio) 
+            values ('".$row['order_id']."','".$row['id']."','".$pactotal."','".$m[$j]."','".$statusList[$m[$j]]."','".$meter."');") or die(mysqli_error($this->db));
                     }
                 }
             }
 
 
-            $query = mysql_query("select orders_package.*,account.account_id,account.account_name from orders_package
+            $query = mysqli_query($this->db, "select orders_package.*,account.account_id,account.account_name from orders_package
     inner join orders on (orders.order_id = orders_package.order_id) 
     inner join account on (account.account_id = orders.account_id) 
-    where orders_package.invoice_no = 0 and orders_package.order_id = '".$order_id."' ") or die(mysql_error());
+    where orders_package.invoice_no = 0 and orders_package.order_id = '".$order_id."' ") or die(mysqli_error($this->db));
 
             $order = 1;
 
-            $row = mysql_fetch_array($query);
+            $row = mysqli_fetch_array($query);
             $invhdr = array();
             $invhdr["clid"]          = $row["account_id"];
             $invhdr["acctno"]        = $row["account_name"];
@@ -85,17 +85,17 @@ class invoices
             $invcount = $invcount + 1;
         
 
-            $query = mysql_query("select orders_package.*,account.account_id,account.account_name from orders_package
+            $query = mysqli_query($this->db, "select orders_package.*,account.account_id,account.account_name from orders_package
         inner join orders on (orders.order_id = orders_package.order_id) 
         inner join account on (account.account_id = orders.account_id) 
-        where orders_package.invoice_no = 0 and orders_package.order_id = '".$order_id."' ") or die(mysql_error());
+        where orders_package.invoice_no = 0 and orders_package.order_id = '".$order_id."' ") or die(mysqli_error($this->db));
     
             $order = 1;
 
 
         
             $lineno = 0;
-            while ($nrow = mysql_fetch_array($query)) {
+            while ($nrow = mysqli_fetch_array($query)) {
                 $order_inv_prices = $price->get_inv_order_prices($nrow["id"]);
 
                 $services_charges = setup_serviceprices($order_inv_prices, $add_ser, $nrow);
@@ -129,7 +129,7 @@ class invoices
                     $lineno = $lineno + 1;
                     $subtotal = $subtotal + $detailrec["amount"];
         
-                    mysql_query("update orders_package set invoice_no = '".$invoiceno."' where id = '".$nrow['id']."' ");
+                    mysqli_query($this->db, "update orders_package set invoice_no = '".$invoiceno."' where id = '".$nrow['id']."' ");
                 }
                 $wbcount++;
 
@@ -147,7 +147,7 @@ class invoices
             $invhdr["message"]     = $c_setting["co_invoice_message"];
             $invoices->update_invoice($invoiceno, $invhdr);
 
-            $or = mysql_query("select * from orders where 1=1 order by order_id ");
+            $or = mysqli_query($this->db, "select * from orders where 1=1 order by order_id ");
         }
 
         /////////////////// end ahmed reda /////////////////////////////
@@ -157,28 +157,28 @@ class invoices
 
     public function re_calc_order_invoice($order_id, $account_id = '')
     {
-        mysql_query("delete from orders_price where order_id = '".$order_id."' ");
+        mysqli_query($this->db, "delete from orders_price where order_id = '".$order_id."' ");
 
 
-        $query = mysql_query("select orders_package.*,account.account_id,account.account_name,orders.invoice_no from orders_package
+        $query = mysqli_query($this->db, "select orders_package.*,account.account_id,account.account_name,orders.invoice_no from orders_package
         inner join orders on (orders.order_id = orders_package.order_id) 
         inner join account on (account.account_id = orders.account_id) 
-        where orders_package.order_id = '".$order_id."' ") or die(mysql_error());
+        where orders_package.order_id = '".$order_id."' ") or die(mysqli_error($this->db));
 
-        if (mysql_num_rows($query) < 1) {
+        if (mysqli_num_rows($query) < 1) {
           
           //  echo "noooooooooooo";
             $ret['error'] = "1";
             $ret['msg'] = "لا توجد قطع" ;
             
 
-            $q = mysql_query("select invoice_no from orders where order_id ='".$order_id."'") or die(mysql_error());
+            $q = mysqli_query($this->db, "select invoice_no from orders where order_id ='".$order_id."'") or die(mysqli_error($this->db));
            
-            while ($r = mysql_fetch_array($q)) {
+            while ($r = mysqli_fetch_array($q)) {
                 $invoice_no = $r['invoice_no'];
             }
 
-            mysql_query("delete from invoicedtl where invoiceno = '".$invoice_no."' ") or die(mysql_error());
+            mysqli_query($this->db, "delete from invoicedtl where invoiceno = '".$invoice_no."' ") or die(mysqli_error($this->db));
 
             $invhdr["id"]          = $invoice_no;
             $invhdr["subtotal"]    = 0;
@@ -194,21 +194,21 @@ class invoices
         $statusList = $this->db->get_table_by_id("status", "disporder", "statusname");
         $price_list = array();
 
-        $q = mysql_query("select * from package_status_price where account_id = 0 ") or die(mysql_error());
-        while ($r = mysql_fetch_array($q)) {
+        $q = mysqli_query($this->db, "select * from package_status_price where account_id = 0 ") or die(mysqli_error($this->db));
+        while ($r = mysqli_fetch_array($q)) {
             $price_list[$r['package_id']][$r['status_id']] = $r['fee'];
         }
         
         if ($account_id != '') {
-            $q = mysql_query("select * from package_status_price where account_id = '$account_id' ") or die(mysql_error());
-            while ($r = mysql_fetch_array($q)) {
+            $q = mysqli_query($this->db, "select * from package_status_price where account_id = '$account_id' ") or die(mysqli_error($this->db));
+            while ($r = mysqli_fetch_array($q)) {
                 $price_list[$r['package_id']][$r['status_id']] = $r['fee'];
             }
         }
 
 
         ///////////set orders_price /////////
-        while ($row = mysql_fetch_array($query)) {
+        while ($row = mysqli_fetch_array($query)) {
 
             //var_dump($row);
             ///cala
@@ -226,32 +226,32 @@ class invoices
                     
                     $pactotal = $price * $meter;
             
-                    mysql_query("insert into orders_price (order_id,package_id,price,type,name,ratio) 
-                    values ('".$row['order_id']."','".$row['id']."','".$pactotal."','".$m[$j]."','".$statusList[$m[$j]]."','".$meter."');") or die(mysql_error());
+                    mysqli_query($this->db, "insert into orders_price (order_id,package_id,price,type,name,ratio) 
+                    values ('".$row['order_id']."','".$row['id']."','".$pactotal."','".$m[$j]."','".$statusList[$m[$j]]."','".$meter."');") or die(mysqli_error($this->db));
                 }
             }
         }
         ////// end orders_price///////////
-        $q = mysql_query("select invoice_no from orders where order_id ='".$order_id."'") or die(mysql_error());
+        $q = mysqli_query($this->db, "select invoice_no from orders where order_id ='".$order_id."'") or die(mysqli_error($this->db));
            
-        while ($r = mysql_fetch_array($q)) {
+        while ($r = mysqli_fetch_array($q)) {
             $invoice_no = $r['invoice_no'];
         }
 
-        mysql_query("delete from invoicedtl where invoiceno = '".$invoice_no."' ") or die(mysql_error());
+        mysqli_query($this->db, "delete from invoicedtl where invoiceno = '".$invoice_no."' ") or die(mysqli_error($this->db));
 
 
-        $query = mysql_query("select orders_package.*,account.account_id,account.account_name from orders_package
+        $query = mysqli_query($this->db, "select orders_package.*,account.account_id,account.account_name from orders_package
             inner join orders on (orders.order_id = orders_package.order_id) 
             inner join account on (account.account_id = orders.account_id) 
-            where  orders_package.order_id = '".$order_id."' ") or die(mysql_error());
+            where  orders_package.order_id = '".$order_id."' ") or die(mysqli_error($this->db));
         
         $Pack_options=$this->get_Pack_options();
         $pack_type=$this->get_package_type();
             
         ////////////invoi_detil /////////////////
         $lineno = 0;
-        while ($nrow = mysql_fetch_array($query)) {
+        while ($nrow = mysqli_fetch_array($query)) {
             $order_inv_prices = $this->get_inv_order_prices($nrow["id"]);
 
             $services_charges = setup_serviceprices($order_inv_prices, $add_ser, $nrow, $pack_type, $Pack_options);
@@ -285,7 +285,7 @@ class invoices
                 $lineno = $lineno + 1;
                 $subtotal = $subtotal + $detailrec["amount"];
         
-                mysql_query("update orders_package set invoice_no = '".$invoice_no."' where id = '".$nrow['id']."' ");
+                mysqli_query($this->db, "update orders_package set invoice_no = '".$invoice_no."' where id = '".$nrow['id']."' ");
             }
             $wbcount++;
 
@@ -306,10 +306,10 @@ class invoices
 
     public function get_Pack_options($account_id=0)
     {
-        $query = mysql_query("select * from addtional_services  where account_id=$account_id") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from addtional_services  where account_id=$account_id") or die(mysqli_error($this->db));
         $arr = array();
         $i = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $arr[$row['id']] = $row['name'];
         }
 
@@ -318,10 +318,10 @@ class invoices
 
     public function get_package_type()
     {
-        $query = mysql_query("select * from package_type") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from package_type") or die(mysqli_error($this->db));
         $arr = array();
         $i = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $arr[$row['package_id']] = $row['package_name'];
         }
 
@@ -329,28 +329,28 @@ class invoices
     }
     public function new_re_calc_order_invoice($order_id, $account_id = '')
     {
-        mysql_query("delete from orders_price where order_id = '".$order_id."' ");
+        mysqli_query($this->db, "delete from orders_price where order_id = '".$order_id."' ");
 
 
-        $query = mysql_query("select orders.price_version_account_id ,orders.price_version_system_id  , orders_package.*,account.account_id,account.account_name,orders.invoice_no from orders_package
+        $query = mysqli_query($this->db, "select orders.price_version_account_id ,orders.price_version_system_id  , orders_package.*,account.account_id,account.account_name,orders.invoice_no from orders_package
     inner join orders on (orders.order_id = orders_package.order_id) 
     inner join account on (account.account_id = orders.account_id) 
-    where orders_package.order_id = '".$order_id."' ") or die(mysql_error());
+    where orders_package.order_id = '".$order_id."' ") or die(mysqli_error($this->db));
 
-        if (mysql_num_rows($query) < 1) {
+        if (mysqli_num_rows($query) < 1) {
       
       //  echo "noooooooooooo";
             $ret['error'] = "1";
             $ret['msg'] = "لا توجد قطع" ;
         
 
-            $q = mysql_query("select invoice_no from orders where order_id ='".$order_id."'") or die(mysql_error());
+            $q = mysqli_query($this->db, "select invoice_no from orders where order_id ='".$order_id."'") or die(mysqli_error($this->db));
        
-            while ($r = mysql_fetch_array($q)) {
+            while ($r = mysqli_fetch_array($q)) {
                 $invoice_no = $r['invoice_no'];
             }
 
-            mysql_query("delete from invoicedtl where invoiceno = '".$invoice_no."' ") or die(mysql_error());
+            mysqli_query($this->db, "delete from invoicedtl where invoiceno = '".$invoice_no."' ") or die(mysqli_error($this->db));
 
             $invhdr["id"]          = $invoice_no;
             $invhdr["subtotal"]    = 0;
@@ -363,9 +363,9 @@ class invoices
         $price_version_account_id='' ;
         $price_version_system_id='' ;
 
-        $query3 = mysql_query("select price_version_account_id ,price_version_system_id  from orders  where  orders.order_id = '".$order_id."'") or die(mysql_error());
+        $query3 = mysqli_query($this->db, "select price_version_account_id ,price_version_system_id  from orders  where  orders.order_id = '".$order_id."'") or die(mysqli_error($this->db));
 
-        while ($r = mysql_fetch_array($query3)) {
+        while ($r = mysqli_fetch_array($query3)) {
             $price_version_account_id = $r['price_version_account_id'];
             $price_version_system_id = $r['price_version_system_id'];
             break;
@@ -375,14 +375,14 @@ class invoices
         $statusList = $this->db->get_table_by_id("status", "disporder", "statusname");
         $price_list = array();
         $addtional_services =array();
-        $q = mysql_query("select * from package_status_price where account_id = 0  and version_id='$price_version_system_id'") or die(mysql_error());
-        while ($r = mysql_fetch_array($q)) {
+        $q = mysqli_query($this->db, "select * from package_status_price where account_id = 0  and version_id='$price_version_system_id'") or die(mysqli_error($this->db));
+        while ($r = mysqli_fetch_array($q)) {
             $price_list[$r['package_id']][$r['status_id']] = $r['fee'];
         }
     
         if ($account_id != '') {
-            $q = mysql_query("select * from package_status_price where account_id = '$account_id' and version_id='$price_version_account_id'") or die(mysql_error());
-            while ($r = mysql_fetch_array($q)) {
+            $q = mysqli_query($this->db, "select * from package_status_price where account_id = '$account_id' and version_id='$price_version_account_id'") or die(mysqli_error($this->db));
+            while ($r = mysqli_fetch_array($q)) {
                 $price_list[$r['package_id']][$r['status_id']] = $r['fee'];
             }
         }
@@ -390,15 +390,15 @@ class invoices
         ////////////// addtional addtional_services ////////////////////////
         if ($account_id != '') {
 
-        // $q = mysql_query("select `addtional_services`.`pack_id`,`addtional_services`.`per_meters`,`addtional_services`.`name`,`addtional_services`.`short_name` , `pack`.`id` as account_pack_id,pack.price , pack.account_id from addtional_services inner join pack on( `pack`.`addtional_services_id` = `addtional_services`.`id`) where pack.account_id= '$account_id' ") or die (mysql_error());
-            $q = mysql_query("select `addtional_services`.id as pack_id,`addtional_services`.`per_meters`,`addtional_services`.`name`,`addtional_services`.`short_name` , `pack`.`id` as id,pack.price , pack.account_id from addtional_services inner join pack on( `pack`.`addtional_services_id` = `addtional_services`.`id`) where pack.account_id=$account_id") or die(mysql_error());
+        // $q = mysqli_query($this->db,"select `addtional_services`.`pack_id`,`addtional_services`.`per_meters`,`addtional_services`.`name`,`addtional_services`.`short_name` , `pack`.`id` as account_pack_id,pack.price , pack.account_id from addtional_services inner join pack on( `pack`.`addtional_services_id` = `addtional_services`.`id`) where pack.account_id= '$account_id' ") or die (mysqli_error($this->db));
+            $q = mysqli_query($this->db, "select `addtional_services`.id as pack_id,`addtional_services`.`per_meters`,`addtional_services`.`name`,`addtional_services`.`short_name` , `pack`.`id` as id,pack.price , pack.account_id from addtional_services inner join pack on( `pack`.`addtional_services_id` = `addtional_services`.`id`) where pack.account_id=$account_id") or die(mysqli_error($this->db));
             $qResult=array();
-            while ($r = mysql_fetch_array($q)) {
+            while ($r = mysqli_fetch_array($q)) {
                 $qResult[]= $r;
             }
         }
-        $q = mysql_query("select * from addtional_services where account_id = 0 ") or die(mysql_error());
-        while ($r = mysql_fetch_array($q)) {
+        $q = mysqli_query($this->db, "select * from addtional_services where account_id = 0 ") or die(mysqli_error($this->db));
+        while ($r = mysqli_fetch_array($q)) {
             $addtional_services[$r['id']] = $r['price'];
             for ($j = 0; $j < count($qResult); $j++) {
                 if ($qResult[$j]['pack_id'] ==  $r['id']) {
@@ -413,9 +413,9 @@ class invoices
 
     
         ///////////set orders_price /////////
-        mysql_query("delete from orders_price where order_id = '".$order_id."' ");
+        mysqli_query($this->db, "delete from orders_price where order_id = '".$order_id."' ");
 
-        while ($row = mysql_fetch_array($query)) {
+        while ($row = mysqli_fetch_array($query)) {
 
         //var_dump($row);
             ///cala
@@ -449,32 +449,32 @@ class invoices
                     ////////////// addtional addtional_services ////////////////////////
                     $pactotal = $price * $meter;
         
-                    mysql_query("insert into orders_price (order_id,package_id,price,type,name,ratio) 
-                values ('".$row['order_id']."','".$row['id']."','".$pactotal."','".$m[$j]."','".$statusList[$m[$j]]."','".$meter."');") or die(mysql_error());
+                    mysqli_query($this->db, "insert into orders_price (order_id,package_id,price,type,name,ratio) 
+                values ('".$row['order_id']."','".$row['id']."','".$pactotal."','".$m[$j]."','".$statusList[$m[$j]]."','".$meter."');") or die(mysqli_error($this->db));
                 }
             }
         }
         ////// end orders_price///////////
-        $q = mysql_query("select invoice_no from orders where order_id ='".$order_id."'") or die(mysql_error());
+        $q = mysqli_query($this->db, "select invoice_no from orders where order_id ='".$order_id."'") or die(mysqli_error($this->db));
            
-        while ($r = mysql_fetch_array($q)) {
+        while ($r = mysqli_fetch_array($q)) {
             $invoice_no = $r['invoice_no'];
         }
 
-        mysql_query("delete from invoicedtl where invoiceno = '".$invoice_no."' ") or die(mysql_error());
+        mysqli_query($this->db, "delete from invoicedtl where invoiceno = '".$invoice_no."' ") or die(mysqli_error($this->db));
 
 
-        $query = mysql_query("select orders_package.*,account.account_id,account.account_name from orders_package
+        $query = mysqli_query($this->db, "select orders_package.*,account.account_id,account.account_name from orders_package
         inner join orders on (orders.order_id = orders_package.order_id) 
         inner join account on (account.account_id = orders.account_id) 
-        where orders_package.order_id = '".$order_id."' ") or die(mysql_error());
+        where orders_package.order_id = '".$order_id."' ") or die(mysqli_error($this->db));
         $Pack_options=$this->get_Pack_options();
         $pack_type=$this->get_package_type();
         // print_r($Pack_options);
         // print_r($pack_type);
         ////////////invoi_detil /////////////////
         $lineno = 0;
-        while ($nrow = mysql_fetch_array($query)) {
+        while ($nrow = mysqli_fetch_array($query)) {
             // print_r($nrow);
             $order_inv_prices = $this->get_inv_order_prices($nrow["id"]);
             // $x='الطول :'.$nrow['length'].' , العرض : '.$nrow['width'].' , السمك : '.$pack_type[$nrow['package_type']].' , الخدمة : '.$pack_type[$nrow['pack_options']];
@@ -510,7 +510,7 @@ class invoices
                 $lineno = $lineno + 1;
                 $subtotal = $subtotal + $detailrec["amount"];
                 
-                mysql_query("update orders_package set invoice_no = '".$invoice_no."' where id = '".$nrow['id']."' ");
+                mysqli_query($this->db, "update orders_package set invoice_no = '".$invoice_no."' where id = '".$nrow['id']."' ");
             }
             $wbcount++;
         
@@ -529,27 +529,27 @@ class invoices
     {
 
         //echo "ahmed";
-        $query = mysql_query("select orders.price_version_account_id ,orders.price_version_system_id  ,
+        $query = mysqli_query($this->db, "select orders.price_version_account_id ,orders.price_version_system_id  ,
         orders_package.*,account.account_id,account.account_name,
         orders.invoice_no from orders_package
         inner join orders on (orders.order_id = orders_package.order_id) 
         inner join account on (account.account_id = orders.account_id) 
-        where orders_package.order_id = '".$order_id."'") or die(mysql_error());
+        where orders_package.order_id = '".$order_id."'") or die(mysqli_error($this->db));
       
        
         $price_version_account_id='' ;
         $price_version_system_id='' ;
        
-        if ($query == "" || mysql_num_rows($query) < 1) {
+        if ($query == "" || mysqli_num_rows($query) < 1) {
             //    echo "del".$order_id;
             $ret['error'] = "1";
             $ret['msg'] = "لا توجد قطع" ;
             return $ret;
         }
       
-        $query3 = mysql_query("select price_version_account_id ,price_version_system_id  from orders  where  orders.order_id = '".$order_id."'") or die(mysql_error());
+        $query3 = mysqli_query($this->db, "select price_version_account_id ,price_version_system_id  from orders  where  orders.order_id = '".$order_id."'") or die(mysqli_error($this->db));
 
-        while ($r = mysql_fetch_array($query3)) {
+        while ($r = mysqli_fetch_array($query3)) {
             $price_version_account_id = $r['price_version_account_id'];
             $price_version_system_id = $r['price_version_system_id'];
             break;
@@ -563,15 +563,15 @@ class invoices
         $addtional_services =array();
         // echo "select * from package_status_price where account_id = 0  and version_id='$price_version_system_id'";
 
-        $q = mysql_query("select * from package_status_price where account_id = 0  and version_id='$price_version_system_id'") or die(mysql_error());
-        while ($r = mysql_fetch_array($q)) {
+        $q = mysqli_query($this->db, "select * from package_status_price where account_id = 0  and version_id='$price_version_system_id'") or die(mysqli_error($this->db));
+        while ($r = mysqli_fetch_array($q)) {
             $price_list[$r['package_id']][$r['status_id']][$r['item_colour']][$r['Glass_type']] = $r['fee'];
         }
         //echo 'ahmed';
         if ($account_id != '') {
             // echo "select * from package_status_price where account_id = '$account_id' and version_id='$price_version_system_id' ";
-            $q = mysql_query("select * from package_status_price where account_id = '$account_id' and version_id='$price_version_system_id' ") or die(mysql_error());
-            while ($r = mysql_fetch_array($q)) {
+            $q = mysqli_query($this->db, "select * from package_status_price where account_id = '$account_id' and version_id='$price_version_system_id' ") or die(mysqli_error($this->db));
+            while ($r = mysqli_fetch_array($q)) {
                 $price_list[$r['package_id']][$r['status_id']][$r['item_colour']][$r['Glass_type']] = $r['fee'];
             }
         }
@@ -580,16 +580,16 @@ class invoices
         // echo 'ahmed';
         if ($account_id != '') {
             // echo "select * from package_status_price where account_id = '$account_id' and version_id='$price_version_system_id' ";
-            $q = mysql_query("select * from package_status_price where account_id = '$account_id' and version_id='$price_version_account_id' ") or die(mysql_error());
-            while ($r = mysql_fetch_array($q)) {
+            $q = mysqli_query($this->db, "select * from package_status_price where account_id = '$account_id' and version_id='$price_version_account_id' ") or die(mysqli_error($this->db));
+            while ($r = mysqli_fetch_array($q)) {
                 $price_list[$r['package_id']][$r['status_id']][$r['item_colour']][$r['Glass_type']] = $r['fee'];
             }
         }
         
         ////////////// addtional addtional_services ////////////////////////
 
-        $q = mysql_query("select * from addtional_services where account_id = 0 ") or die(mysql_error());
-        while ($r = mysql_fetch_array($q)) {
+        $q = mysqli_query($this->db, "select * from addtional_services where account_id = 0 ") or die(mysqli_error($this->db));
+        while ($r = mysqli_fetch_array($q)) {
             $addtional_services[$r['id']] = $r;
             // for ($j = 0; $j < count($qResult); $j++) {
             //     if($qResult[$j]['pack_id'] ==  $r['id'] ){
@@ -600,11 +600,11 @@ class invoices
 
         if ($account_id != '') {
 
-            // $q = mysql_query("select `addtional_services`.`pack_id`,`addtional_services`.`per_meters`,`addtional_services`.`name`,`addtional_services`.`short_name` , `pack`.`id` as account_pack_id,pack.price , pack.account_id from addtional_services inner join pack on( `pack`.`addtional_services_id` = `addtional_services`.`id`) where pack.account_id= '$account_id' ") or die (mysql_error());
-            $q = mysql_query("select addtional_services.* , `addtional_services`.id as pack_id,`addtional_services`.`per_meters`,`addtional_services`.`name`,`addtional_services`.`short_name` , `pack`.`id` as id,pack.price , pack.account_id from addtional_services 
-            inner join pack on( `pack`.`addtional_services_id` = `addtional_services`.`id`) where pack.account_id=$account_id") or die(mysql_error());
+            // $q = mysqli_query($this->db,"select `addtional_services`.`pack_id`,`addtional_services`.`per_meters`,`addtional_services`.`name`,`addtional_services`.`short_name` , `pack`.`id` as account_pack_id,pack.price , pack.account_id from addtional_services inner join pack on( `pack`.`addtional_services_id` = `addtional_services`.`id`) where pack.account_id= '$account_id' ") or die (mysqli_error($this->db));
+            $q = mysqli_query($this->db, "select addtional_services.* , `addtional_services`.id as pack_id,`addtional_services`.`per_meters`,`addtional_services`.`name`,`addtional_services`.`short_name` , `pack`.`id` as id,pack.price , pack.account_id from addtional_services 
+            inner join pack on( `pack`.`addtional_services_id` = `addtional_services`.`id`) where pack.account_id=$account_id") or die(mysqli_error($this->db));
             $qResult=array();
-            while ($r = mysql_fetch_array($q)) {
+            while ($r = mysqli_fetch_array($q)) {
                 $addtional_services[$r['id']] = $r;
             }
         }
@@ -617,9 +617,9 @@ class invoices
         
         //var_dump($price_list);
         ///////////set orders_price /////////
-        mysql_query("delete from orders_price where order_id = '".$order_id."' ");
+        mysqli_query($this->db, "delete from orders_price where order_id = '".$order_id."' ");
 
-        while ($row = mysql_fetch_array($query)) {
+        while ($row = mysqli_fetch_array($query)) {
 
             //var_dump($row);
             ///cala
@@ -649,8 +649,8 @@ class invoices
                     ////////////// addtional addtional_services ////////////////////////
                     $pactotal = $price * $meter;
             
-                    mysql_query("insert into orders_price (order_id,package_id,price,type,name,ratio) 
-                    values ('".$row['order_id']."','".$row['id']."','".$pactotal."','".$m[$j]."','".$statusList[$m[$j]]."','".$meter."');") or die(mysql_error());
+                    mysqli_query($this->db, "insert into orders_price (order_id,package_id,price,type,name,ratio) 
+                    values ('".$row['order_id']."','".$row['id']."','".$pactotal."','".$m[$j]."','".$statusList[$m[$j]]."','".$meter."');") or die(mysqli_error($this->db));
                 }
             }
 
@@ -675,8 +675,8 @@ class invoices
                     $paramter = $meter;
                     $cprice =  $addtional_services[$ad[$x]]['price'] ;
                 }
-                mysql_query("insert into orders_price (order_id,package_id,price,type,name,ratio) 
-                    values ('".$row['order_id']."','".$row['id']."','".$cprice."','add_".$addtional_services[$ad[$x]]['id']."','".$addtional_services[$ad[$x]]['name']."','".$paramter."');") or die(mysql_error());
+                mysqli_query($this->db, "insert into orders_price (order_id,package_id,price,type,name,ratio) 
+                    values ('".$row['order_id']."','".$row['id']."','".$cprice."','add_".$addtional_services[$ad[$x]]['id']."','".$addtional_services[$ad[$x]]['name']."','".$paramter."');") or die(mysqli_error($this->db));
                   
                 //$price = $price + $addtional_services[$ad[$x]];
             }
@@ -686,13 +686,13 @@ class invoices
 
         /////////set invic_head ////////
 
-        $query = mysql_query("select orders_package.*,account.account_id,account.account_name,
+        $query = mysqli_query($this->db, "select orders_package.*,account.account_id,account.account_name,
             orders.invoice_no from orders_package
             inner join orders on (orders.order_id = orders_package.order_id) 
             inner join account on (account.account_id = orders.account_id) 
-            where  orders_package.order_id = '".$order_id."'") or die(mysql_error());
+            where  orders_package.order_id = '".$order_id."'") or die(mysqli_error($this->db));
 
-        $row = mysql_fetch_array($query);
+        $row = mysqli_fetch_array($query);
 
         $invhdr = array();
         $invhdr["clid"]          = $row["account_id"];
@@ -715,20 +715,20 @@ class invoices
         $invcount = $invcount + 1;
 
 
-        $query = mysql_query("select orders_package.*,account.account_id,account.account_name from orders_package
+        $query = mysqli_query($this->db, "select orders_package.*,account.account_id,account.account_name from orders_package
             inner join orders on (orders.order_id = orders_package.order_id) 
             inner join account on (account.account_id = orders.account_id) 
-            where  orders_package.order_id = '".$order_id."' ") or die(mysql_error());
+            where  orders_package.order_id = '".$order_id."' ") or die(mysqli_error($this->db));
            
         $Pack_options=$this->get_Pack_options();
         $pack_type=$this->get_package_type();
         // print_r($Pack_options);
-        mysql_query("delete from invoicedtl where invoiceno = '".$invoiceno."' ");
+        mysqli_query($this->db, "delete from invoicedtl where invoiceno = '".$invoiceno."' ");
 
         // print_r($pack_type);
         ////////////invoi_detil /////////////////
         $lineno = 0;
-        while ($nrow = mysql_fetch_array($query)) {
+        while ($nrow = mysqli_fetch_array($query)) {
             // print_r($nrow);
             $order_inv_prices = $this->get_inv_order_prices($nrow["id"]);
             // $x='الطول :'.$nrow['length'].' , العرض : '.$nrow['width'].' , السمك : '.$pack_type[$nrow['package_type']].' , الخدمة : '.$pack_type[$nrow['pack_options']];
@@ -764,7 +764,7 @@ class invoices
                 $lineno = $lineno + 1;
                 $subtotal = $subtotal + $detailrec["amount"];
                     
-                mysql_query("update orders_package set invoice_no = '".$invoiceno."' where id = '".$nrow['id']."' ");
+                mysqli_query($this->db, "update orders_package set invoice_no = '".$invoiceno."' where id = '".$nrow['id']."' ");
             }
             $wbcount++;
             
@@ -797,7 +797,7 @@ class invoices
         $sql = $this->db->make_update("orders", $ordupd, "order_id", $order_id);
 
   
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
   
         if ($query) {
             return true;
@@ -812,10 +812,10 @@ class invoices
 
     public function get_inv_order_prices($order_id)
     {
-        $query = mysql_query("select * from orders_price where package_id = " . $this->db->qstr($order_id) . " ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from orders_price where package_id = " . check_mysql_string($this->db,$order_id) . " ") or die(mysqli_error($this->db));
         $order_details = array();
         $i = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $order_details[$i][$row["type"]] = $row;
             $i++;
         }
@@ -828,10 +828,10 @@ class invoices
         $sql = $this->db->make_insert("invoicehdr", $array);
 
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
         if ($query) {
-            return mysql_insert_id();
+            return mysqli_insert_id($this->db);
         } else {
             return false;
         }
@@ -843,10 +843,10 @@ class invoices
         $sql = $this->db->make_insert("invoicedtl", $array);
 
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
         if ($query) {
-            return mysql_insert_id();
+            return mysqli_insert_id($this->db);
         } else {
             return false;
         }
@@ -871,13 +871,13 @@ class invoices
  inner join account on (invoicehdr.clid = account.account_id) 
  where invoicehdr.paid <> 'Y' and invoicehdr.printed <> 'Y'
   and invoicehdr.delivered <> 'Y' and invoicehdr.reviewed=$reviewed  $msql order by invoicehdr.id desc LIMIT $offset, $no_of_records_per_page";
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
 
         $company_details = array();
 
 
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             foreach ($row as $key => $value) {
                 $arr[$key] = $value;
             }
@@ -895,33 +895,33 @@ class invoices
         $sql = "";
 
         if ($invoice_no != "") {
-            $sql .= " and invoicehdr.id = " . $this->db->qstr($invoice_no) . " ";
+            $sql .= " and invoicehdr.id = " . check_mysql_string($this->db,$invoice_no) . " ";
         } else {
             if ($account_id != "") {
-                $sql .= " and invoicehdr.clid = " . $this->db->qstr($account_id) . " ";
+                $sql .= " and invoicehdr.clid = " . check_mysql_string($this->db,$account_id) . " ";
             }
             if ($due_date != "") {
-                $sql .= " and invoicehdr.duedate <= " . $this->db->qstr($due_date) . " ";
+                $sql .= " and invoicehdr.duedate <= " . check_mysql_string($this->db,$due_date) . " ";
             }
             if ($billingcode != "") {
-                $sql .= " and account.billing_code <= " . $this->db->qstr($billingcode) . " ";
+                $sql .= " and account.billing_code <= " . check_mysql_string($this->db,$billingcode) . " ";
             }
             if ($from != '') {
-                $sql .= " and invoicehdr.date >= " . $this->db->qstr($due_date) . " ";
+                $sql .= " and invoicehdr.date >= " . check_mysql_string($this->db,$due_date) . " ";
             }
             if ($to != '') {
-                $sql .= " and invoicehdr.date <= " . $this->db->qstr($due_date) . " ";
+                $sql .= " and invoicehdr.date <= " . check_mysql_string($this->db,$due_date) . " ";
             }
         }
 
-        $query = mysql_query("select invoicehdr.id,clid,invoicehdr.acctno,date,duedate,random,fsamount,tax1amount,tax2amount,tax3amount,tax4amount,tax5amount,subtotal,account_company as company, (invoicehdr.subtotal + invoicehdr.fsamount + invoicehdr.tax2amount + invoicehdr.tax1amount+ invoicehdr.tax3amount+ invoicehdr.tax4amount) as invoice_total  from invoicehdr,account where invoicehdr.clid=account.account_id and paid<>'Y'  " . $sql . " order by invoicehdr.acctno,invoicehdr.date,invoicehdr.id") or die(mysql_error());
+        $query = mysqli_query($this->db, "select invoicehdr.id,clid,invoicehdr.acctno,date,duedate,random,fsamount,tax1amount,tax2amount,tax3amount,tax4amount,tax5amount,subtotal,account_company as company, (invoicehdr.subtotal + invoicehdr.fsamount + invoicehdr.tax2amount + invoicehdr.tax1amount+ invoicehdr.tax3amount+ invoicehdr.tax4amount) as invoice_total  from invoicehdr,account where invoicehdr.clid=account.account_id and paid<>'Y'  " . $sql . " order by invoicehdr.acctno,invoicehdr.date,invoicehdr.id") or die(mysqli_error($this->db));
 
         $category = array();
-        while ($row = mysql_fetch_assoc($query)) {
-            $q = mysql_query("select * from cashreceipts where invoiceno='" . $row['id'] . "' ") or die(mysql_error());
+        while ($row = mysqli_fetch_assoc($query)) {
+            $q = mysqli_query($this->db, "select * from cashreceipts where invoiceno='" . $row['id'] . "' ") or die(mysqli_error($this->db));
             $payments = 0;
-            for ($i = 0; $i < mysql_num_rows($q); $i++) {
-                $cashrcpt = mysql_fetch_array($q, MYSQL_ASSOC);
+            for ($i = 0; $i < mysqli_num_rows($q); $i++) {
+                $cashrcpt = mysqli_fetch_assoc($q);
                 $payments = $payments + $cashrcpt["applied"];
             }
 
@@ -941,17 +941,17 @@ class invoices
         $sql = "";
 
         if ($account_id != "") {
-            $sql .= " and invoicehdr.clid = " . $this->db->qstr($account_id) . " ";
+            $sql .= " and invoicehdr.clid = " . check_mysql_string($this->db,$account_id) . " ";
         }
         if ($invoice_no != "") {
-            $sql .= " and invoicehdr.id = " . $this->db->qstr($invoice_no) . " ";
+            $sql .= " and invoicehdr.id = " . check_mysql_string($this->db,$invoice_no) . " ";
         }
         if ($due_date != "") {
-            $sql .= " and invoicehdr.duedate <= " . $this->db->qstr($due_date) . " ";
+            $sql .= " and invoicehdr.duedate <= " . check_mysql_string($this->db,$due_date) . " ";
         }
 
 
-        $query = mysql_query("select cashreceipts.id,
+        $query = mysqli_query($this->db, "select cashreceipts.id,
                clid,
                cashreceipts.acctno,
                ref,
@@ -963,7 +963,7 @@ class invoices
                invoiceno,
                applied
         from cashreceipts,account where cashreceipts.clid=account.account_id  and date >= '2013-07-01' and date <= '2013-07-31'
-        order by date asc, acctno, ref asc, invoiceno asc") or die(mysql_error());
+        order by date asc, acctno, ref asc, invoiceno asc") or die(mysqli_error($this->db));
 
         return $this->db->build_array($query);
     }
@@ -973,18 +973,18 @@ class invoices
     {
         $sql = $this->db->make_insert("invoicehdr", $invoice_details);
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
-        return mysql_insert_id();
+        return mysqli_insert_id($this->db);
     }
 
 
     public function get_invoice_header($invoice_id)
     {
-        $query = mysql_query("select * from invoicehdr where id=" . $this->db->qstr($invoice_id) . "") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from invoicehdr where id=" . check_mysql_string($this->db,$invoice_id) . "") or die(mysqli_error($this->db));
 
-        if (mysql_num_rows($query)) {
-            $row = mysql_fetch_object($query);
+        if (mysqli_num_rows($query)) {
+            $row = mysqli_fetch_object($query);
             return $row;
         } else {
             return false;
@@ -994,13 +994,13 @@ class invoices
 
     public function get_invoice_lines($invoice_id)
     {
-        $query = mysql_query("select * from invoicedtl LEFT  outer join orders on (orders.order_id = invoicedtl.item ) where invoicedtl.invoiceno=" . $this->db->qstr($invoice_id) . " order by lineno") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from invoicedtl LEFT  outer join orders on (orders.order_id = invoicedtl.item ) where invoicedtl.invoiceno=" . check_mysql_string($this->db,$invoice_id) . " order by lineno") or die(mysqli_error($this->db));
 
 
         $company_details = array();
 
 
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             foreach ($row as $key => $value) {
                 $arr[$key] = $value;
             }
@@ -1015,13 +1015,13 @@ class invoices
 
     public function search_invoices($invoice_id, $from_date, $to_date, $account_id)
     {
-        $query = mysql_query("select * from invoicehdr  LEFT  outer join cashreceipts  on (cashreceipts.invoiceno = invoicehdr.id ) where invoicehdr.id =" . $this->db->qstr($invoice_id) . " and invoicehdr.clid = " . $this->db->qstr($account_id) . " ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from invoicehdr  LEFT  outer join cashreceipts  on (cashreceipts.invoiceno = invoicehdr.id ) where invoicehdr.id =" . check_mysql_string($this->db,$invoice_id) . " and invoicehdr.clid = " . check_mysql_string($this->db,$account_id) . " ") or die(mysqli_error($this->db));
 
 
         $company_details = array();
 
 
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             foreach ($row as $key => $value) {
                 $arr[$key] = $value;
             }
@@ -1040,10 +1040,10 @@ class invoices
 
         //echo $sql;
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
         if ($query) {
-            return mysql_insert_id();
+            return mysqli_insert_id($this->db);
         } else {
             return false;
         }
@@ -1054,10 +1054,10 @@ class invoices
         $sql = $this->db->make_insert("cashreceipts", $array);
 
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
         if ($query) {
-            return mysql_insert_id();
+            return mysqli_insert_id($this->db);
         } else {
             return false;
         }
@@ -1066,8 +1066,8 @@ class invoices
 
     public function get_account_byinvoice_id($account_id)
     {
-        $query = mysql_query("select clid from invoicehdr where id = '" . $account_id . "' ") or die(mysql_error());
-        $row = mysql_fetch_array($query);
+        $query = mysqli_query($this->db, "select clid from invoicehdr where id = '" . $account_id . "' ") or die(mysqli_error($this->db));
+        $row = mysqli_fetch_array($query);
 
         return $row['clid'];
     }
@@ -1075,16 +1075,16 @@ class invoices
 
     public function cancel_invoices($invoice_id)
     {
-        $query = mysql_query("select order_id from orders where invoiceno = '$invoice_id'") or die(mysql_error());
+        $query = mysqli_query($this->db, "select order_id from orders where invoiceno = '$invoice_id'") or die(mysqli_error($this->db));
 
         $ids = "";
-        while ($row = mysql_fetch_array($query)) {
-            mysql_query("update orders set invoiceno = '0' where order_id = '" . $row['order_id'] . "' ") or die(mysql_error());
+        while ($row = mysqli_fetch_array($query)) {
+            mysqli_query($this->db, "update orders set invoiceno = '0' where order_id = '" . $row['order_id'] . "' ") or die(mysqli_error($this->db));
         }
 
 
-        mysql_query("delete from invoicedtl where invoiceno = '$invoice_id'");
-        mysql_query("delete from invoicehdr where id = '$invoice_id'");
+        mysqli_query($this->db, "delete from invoicedtl where invoiceno = '$invoice_id'");
+        mysqli_query($this->db, "delete from invoicehdr where id = '$invoice_id'");
     }
 
 
@@ -1134,16 +1134,16 @@ class invoices
 	order by   invoiceno asc";
 
         //echo $where;
-        $q = mysql_query($where) or die(mysql_error());
+        $q = mysqli_query($this->db, $where) or die(mysqli_error($this->db));
 
         //echo $where;
         $category = array();
 
-        while ($row = mysql_fetch_assoc($q)) {
+        while ($row = mysqli_fetch_assoc($q)) {
             $inv_total = "";
-            $query = mysql_query("select (invoicehdr.subtotal + invoicehdr.fsamount + invoicehdr.tax2amount + invoicehdr.tax1amount + invoicehdr.tax3amount + invoicehdr.tax4amount) as invoice_total from invoicehdr where id = '" . $row['invoiceno'] . "' ") or die(mysql_error());
-            if (mysql_num_rows($query) > 0) {
-                $r = mysql_fetch_array($query);
+            $query = mysqli_query($this->db, "select (invoicehdr.subtotal + invoicehdr.fsamount + invoicehdr.tax2amount + invoicehdr.tax1amount + invoicehdr.tax3amount + invoicehdr.tax4amount) as invoice_total from invoicehdr where id = '" . $row['invoiceno'] . "' ") or die(mysqli_error($this->db));
+            if (mysqli_num_rows($query) > 0) {
+                $r = mysqli_fetch_array($query);
                 $inv_total = $r['invoice_total'];
             }
 
@@ -1189,13 +1189,13 @@ class invoices
 
         //echo $where;
 
-        $q = mysql_query($where) or die(mysql_error() . "test");
+        $q = mysqli_query($this->db, $where) or die(mysqli_error($this->db) . "test");
 
         $deposits = array();
         //*get all cashreceipts for all customers(or just one) - against invoice no Zero,
         // & put in array.
-        for ($n = 0; $n < mysql_num_rows($q); $n++) {
-            $cr = mysql_fetch_array($q, MYSQL_ASSOC);
+        for ($n = 0; $n < mysqli_num_rows($q); $n++) {
+            $cr = mysqli_fetch_assoc($q);
             $acctno = $cr["acctno"];
             $applied = $cr["applied"];
             $deposits["$acctno"] = $deposits["$acctno"] + $applied;
@@ -1212,15 +1212,15 @@ class invoices
     {
         $sql = "select *,(invoicehdr.subtotal + invoicehdr.fsamount + invoicehdr.tax2amount + invoicehdr.tax1amount + invoicehdr.tax3amount + invoicehdr.tax4amount) as invoice_total  from invoicehdr where paid<>'Y'  and clid='$account_id' order by id";
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
         $category = array();
 
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $payments = "";
-            $rc = mysql_query("select * from cashreceipts where invoiceno='" . $row['id'] . "' and clid='$account_id'") or die(mysql_errno());
-            for ($i = 0; $i < mysql_num_rows($rc); $i++) {
-                $cashrcpt = mysql_fetch_array($rc, MYSQL_ASSOC);
+            $rc = mysqli_query($this->db, "select * from cashreceipts where invoiceno='" . $row['id'] . "' and clid='$account_id'") or die(mysqli_errno($this->db));
+            for ($i = 0; $i < mysqli_num_rows($rc); $i++) {
+                $cashrcpt = mysqli_fetch_assoc($rc);
                 $payments = $payments + $cashrcpt["applied"];
             }
 
@@ -1233,13 +1233,13 @@ class invoices
         }
 
 
-        $r = mysql_query("select * from cashreceipts where invoiceno='0' and clid='$account_id'") or die(mysql_errno());
+        $r = mysqli_query($this->db, "select * from cashreceipts where invoiceno='0' and clid='$account_id'") or die(mysqli_errno($this->db));
         $payments = 0;
-        for ($i = 0; $i < mysql_num_rows($r); $i++) {
-            $cashrcpt = mysql_fetch_array($r, MYSQL_ASSOC);
+        for ($i = 0; $i < mysqli_num_rows($r); $i++) {
+            $cashrcpt = mysqli_fetch_assoc($r);
             $payments = $payments + $cashrcpt["applied"];
         }
-        if (mysql_num_rows($r) > 0) {
+        if (mysqli_num_rows($r) > 0) {
             $category[] = array('id' => '0', 'invoiceno' => '0', 'payments' => $payments);
         }
         return $category;
@@ -1282,20 +1282,20 @@ class invoices
         }
 
         //	echo $sql;
-        $query = mysql_query("select orders.office_name,orders.operation_name,`orders`.`order_size`,`orders`.`pieces`,`orders`.`price_version_account_id`,`orders`.`price_version_system_id`,account.*,invoicehdr.*,account_company as company, 
+        $query = mysqli_query($this->db, "select orders.office_name,orders.operation_name,`orders`.`order_size`,`orders`.`pieces`,`orders`.`price_version_account_id`,`orders`.`price_version_system_id`,account.*,invoicehdr.*,account_company as company, 
         (invoicehdr.subtotal + invoicehdr.fsamount + invoicehdr.tax2amount + invoicehdr.tax1amount + invoicehdr.tax3amount + invoicehdr.tax4amount)
          as invoice_total , orders.order_type , orders.order_status 
         from invoicehdr 
         left join orders on (`orders`.`order_id` = `invoicehdr`.`order_id`) 
         inner join account on (invoicehdr.clid = account.account_id) 
-        where invoicehdr.clid=account.account_id   " . $sql . " order by invoicehdr.date ASC, id ASC") or die(mysql_error());
+        where invoicehdr.clid=account.account_id   " . $sql . " order by invoicehdr.date ASC, id ASC") or die(mysqli_error($this->db));
 
         $category = array();
-        while ($row = mysql_fetch_assoc($query)) {
-            $q = mysql_query("select * from cashreceipts where invoiceno='" . $row['id'] . "' ") or die(mysql_error());
+        while ($row = mysqli_fetch_assoc($query)) {
+            $q = mysqli_query($this->db, "select * from cashreceipts where invoiceno='" . $row['id'] . "' ") or die(mysqli_error($this->db));
             $payments = 0;
-            for ($i = 0; $i < mysql_num_rows($q); $i++) {
-                $cashrcpt = mysql_fetch_array($q, MYSQL_ASSOC);
+            for ($i = 0; $i < mysqli_num_rows($q); $i++) {
+                $cashrcpt = mysqli_fetch_assoc($q);
                 $payments = $payments + $cashrcpt["applied"];
             }
 
@@ -1370,26 +1370,26 @@ class invoices
     public function get_paid_invoice($from, $to)
     {
         if ($from != '') {
-            $sql .= " and invoicehdr.date >= " . $this->db->qstr($from) . " ";
+            $sql .= " and invoicehdr.date >= " . check_mysql_string($this->db,$from) . " ";
         }
         if ($to != '') {
-            $sql .= " and invoicehdr.date <= " . $this->db->qstr($to) . " ";
+            $sql .= " and invoicehdr.date <= " . check_mysql_string($this->db,$to) . " ";
         }
 
         //echo "select *  from invoicehdr where  paid = 'Y'   ".$sql." ";
 
-        $query = mysql_query("select *  from invoicehdr where  paid = 'Y'   " . $sql . " ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select *  from invoicehdr where  paid = 'Y'   " . $sql . " ") or die(mysqli_error($this->db));
 
-        return mysql_num_rows($query);
+        return mysqli_num_rows($query);
     }
 
 
     
     public function get_account_company($account_id)
     {
-        $query = mysql_query("select * from account where account_id = " . $account_id . "") or die(mysql_error());
-        if (mysql_num_rows($query) == 1) {
-            $row = mysql_fetch_array($query);
+        $query = mysqli_query($this->db, "select * from account where account_id = " . $account_id . "") or die(mysqli_error($this->db));
+        if (mysqli_num_rows($query) == 1) {
+            $row = mysqli_fetch_array($query);
             return $row['account_company'];
         } else {
             return false;

@@ -56,14 +56,14 @@ $where  = "(printed='Y' or posted='Y' or delivered='Y')
 
 $sql            = "select max(id) as last_invoiceno from invoicehdr where ($where)";
 //echo $sql;
-$ri             = mysql_query($sql);
-$maxid          = mysql_fetch_array($ri,MYSQL_ASSOC);
+$ri             = mysqli_query($mycon,$sql);
+$maxid          = mysqli_fetch_array($ri);
 $last_invoiceno = $maxid["last_invoiceno"];
 //*we'll need the rest of it too.
 
 $sql            = "select * from invoicehdr where id='$last_invoiceno'";
-$ri             = mysql_query($sql);
-$lastinvhdr     = mysql_fetch_array($ri,MYSQL_ASSOC);
+$ri             = mysqli_query($mycon,$sql);
+$lastinvhdr     = mysqli_fetch_array($ri);
 
 $last_invoice_date = $lastinvhdr["date"];
 $lastinv_total  = round($lastinvhdr["subtotal"]
@@ -79,9 +79,9 @@ $lastinv_total  = round($lastinvhdr["subtotal"]
 //*we'll also need the ppd amount for this prev invoice if there was any.
 if ($last_invoice_date != null){
 $ppd_on_lastinvoice = 0;
-$rc = mysql_query("select * from cashreceipts  where invoiceno='$last_invoiceno'  and  ppd='Y'");
+$rc = mysqli_query($mycon,"select * from cashreceipts  where invoiceno='$last_invoiceno'  and  ppd='Y'");
 
-while($cashrcpt = mysql_fetch_array($rc,MYSQL_ASSOC)){
+while($cashrcpt = mysqli_fetch_array($rc)){
   $ppd_on_lastinvoice += $cashrcpt["applied"];
 }
 
@@ -98,13 +98,13 @@ $where  = "(printed='Y' or posted='Y' or delivered='Y')
            and paid<>'Y'";
 
 $sql = "select * from invoicehdr where ($where) order by id";
-$ri = mysql_query($sql);
+$ri = mysqli_query($mycon,$sql);
 $oi_tally          = 0;
 $oi_pymts          = 0;
 //$cr_tally_pre_last = 0;
-                                                       //$coi=mysql_num_rows($ri);
-for ($n=0; $n<mysql_num_rows($ri); $n++) {
- $xinvhdr = mysql_fetch_array($ri,MYSQL_ASSOC);
+                                                       //$coi=mysqli_num_rows($ri);
+for ($n=0; $n<mysqli_num_rows($ri); $n++) {
+ $xinvhdr = mysqli_fetch_array($ri);
  $xinvoiceno = $xinvhdr["id"];
  //* tally for the invoice value.
  $xinvoice_total = round($xinvhdr["subtotal"]
@@ -122,20 +122,20 @@ for ($n=0; $n<mysql_num_rows($ri); $n++) {
  //*Step 2: get all cash receipts THAT PART-PAY each of these UnPaid invoices,
  //         provided they are dated < today.  (NOT = today)
  //         Tally ALL the payments (total against these invoices)
- $rc = mysql_query("select * from cashreceipts where invoiceno='$xinvoiceno'
+ $rc = mysqli_query($mycon,"select * from cashreceipts where invoiceno='$xinvoiceno'
                                            and  date<'$last_invoice_date'");
 
- for ($c = 0; $c < mysql_num_rows($rc); $c++) {
-  $cashrcpt = mysql_fetch_array($rc,MYSQL_ASSOC);
+ for ($c = 0; $c < mysqli_num_rows($rc); $c++) {
+  $cashrcpt = mysqli_fetch_array($rc);
   //minor exception: we'll take a ppd receipt ON the stmt date,
   //                 as this would have reduced the o/s amount on the last stmt,
   //                 so we need to include it to have the prev.bal link back.
    $oi_pymts = $oi_pymts + $cashrcpt["applied"];
                                                                    //$cra=$cashrcpt["applied"];
    }
- mysql_free_result($rc); //cashreceipts
+ mysqli_free_result($rc); //cashreceipts
  }//*for loop thru invoices
-mysql_free_result($ri); //invoices
+mysqli_free_result($ri); //invoices
 
 
 //*Calculating Opening Balance....
@@ -144,7 +144,7 @@ mysql_free_result($ri); //invoices
 //         invoices that were o/s then to be Fully-Paid.
 //Note: Exclude Ppd cashrcpts as they have already been shown with the original invoice.
 //      Only show cashrcpts "Received Since".
-$rc = mysql_query("select * from cashreceipts, invoicehdr where
+$rc = mysqli_query($mycon,"select * from cashreceipts, invoicehdr where
                                                cashreceipts.invoiceno=invoicehdr.id
                                           and  cashreceipts.acctno='$acctno'
                                           and  invoicehdr.paid='Y'
@@ -152,25 +152,25 @@ $rc = mysql_query("select * from cashreceipts, invoicehdr where
                                           and  cashreceipts.invoiceno<'$last_invoiceno'
                                           and  cashreceipts.ppd != 'Y'");
 $paid_to_paidinv_since_lastinv = 0;
-for ($c = 0; $c < mysql_num_rows($rc); $c++) {
- $cashrcpt = mysql_fetch_array($rc,MYSQL_ASSOC);
+for ($c = 0; $c < mysqli_num_rows($rc); $c++) {
+ $cashrcpt = mysqli_fetch_array($rc);
  $paid_to_paidinv_since_lastinv  = $paid_to_paidinv_since_lastinv  + $cashrcpt["applied"];
  }
-mysql_free_result($rc);
+mysqli_free_result($rc);
 
 //*Calculating "Payments Received Since Last Stmt"
 //Step 4: Get ALL payments since last stmt.
-$rc = mysql_query("select * from cashreceipts where
+$rc = mysqli_query($mycon,"select * from cashreceipts where
                                                acctno='$acctno'
                                           and  date >='$last_invoice_date'
                                           and  date <'$stmt_date'
                                           and  cashreceipts.ppd != 'Y'");
 $curr_pymts = 0;
-for ($c = 0; $c < mysql_num_rows($rc); $c++) {
- $cashrcpt = mysql_fetch_array($rc,MYSQL_ASSOC);
+for ($c = 0; $c < mysqli_num_rows($rc); $c++) {
+ $cashrcpt = mysqli_fetch_array($rc);
  $curr_pymts  = $curr_pymts  + $cashrcpt["applied"];
  }
-mysql_free_result($rc);
+mysqli_free_result($rc);
 
 
 //*Step 5: Credit Invoices for THIS Stmt, Since the last Invoice.
@@ -180,10 +180,10 @@ $where  = "(printed='Y' or posted='Y' or delivered='Y')
            and  id<'$invoiceno'
            and subtotal < 0";
 $sql = "select * from invoicehdr where ($where) ";
-$rh2  = mysql_query($sql); //*** don't use $rh  -  it's already being used in the loop in invoiceall
-$curr_credits = 0;                                    //$ccr=mysql_num_rows($rh2);
-for ($i = 0; $i < mysql_num_rows($rh2); $i++) {
- $crinvhdr     = mysql_fetch_array($rh2,MYSQL_ASSOC);
+$rh2  = mysqli_query($mycon,$sql); //*** don't use $rh  -  it's already being used in the loop in invoiceall
+$curr_credits = 0;                                    //$ccr=mysqli_num_rows($rh2);
+for ($i = 0; $i < mysqli_num_rows($rh2); $i++) {
+ $crinvhdr     = mysqli_fetch_array($rh2);
  $curr_cr_inv_total  = round($crinvhdr["subtotal"]
                           + $crinvhdr["fsamount"]
                           + $crinvhdr["tax1amount"]
@@ -193,7 +193,7 @@ for ($i = 0; $i < mysql_num_rows($rh2); $i++) {
                           + $crinvhdr["tax5amount"],2);
  $curr_credits = $curr_credits + $curr_cr_inv_total;
  }
-mysql_free_result($rh2);
+mysqli_free_result($rh2);
 
 
 //Step 6: Tally the amount on Deposit
@@ -203,13 +203,13 @@ mysql_free_result($rh2);
 $sql = "select * from cashreceipts where acctno='$acctno'
                                          and invoiceno=0
                                          and  date <'$last_invoice_date'";
-$rc  = mysql_query($sql);
+$rc  = mysqli_query($mycon,$sql);
 $deposits = 0;
-for ($i = 0; $i < mysql_num_rows($rc); $i++) {
- $cashrcpt = mysql_fetch_array($rc,MYSQL_ASSOC);
+for ($i = 0; $i < mysqli_num_rows($rc); $i++) {
+ $cashrcpt = mysqli_fetch_array($rc);
  $deposits = $deposits + $cashrcpt["applied"];
 }
-mysql_free_result($rc); //cashreceipts
+mysqli_free_result($rc); //cashreceipts
 
 
 

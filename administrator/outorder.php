@@ -31,7 +31,7 @@ switch ($action) {
 
     case 'finish_out_order_all':
         if (isset($_POST['out_id'])) {
-            $q = mysql_query("update out_orders set status= '2' , finished = '1'   where id='" . $_POST['out_id'] . "' ") or die(mysql_error());
+            $q = mysqli_query($mycon,"update out_orders set status= '2' , finished = '1'   where id='" . $_POST['out_id'] . "' ") or die(mysqli_error($mycon));
 
 
             echo "تم الانتهاء من امر التسليم";

@@ -71,8 +71,8 @@ if (isset($_POST['x'])) {
 } else {
 
 
-    $q = mysql_query("select * from out_orders inner join account on (account.account_id = out_orders.account_id) where id  = '" . $_GET['id'] . "' ") or die (mysql_error());
-    $on = mysql_fetch_array($q);
+    $q = mysqli_query($mycon,"select * from out_orders inner join account on (account.account_id = out_orders.account_id) where id  = '" . $_GET['id'] . "' ") or die (mysqli_error($mycon));
+    $on = mysqli_fetch_array($q);
     $on['items'] = ltrim($on['items'], ',');
     $pac = explode(',', $on['items']);
     $ordernos = count($pac) - 1;
@@ -222,7 +222,7 @@ H6 {page-break-after:always}
         $upd_invhdr["id"] = $invoiceno;
         $upd_invhdr["posted"] = "V";
         $sql = $db->make_update("invoicehdr", $upd_invhdr, "id", $invoiceno);
-        mysql_query($sql);
+        mysqli_query($mycon,$sql);
         //update("invoicehdr",$upd_invhdr);
     }
 
@@ -248,9 +248,9 @@ H6 {page-break-after:always}
         //*                                                                            *
         //*******************   DUPLICATE CODE: INVOICEALL.PHP  ************************
         //******************************************************************************
-        $rc = mysql_query("select * from account where account_name='$acctno'");
-        $customer = mysql_fetch_array($rc);
-        mysql_free_result($rc);
+        $rc = mysqli_query($mycon,"select * from account where account_name='$acctno'");
+        $customer = mysqli_fetch_array($rc);
+        mysqli_free_result($rc);
         //$clid  = $customer["id"];
         $name = $customer["account_company"];
         if ($name == "***Deleted***") $name .= "(" . $customer["account_shortname"] . ")";
@@ -433,10 +433,10 @@ H6 {page-break-after:always}
             $orderby = "waybill_ref, lineno";
         else
             $orderby = "lineno";
-        $rd = mysql_query("select invoicedtl.*,orders.order_date from invoicedtl left join orders on (invoicedtl.waybill = orders.order_id) where invoicedtl.invoiceno=$invoiceno order by $orderby") or die (mysql_error());
+        $rd = mysqli_query($mycon,"select invoicedtl.*,orders.order_date from invoicedtl left join orders on (invoicedtl.waybill = orders.order_id) where invoicedtl.invoiceno=$invoiceno order by $orderby") or die (mysqli_error($mycon));
 
-        for ($n = 0; $n < mysql_num_rows($rd); $n++) {
-            $invoicedtl = mysql_fetch_array($rd);
+        for ($n = 0; $n < mysqli_num_rows($rd); $n++) {
+            $invoicedtl = mysqli_fetch_array($rd);
             $li_order_date[$n + 1] = $invoicedtl["order_date"];
             $li_waybills[$n + 1] = $invoicedtl["waybill"];
             $li_waybill_refs[$n + 1] = $invoicedtl["waybill_ref"];
@@ -460,10 +460,10 @@ H6 {page-break-after:always}
             // if ($invoiceoption_rb3 < 3)  {
             if ($invoicedtl["chgtype"] == "S") {
                 $orderid = $invoicedtl["waybill"];
-                $ro = mysql_query("select o.*,s.service_name from orders as o left join services as s on (o.service_id = s.service_id) 
+                $ro = mysqli_query($mycon,"select o.*,s.service_name from orders as o left join services as s on (o.service_id = s.service_id) 
    		 where order_id=$orderid");
-                $order = mysql_fetch_array($ro);
-                mysql_free_result($ro);
+                $order = mysqli_fetch_array($ro);
+                mysqli_free_result($ro);
                 $servicetype = "";
 
 
@@ -485,10 +485,10 @@ H6 {page-break-after:always}
             }
             // }
 
-        } //for ($n = 0; $n < mysql_num_rows($rd); $n++)
+        } //for ($n = 0; $n < mysqli_num_rows($rd); $n++)
 
-        $showlines_count = mysql_num_rows($rd);
-        mysql_free_result($rd);
+        $showlines_count = mysqli_num_rows($rd);
+        mysqli_free_result($rd);
 
         //******************************************************************************
         //* Assemble the Statement Info.                                               *

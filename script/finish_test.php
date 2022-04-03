@@ -2,16 +2,16 @@
 include("../setting.php");
 
 
-$q = mysql_query("SELECT * FROM `orders` WHERE `order_status` = 1");
+$q = mysqli_query($mycon,"SELECT * FROM `orders` WHERE `order_status` = 1");
 
-while($row = mysql_fetch_array($q)){
+while($row = mysqli_fetch_array($q)){
 
-    $s = mysql_query("select * from orders_package where order_id = '".$row['order_id']."' and package_status != '2' ") or die (mysql_error());
-    $num = mysql_num_rows($s);
+    $s = mysqli_query($mycon,"select * from orders_package where order_id = '".$row['order_id']."' and package_status != '2' ") or die (mysqli_error($mycon));
+    $num = mysqli_num_rows($s);
 
     if($num == "0"){
 
-        mysql_query("update orders set finished = '1' where order_id = '".$row['order_id']."' ");
+        mysqli_query($mycon,"update orders set finished = '1' where order_id = '".$row['order_id']."' ");
     }
 
 }

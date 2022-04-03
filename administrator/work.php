@@ -50,7 +50,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
             //     }
             // }
 
-            $conClass = new console(2);
+            $conClass = new console(2, $db);
             $conClass->set_page($pageno, PERPAGE);
             $conClass->set_allowtotal("0");
             $conClass->set_ND("Y");
@@ -129,7 +129,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
                         $sql = $db->make_insert("inventory_action", $invetory_details);
                         // echo $sql;
-                        $res = mysql_query($sql) or die(mysql_error());
+                        $res = mysqli_query($mycon, $sql) or die(mysqli_error($mycon));
 
 
                         $invClass->update_inventory($_POST['item_id'][$j], (-1 * $_POST['quantity'][$j]), "1");
@@ -162,7 +162,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
                 $workClass->cancel_package($_POST['id'], $_SESSION['user_type']);
                 
-                // $query = mysql_query("select * from orders_package_work  where package_id = '" .$_POST['id'] . "' ") or die (mysql_error());
+                // $query = mysqli_query($mycon,"select * from orders_package_work  where package_id = '" .$_POST['id'] . "' ") or die (mysqli_error($mycon));
                 // $o=object_to_array($query);
                 //   echo'<pre>';
                 //   print_r($part);
@@ -202,7 +202,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
                     $logger->compareAndLogV2($package_id[$i], "ادخال الفرن", $_SESSION['user_id'], $_SESSION['name'], $op[0]['statusname'], array(), $part[0]);
 
                     ////// end log
-                    $query = mysql_query("update orders_package_work set user_id = '".$_SESSION['user_id']."' , in_work = '1'  where operation = '" . $_POST['operation'] . "'  and package_id = '" . $package_id[$i] . "'  ") or die(mysql_error());
+                    $query = mysqli_query($mycon, "update orders_package_work set user_id = '".$_SESSION['user_id']."' , in_work = '1'  where operation = '" . $_POST['operation'] . "'  and package_id = '" . $package_id[$i] . "'  ") or die(mysqli_error($mycon));
                 }
             }
 
@@ -247,9 +247,9 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
                     $account_id = $account->get_account_id_byname($accno);
 
-                    $a = mysql_query("insert into out_orders (account_id,create_date) values('" . $account_id . "','" . date("Y-m-d H:i:s") . "');") or die(mysql_error());
+                    $a = mysqli_query($mycon, "insert into out_orders (account_id,create_date) values('" . $account_id . "','" . date("Y-m-d H:i:s") . "');") or die(mysqli_error($mycon));
 
-                    $id = mysql_insert_id();
+                    $id = mysqli_insert_id($mycon);
 
                     //echo $id;
 
@@ -268,8 +268,8 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
         case 'create_out_order':
             if (isset($_GET['id'])) {
-                $q = mysql_query("select * from out_orders where id = '" . $_GET['id'] . "' ") or die(mysql_error());
-                $r = mysql_fetch_array($q);
+                $q = mysqli_query($mycon, "select * from out_orders where id = '" . $_GET['id'] . "' ") or die(mysqli_error($mycon));
+                $r = mysqli_fetch_array($q);
 
                 $big_out_order = "1";
 
@@ -304,9 +304,9 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
         case 'append_out_order':
             if (isset($_POST['id']) && isset($_POST['pid']) && isset($_POST['type'])) {
-                $query = mysql_query("select * from out_orders where id = '" . $_POST['id'] . "' ") or die(mysql_error());
+                $query = mysqli_query($mycon, "select * from out_orders where id = '" . $_POST['id'] . "' ") or die(mysqli_error($mycon));
 
-                $r = mysql_fetch_array($query);
+                $r = mysqli_fetch_array($query);
 
                 $item = explode(',', $r['items']);
 
@@ -330,17 +330,17 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
 
                 $result = implode(',', $item);
-                mysql_query("update out_orders set items = '" . $result . "' where  id = '" . $_POST['id'] . "' ");
+                mysqli_query($mycon, "update out_orders set items = '" . $result . "' where  id = '" . $_POST['id'] . "' ");
             }
             break;
 
         case 'finish_out_order':
 
             if (isset($_POST['out_id'])) {
-                $q = mysql_query("select * from out_orders where id='" . $_POST['out_id'] . "' ") or die(mysql_error());
+                $q = mysqli_query($mycon, "select * from out_orders where id='" . $_POST['out_id'] . "' ") or die(mysqli_error($mycon));
 
-                if (mysql_num_rows($q) > 0) {
-                    $r = mysql_fetch_array($q);
+                if (mysqli_num_rows($q) > 0) {
+                    $r = mysqli_fetch_array($q);
 
                     $r['items'] = ltrim($r['items'], ',');
                     $str = substr($r['items'], -1);
@@ -350,12 +350,12 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
                     }
 
 
-                    $query = mysql_query("update orders_package_work set status = 3 , end_time = '" . date('Y-m-d H:i:s') . "' , out_work = '1' where operation = '5'  and package_id in (" . $r['items'] . ")  ") or die(mysql_error());
+                    $query = mysqli_query($mycon, "update orders_package_work set status = 3 , end_time = '" . date('Y-m-d H:i:s') . "' , out_work = '1' where operation = '5'  and package_id in (" . $r['items'] . ")  ") or die(mysqli_error($mycon));
 
-                    $query = mysql_query("update orders_package_work set status = 3 , start_time = '" . date('Y-m-d H:i:s') . "' , end_time = '" . date('Y-m-d H:i:s') . "', in_work = '1' , out_work = '1' where operation = '6'  and package_id in (" . $r['items'] . ")  ") or die(mysql_error());
+                    $query = mysqli_query($mycon, "update orders_package_work set status = 3 , start_time = '" . date('Y-m-d H:i:s') . "' , end_time = '" . date('Y-m-d H:i:s') . "', in_work = '1' , out_work = '1' where operation = '6'  and package_id in (" . $r['items'] . ")  ") or die(mysqli_error($mycon));
 
 
-                    mysql_query("update orders_package set package_status = '2' where id in (" . $r['items'] . ")  ") or die(mysql_error());
+                    mysqli_query($mycon, "update orders_package set package_status = '2' where id in (" . $r['items'] . ")  ") or die(mysqli_error($mycon));
 
 
                     $pid = explode(',', $r['items']);
@@ -364,7 +364,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
                         $workClass->check_finish($order_id);
                     }
 
-                    $q = mysql_query("update out_orders set status= '1' , added_by = '".$_SESSION['user_id']."' ,  added_name = '".$_SESSION['name']."' , finishe_date = '" . date("Y-m-d H:i:s") . "'  where id='" . $_POST['out_id'] . "' ") or die(mysql_error());
+                    $q = mysqli_query($mycon, "update out_orders set status= '1' , added_by = '".$_SESSION['user_id']."' ,  added_name = '".$_SESSION['name']."' , finishe_date = '" . date("Y-m-d H:i:s") . "'  where id='" . $_POST['out_id'] . "' ") or die(mysqli_error($mycon));
                     //location log
                   
                     $logger->compareAndLogV2($order_id, "طلبية", $_SESSION['user_id'], $_SESSION['name'], 'تسليم', array(), array());
@@ -383,10 +383,10 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
                 $package_id = explode(",", $_POST['id']);
                
                 if (isset($_POST['all'])) {
-                    $result=mysql_query("select Distinct package_id from orders_package_work 
+                    $result=mysqli_query($mycon, "select Distinct package_id from orders_package_work 
                     inner join (SELECT order_id FROM orders where easy_order_id ='".$_POST['all']."' and order_status = '1' order by 
-                    orders.order_date DESC limit 1 ) as o on orders_package_work.order_id = o.order_id") or die(mysql_error());
-                    while ($row=mysql_fetch_row($result)) {
+                    orders.order_date DESC limit 1 ) as o on orders_package_work.order_id = o.order_id") or die(mysqli_error($mycon));
+                    while ($row=mysqli_fetch_row($result)) {
 //                        var_dump($row);
                         $package_ids.=$row['0'].',';
                     }
@@ -403,7 +403,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
                         $sql = "";
                     }
 
-                    $query = mysql_query("update orders_package_work set user_id = '".$_SESSION['user_id']."' , status = 3 , end_time = '" . date('Y-m-d H:i:s') . "'  " . $sql . " where operation = '" . $_POST['operation'] . "'  and package_id = '" . $package_id[$i] . "'  ") or die(mysql_error());
+                    $query = mysqli_query($mycon, "update orders_package_work set user_id = '".$_SESSION['user_id']."' , status = 3 , end_time = '" . date('Y-m-d H:i:s') . "'  " . $sql . " where operation = '" . $_POST['operation'] . "'  and package_id = '" . $package_id[$i] . "'  ") or die(mysqli_error($mycon));
 
 
                     
@@ -417,7 +417,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
                     ////// end log
                     if ($_POST['operation'] == '5') {
-                        mysql_query("update orders_package set package_status = '2' where id = '" . $package_id[$i] . "'  ") or die(mysql_error());
+                        mysqli_query($mycon, "update orders_package set package_status = '2' where id = '" . $package_id[$i] . "'  ") or die(mysqli_error($mycon));
 
                         if (isset($_POST['order_id']) && $_POST['order_id'] != "") {
                             $workClass->check_finish($_POST['order_id']);
@@ -432,7 +432,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
                     if ($_POST['operation'] == '3') {
                         if ($part[0]['glassPointing'] == 'ربع') {
-                            $query = mysql_query("update orders_package_work set user_id = '".$_SESSION['user_id']."' , status = 3 , end_time = '" . date('Y-m-d H:i:s') . "'  " . $sql . " where operation = '7'  and package_id = '" . $package_id[$i] . "'  ") or die(mysql_error());
+                            $query = mysqli_query($mycon, "update orders_package_work set user_id = '".$_SESSION['user_id']."' , status = 3 , end_time = '" . date('Y-m-d H:i:s') . "'  " . $sql . " where operation = '7'  and package_id = '" . $package_id[$i] . "'  ") or die(mysqli_error($mycon));
                         }
                     }
                     echo '</br>package_id => '.$package_id[$i] . 'operation => '.$_POST['operation'] .'</br>';
@@ -441,22 +441,22 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
                 if ($_POST['operation']=='2') {
                     ///////// check all item in order are finsh /////////////
-                    $query =mysql_query("select order_id from orders_package  where id = '" . $package_id[0] . "'  ") or die(mysql_error());
+                    $query =mysqli_query($mycon, "select order_id from orders_package  where id = '" . $package_id[0] . "'  ") or die(mysqli_error($mycon));
 
 
-                    while ($row = mysql_fetch_assoc($query)) {
+                    while ($row = mysqli_fetch_assoc($query)) {
                         $order_id= $row["order_id"];
                     }
 
 
-                    $result =mysql_query("select * FROM  `orders_package_work` WHERE order_id = '".$order_id."'  AND STATUS = '2' and operation ='2' ") or die(mysql_error());
+                    $result =mysqli_query($mycon, "select * FROM  `orders_package_work` WHERE order_id = '".$order_id."'  AND STATUS = '2' and operation ='2' ") or die(mysqli_error($mycon));
 
 
-                    $num_rows = mysql_num_rows($result);
+                    $num_rows = mysqli_num_rows($result);
 
                     ///////// if all finsh  update  order_work_status ///////////
                     if ($num_rows < 1) {
-                        mysql_query("update orders set order_work_status = '".$_POST['operation'] ."' where order_id = '" . $order_id . "'  ") or die(mysql_error());
+                        mysqli_query($mycon, "update orders set order_work_status = '".$_POST['operation'] ."' where order_id = '" . $order_id . "'  ") or die(mysqli_error($mycon));
                     }
 
                     ///////// end check all item in order are finsh /////////////
@@ -472,7 +472,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
         case 'delivery':
 
-            $console = new console(8);
+            $console = new console(8, $db);
             $console->set_allowtotal("0");
             $console->set_ND("Y");
 

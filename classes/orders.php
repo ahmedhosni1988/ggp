@@ -4,20 +4,20 @@ class orders
 {
     public $db;
 
-    public function orders($db)
+    public function __construct($db)
     {
-        $this->db = $db;
+        $this->db = $db->get_conn();
     }
 
     ///////////////////////////////////////////////////////////
     public function add_orders($account_id, $user_id, $order_status, $from_name, $from_address, $from_pcode, $from_phone, $to_name, $to_address, $to_pcode, $to_phone, $pickup_time, $pickup_date, $delivery_time, $delivery_date, $driver_id, $service_id, $order_comment, $order_des, $refrence, $price, $has_package, $confirmation_mail, $transport_id, $from_zone, $to_zone, $contact, $att, $declared_value, $orderedby, $COD, $collect, $paymentterm, $packagetype, $weight, $volume, $pieces, $return, $pickup_by, $deliver_by, $order_date)
     {
-        $query = mysql_query("INSERT INTO orders(account_id, user_id, order_status, from_name, from_address, from_pcode, from_phone, to_name, to_address, to_pcode, to_phone, pickup_time,pickup_date, delivery_time,delivery_date, driver_id, service_id, order_comment,order_des, refrence, price, has_package,confirmation_mail,transport_id,order_date,from_zone,to_zone,from_contact,to_att,declared_value,orderedby,COD,collect,paymentterm,packagetype,weight,volume,pieces,ret,pickup_by,deliver_by) 
+        $query = mysqli_query($this->db, "INSERT INTO orders(account_id, user_id, order_status, from_name, from_address, from_pcode, from_phone, to_name, to_address, to_pcode, to_phone, pickup_time,pickup_date, delivery_time,delivery_date, driver_id, service_id, order_comment,order_des, refrence, price, has_package,confirmation_mail,transport_id,order_date,from_zone,to_zone,from_contact,to_att,declared_value,orderedby,COD,collect,paymentterm,packagetype,weight,volume,pieces,ret,pickup_by,deliver_by) 
 VALUES 
-(" . $this->db->qstr($account_id) . "," . $this->db->qstr($user_id) . "," . $this->db->qstr($order_status) . "," . $this->db->qstr($from_name) . "," . $this->db->qstr($from_address) . "," . $this->db->qstr($from_pcode) . "," . $this->db->qstr($from_phone) . "," . $this->db->qstr($to_name) . "," . $this->db->qstr($to_address) . "," . $this->db->qstr($to_pcode) . "," . $this->db->qstr($to_phone) . "," . $this->db->qstr($pickup_time) . "," . $this->db->qstr($pickup_date) . "," . $this->db->qstr($delivery_time) . "," . $this->db->qstr($delivery_date) . "," . $this->db->qstr($driver_id) . "," . $this->db->qstr($service_id) . "," . $this->db->qstr($order_comment) . "," . $this->db->qstr($order_des) . "," . $this->db->qstr($refrence) . "," . $this->db->qstr($price) . "," . $this->db->qstr($has_package) . "," . $this->db->qstr($confirmation_mail) . "," . $this->db->qstr($transport_id) . "," . $this->db->qstr($order_date) . "," . $this->db->qstr($from_zone) . "," . $this->db->qstr($to_zone) . "," . $this->db->qstr($contact) . "," . $this->db->qstr($att) . "," . $this->db->qstr($declared_value) . "," . $this->db->qstr($orderedby) . "," . $this->db->qstr($COD) . "," . $this->db->qstr($collect) . "," . $this->db->qstr($paymentterm) . "," . $this->db->qstr($packagetype) . "," . $this->db->qstr($weight) . "," . $this->db->qstr($volume) . ", " . $this->db->qstr($pieces) . " ," . $this->db->qstr($return) . " ," . $this->db->qstr($pickup_by) . "," . $this->db->qstr($deliver_by) . " );") or die(mysql_error());
+(" . check_mysql_string($this->db,$account_id) . "," . check_mysql_string($this->db,$user_id) . "," . check_mysql_string($this->db,$order_status) . "," . check_mysql_string($this->db,$from_name) . "," . check_mysql_string($this->db,$from_address) . "," . check_mysql_string($this->db,$from_pcode) . "," . check_mysql_string($this->db,$from_phone) . "," . check_mysql_string($this->db,$to_name) . "," . check_mysql_string($this->db,$to_address) . "," . check_mysql_string($this->db,$to_pcode) . "," . check_mysql_string($this->db,$to_phone) . "," . check_mysql_string($this->db,$pickup_time) . "," . check_mysql_string($this->db,$pickup_date) . "," . check_mysql_string($this->db,$delivery_time) . "," . check_mysql_string($this->db,$delivery_date) . "," . check_mysql_string($this->db,$driver_id) . "," . check_mysql_string($this->db,$service_id) . "," . check_mysql_string($this->db,$order_comment) . "," . check_mysql_string($this->db,$order_des) . "," . check_mysql_string($this->db,$refrence) . "," . check_mysql_string($this->db,$price) . "," . check_mysql_string($this->db,$has_package) . "," . check_mysql_string($this->db,$confirmation_mail) . "," . check_mysql_string($this->db,$transport_id) . "," . check_mysql_string($this->db,$order_date) . "," . check_mysql_string($this->db,$from_zone) . "," . check_mysql_string($this->db,$to_zone) . "," . check_mysql_string($this->db,$contact) . "," . check_mysql_string($this->db,$att) . "," . check_mysql_string($this->db,$declared_value) . "," . check_mysql_string($this->db,$orderedby) . "," . check_mysql_string($this->db,$COD) . "," . check_mysql_string($this->db,$collect) . "," . check_mysql_string($this->db,$paymentterm) . "," . check_mysql_string($this->db,$packagetype) . "," . check_mysql_string($this->db,$weight) . "," . check_mysql_string($this->db,$volume) . ", " . check_mysql_string($this->db,$pieces) . " ," . check_mysql_string($this->db,$return) . " ," . check_mysql_string($this->db,$pickup_by) . "," . check_mysql_string($this->db,$deliver_by) . " );") or die(mysqli_error($this->db));
 
         if ($query) {
-            return mysql_insert_id();
+            return mysqli_insert_id($this->db);
         } else {
             return 0;
         }
@@ -33,9 +33,9 @@ VALUES
         }
         $sql .= "order_id from orders where order_id = '" . $order_id . "' ";
 
-        $q = mysql_query($sql) or die(mysql_error());
+        $q = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
-        return mysql_fetch_object($q);
+        return mysqli_fetch_object($q);
     }
 
 
@@ -44,49 +44,49 @@ VALUES
     {
         $sql = "update orders set 
 
-from_name = " . $this->db->qstr($from_name) . ", 
-from_address = " . $this->db->qstr($from_address) . ", 
-from_pcode = " . $this->db->qstr($from_pcode) . ", 
-from_phone = " . $this->db->qstr($from_phone) . ", 
-to_name = " . $this->db->qstr($to_name) . ", 
-to_address = " . $this->db->qstr($to_address) . ", 
-to_pcode = " . $this->db->qstr($to_pcode) . ", 
-to_phone = " . $this->db->qstr($to_phone) . ", 
-pickup_time = " . $this->db->qstr($pickup_time) . ",
-pickup_date = " . $this->db->qstr($pickup_date) . ", 
-delivery_time = " . $this->db->qstr($delivery_time) . ",
-delivery_date = " . $this->db->qstr($delivery_date) . ", 
-driver_id = " . $this->db->qstr($driver_id) . ", 
-service_id = " . $this->db->qstr($service_id) . ", 
-order_comment = " . $this->db->qstr($order_comment) . ",
-order_des = " . $this->db->qstr($order_des) . ", 
-chargecode = " . $this->db->qstr($refrence) . ", 
-price = " . $this->db->qstr($price) . ", 
-has_package = " . $this->db->qstr($has_package) . ",
-confirmation_mail = " . $this->db->qstr($confirmation_mail) . ",
-transport_id = " . $this->db->qstr($transport_id) . ",
-from_zone = " . $this->db->qstr($from_zone) . ",
-to_zone = " . $this->db->qstr($to_zone) . ",
-from_contact = " . $this->db->qstr($contact) . ",
-to_att = " . $this->db->qstr($att) . " ,
-declared_value = " . $this->db->qstr($declared_value) . ",
-orderedby= " . $this->db->qstr($orderedby) . ",
-COD = " . $this->db->qstr($COD) . ",
-collect = " . $this->db->qstr($collect) . ",
-paymentterm = " . $this->db->qstr($paymentterm) . ",
-packagetype = " . $this->db->qstr($packagetype) . " ,
-weight = " . $this->db->qstr($weight) . ",
-volume = " . $this->db->qstr($volume) . ",
-pieces =" . $this->db->qstr($pieces) . " ,
-ret = " . $this->db->qstr($return) . ",
-override_distance = " . $this->db->qstr($overide_distance) . ",
-order_status = " . $this->db->qstr($order_status) . ",
-pickup_by = " . $this->db->qstr($pickup_by) . ",
-deliver_by = " . $this->db->qstr($deliver_by) . "
-where order_id = " . $this->db->qstr($order_id) . " ";
+from_name = " . check_mysql_string($this->db,$from_name) . ", 
+from_address = " . check_mysql_string($this->db,$from_address) . ", 
+from_pcode = " . check_mysql_string($this->db,$from_pcode) . ", 
+from_phone = " . check_mysql_string($this->db,$from_phone) . ", 
+to_name = " . check_mysql_string($this->db,$to_name) . ", 
+to_address = " . check_mysql_string($this->db,$to_address) . ", 
+to_pcode = " . check_mysql_string($this->db,$to_pcode) . ", 
+to_phone = " . check_mysql_string($this->db,$to_phone) . ", 
+pickup_time = " . check_mysql_string($this->db,$pickup_time) . ",
+pickup_date = " . check_mysql_string($this->db,$pickup_date) . ", 
+delivery_time = " . check_mysql_string($this->db,$delivery_time) . ",
+delivery_date = " . check_mysql_string($this->db,$delivery_date) . ", 
+driver_id = " . check_mysql_string($this->db,$driver_id) . ", 
+service_id = " . check_mysql_string($this->db,$service_id) . ", 
+order_comment = " . check_mysql_string($this->db,$order_comment) . ",
+order_des = " . check_mysql_string($this->db,$order_des) . ", 
+chargecode = " . check_mysql_string($this->db,$refrence) . ", 
+price = " . check_mysql_string($this->db,$price) . ", 
+has_package = " . check_mysql_string($this->db,$has_package) . ",
+confirmation_mail = " . check_mysql_string($this->db,$confirmation_mail) . ",
+transport_id = " . check_mysql_string($this->db,$transport_id) . ",
+from_zone = " . check_mysql_string($this->db,$from_zone) . ",
+to_zone = " . check_mysql_string($this->db,$to_zone) . ",
+from_contact = " . check_mysql_string($this->db,$contact) . ",
+to_att = " . check_mysql_string($this->db,$att) . " ,
+declared_value = " . check_mysql_string($this->db,$declared_value) . ",
+orderedby= " . check_mysql_string($this->db,$orderedby) . ",
+COD = " . check_mysql_string($this->db,$COD) . ",
+collect = " . check_mysql_string($this->db,$collect) . ",
+paymentterm = " . check_mysql_string($this->db,$paymentterm) . ",
+packagetype = " . check_mysql_string($this->db,$packagetype) . " ,
+weight = " . check_mysql_string($this->db,$weight) . ",
+volume = " . check_mysql_string($this->db,$volume) . ",
+pieces =" . check_mysql_string($this->db,$pieces) . " ,
+ret = " . check_mysql_string($this->db,$return) . ",
+override_distance = " . check_mysql_string($this->db,$overide_distance) . ",
+order_status = " . check_mysql_string($this->db,$order_status) . ",
+pickup_by = " . check_mysql_string($this->db,$pickup_by) . ",
+deliver_by = " . check_mysql_string($this->db,$deliver_by) . "
+where order_id = " . check_mysql_string($this->db,$order_id) . " ";
 
         //	echo $sql;
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
         if ($query) {
             return true;
@@ -124,22 +124,22 @@ where order_id = " . $this->db->qstr($order_id) . " ";
 	inner join services as s on (o.service_id = s.service_id) 
 	inner join users as u on (u.user_id = o.user_id) 
 	left join drivers as ds on (o.driver_id = ds.id)
-   where o.id = " . $this->db->qstr($id) . " ";
+   where o.id = " . check_mysql_string($this->db,$id) . " ";
 
         //echo $sql;
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
         $order_details = array();
 
-        $order_details = mysql_fetch_object($query);
+        $order_details = mysqli_fetch_object($query);
         return $order_details;
     }
 
     public function update_order_group($array, $key)
     {
         $sql = $this->db->make_update("orders_group", $array, "id", $key);
-        mysql_query($sql) or die(mysql_error());
+        mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
     }
 
     //////////////////////////////////////////////////////////////
@@ -172,15 +172,15 @@ from orders as o
 left join account as a on (o.account_id=a.account_id) 
 left join services as s on (o.service_id = s.service_id) 
 left join users as u on (u.user_id = o.user_id) 
- where o.order_id = " . $this->db->qstr($order_id) . " ";
+ where o.order_id = " . check_mysql_string($this->db,$order_id) . " ";
 
         //echo $sql;
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
         $order_details = array();
 
-        $order_details = mysql_fetch_object($query);
+        $order_details = mysqli_fetch_object($query);
         return $order_details;
     }
 
@@ -202,21 +202,21 @@ inner join status as os on ( os.id = o.order_status )
 left join drivers as ds on (o.driver_id = ds.id) 
 where order_id = '$order_id'";
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
         $order_details = array();
 
-        $order_details = mysql_fetch_object($query);
+        $order_details = mysqli_fetch_object($query);
         return $order_details;
     }
 
 
     public function order_add_skid($order_id, $weight, $length, $width, $height, $quantiy, $total)
     {
-        mysql_query("delete from order_skid where order_id = " . $this->db->qstr($order_id) . " ") or die(mysql_error());
+        mysqli_query($this->db, "delete from order_skid where order_id = " . check_mysql_string($this->db,$order_id) . " ") or die(mysqli_error($this->db));
         for ($i = 0; $i < count($length); $i++) {
             if ($total[$i] != '' && $total[$i] != '0') {
-                $query = mysql_query("insert into order_skid (order_id,weight,width,length,height,quantity,total) values (" . $this->db->qstr($order_id) . "," . $this->db->qstr($weight[$i]) . "," . $this->db->qstr($width[$i]) . "," . $this->db->qstr($length[$i]) . "," . $this->db->qstr($height[$i]) . "," . $this->db->qstr($quantiy[$i]) . "," . $this->db->qstr($total[$i]) . ");") or die(mysql_error());
+                $query = mysqli_query($this->db, "insert into order_skid (order_id,weight,width,length,height,quantity,total) values (" . check_mysql_string($this->db,$order_id) . "," . check_mysql_string($this->db,$weight[$i]) . "," . check_mysql_string($this->db,$width[$i]) . "," . check_mysql_string($this->db,$length[$i]) . "," . check_mysql_string($this->db,$height[$i]) . "," . check_mysql_string($this->db,$quantiy[$i]) . "," . check_mysql_string($this->db,$total[$i]) . ");") or die(mysqli_error($this->db));
             }
         }
     }
@@ -224,12 +224,12 @@ where order_id = '$order_id'";
 
     public function get_order_skid($order_id)
     {
-        $query = mysql_query("select * from order_skid where order_id = " . $this->db->qstr($order_id) . " ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from order_skid where order_id = " . check_mysql_string($this->db,$order_id) . " ") or die(mysqli_error($this->db));
 
 
         $order_details = array();
         $i = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             foreach ($row as $key => $value) {
                 $arr[$key] = $value;
             }
@@ -245,7 +245,7 @@ where order_id = '$order_id'";
         $sql = $this->db->make_update("orders", $array, "order_id", $order_id);
         //echo $sql;
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
         if ($query) {
             return true;
@@ -260,10 +260,10 @@ where order_id = '$order_id'";
         $sql = $this->db->make_insert("orders", $array);
 
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
         if ($query) {
-            return mysql_insert_id();
+            return mysqli_insert_id($this->db);
         } else {
             return false;
         }
@@ -345,11 +345,11 @@ where ";
             }
 
             if (isset($data['commdesc']) && !empty($data['commdesc'])) {
-                $sql1 .= " CONCAT(o.order_comment,o.order_des) like '%" . mysql_real_escape_string($data['commdesc']) . "%' and";
+                $sql1 .= " CONCAT(o.order_comment,o.order_des) like '%" . mysqli_real_escape_string($this->db, $data['commdesc']) . "%' and";
             }
 
             if (isset($data['delpts']) && !empty($data['delpts'])) {
-                $sql1 .= " CONCAT(o.from_name,o.from_address,o.from_pcode,o.from_contact,o.to_name,o.to_address,o.to_pcode,o.to_att) like '%" . mysql_real_escape_string($data['delpts']) . "%'  and";
+                $sql1 .= " CONCAT(o.from_name,o.from_address,o.from_pcode,o.from_contact,o.to_name,o.to_address,o.to_pcode,o.to_att) like '%" . mysqli_real_escape_string($this->db, $data['delpts']) . "%'  and";
             }
 
 
@@ -430,16 +430,16 @@ where ";
 
         //echo $sql;
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
 
-        if (mysql_num_rows($query) < 1) {
+        if (mysqli_num_rows($query) < 1) {
             $arr['no_result'] = "لا توجد بيانات";
 
             return $arr;
         } else {
             $i = 0;
-            while ($row = mysql_fetch_assoc($query)) {
+            while ($row = mysqli_fetch_assoc($query)) {
                 foreach ($row as $key => $value) {
                     $arr[$key] = $value;
                 }
@@ -454,7 +454,7 @@ where ";
 
     public function update_order_distance($order_id, $from, $to, $distance)
     {
-        $query = mysql_query("update orders set quoted_distance = " . $this->db->qstr($distance) . " , from_address = " . $this->db->qstr($from) . " , to_address = " . $this->db->qstr($to) . " , from_pcode = '' , to_pcode = '' where order_id = " . $this->db->qstr($order_id) . "") or die(mysql_error());
+        $query = mysqli_query($this->db, "update orders set quoted_distance = " . check_mysql_string($this->db,$distance) . " , from_address = " . check_mysql_string($this->db,$from) . " , to_address = " . check_mysql_string($this->db,$to) . " , from_pcode = '' , to_pcode = '' where order_id = " . check_mysql_string($this->db,$order_id) . "") or die(mysqli_error($this->db));
     }
 
     public function update_order_driver($order_id, $driver_id, $driver_id2 = null)
@@ -488,9 +488,9 @@ where ";
         }
 
         //  echo $sql;
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $res[] = $row;
         }
 
@@ -504,7 +504,7 @@ where ";
 
     public function update_order_status($id, $status)
     {
-        $query = mysql_query("update orders set order_status=" . $this->db->qstr($status) . " where order_id = '" . $id . "'") or die(mysql_error());
+        $query = mysqli_query($this->db, "update orders set order_status=" . check_mysql_string($this->db,$status) . " where order_id = '" . $id . "'") or die(mysqli_error($this->db));
         if ($query) {
             return true;
         } else {
@@ -515,25 +515,25 @@ where ";
 
     public function get_order($order_id)
     {
-        $query = mysql_query("select *,orders.account_id as account_id,orders.easy_order_id as easy_order_id,account.account_name ,account.account_company,orders.billing_code from orders 
+        $query = mysqli_query($this->db, "select *,orders.account_id as account_id,orders.easy_order_id as easy_order_id,account.account_name ,account.account_company,orders.billing_code from orders 
 inner join account on (orders.account_id = account.account_id) 
 left  join users on (orders.user_id = users.user_id) 
-inner join services on (orders.service_id = services.service_id)  where order_id = '$order_id'") or die(mysql_error());
+inner join services on (orders.service_id = services.service_id)  where order_id = '$order_id'") or die(mysqli_error($this->db));
 
         $order_details = array();
 
-        $order_details = mysql_fetch_object($query);
+        $order_details = mysqli_fetch_object($query);
         return $order_details;
     }
 
 
     public function order_total($order_id)
     {
-        $q = mysql_query("select * from orders_price where order_id = '" . $order_id . "' ") or die(mysql_error());
+        $q = mysqli_query($this->db, "select * from orders_price where order_id = '" . $order_id . "' ") or die(mysqli_error($this->db));
 
 
         $total = 0;
-        while ($row = mysql_fetch_array($q)) {
+        while ($row = mysqli_fetch_array($q)) {
             if ($row['type'] != "total") {
                 if ($row['price'] != '' && $row['price'] != '0.00') {
                     $total += $row['price'];
@@ -545,23 +545,23 @@ inner join services on (orders.service_id = services.service_id)  where order_id
             }
         }
 
-        mysql_query("update orders_price set price = '" . $total . "'  where order_id = '" . $order_id . "' && type = 'total' ") or die(mysql_error());
-        mysql_query("update orders set price = '" . $total . "' where order_id = '" . $order_id . "'  ") or die(mysql_error());
+        mysqli_query($this->db, "update orders_price set price = '" . $total . "'  where order_id = '" . $order_id . "' && type = 'total' ") or die(mysqli_error($this->db));
+        mysqli_query($this->db, "update orders set price = '" . $total . "' where order_id = '" . $order_id . "'  ") or die(mysqli_error($this->db));
     }
 
     public function add_order_price($orderid, $name, $ratio, $price, $type, $ser_id = null, $override = null)
     {
         if ($ser_id == null) {
             if ($override == null) {
-                $query = mysql_query("insert into orders_price(order_id,name,ratio,price,type) values (" . $this->db->qstr($orderid) . "," . $this->db->qstr($name) . "," . $this->db->qstr($ratio) . "," . $this->db->qstr($price) . "," . $this->db->qstr($type) . ");") or die(mysql_error());
+                $query = mysqli_query($this->db, "insert into orders_price(order_id,name,ratio,price,type) values (" . check_mysql_string($this->db,$orderid) . "," . check_mysql_string($this->db,$name) . "," . check_mysql_string($this->db,$ratio) . "," . check_mysql_string($this->db,$price) . "," . check_mysql_string($this->db,$type) . ");") or die(mysqli_error($this->db));
             } else {
-                $query = mysql_query("insert into orders_price(order_id,name,ratio,price,type,override) values (" . $this->db->qstr($orderid) . "," . $this->db->qstr($name) . "," . $this->db->qstr($ratio) . "," . $this->db->qstr($price) . "," . $this->db->qstr($type) . "," . $this->db->qstr($override) . ");") or die(mysql_error());
+                $query = mysqli_query($this->db, "insert into orders_price(order_id,name,ratio,price,type,override) values (" . check_mysql_string($this->db,$orderid) . "," . check_mysql_string($this->db,$name) . "," . check_mysql_string($this->db,$ratio) . "," . check_mysql_string($this->db,$price) . "," . check_mysql_string($this->db,$type) . "," . check_mysql_string($this->db,$override) . ");") or die(mysqli_error($this->db));
             }
         } else {
             if ($override == null) {
-                $query = mysql_query("insert into orders_price(order_id,ser_id,name,ratio,price,type) values (" . $this->db->qstr($orderid) . "," . $this->db->qstr($ser_id) . "," . $this->db->qstr($name) . "," . $this->db->qstr($ratio) . "," . $this->db->qstr($price) . "," . $this->db->qstr($type) . ");") or die(mysql_error());
+                $query = mysqli_query($this->db, "insert into orders_price(order_id,ser_id,name,ratio,price,type) values (" . check_mysql_string($this->db,$orderid) . "," . check_mysql_string($this->db,$ser_id) . "," . check_mysql_string($this->db,$name) . "," . check_mysql_string($this->db,$ratio) . "," . check_mysql_string($this->db,$price) . "," . check_mysql_string($this->db,$type) . ");") or die(mysqli_error($this->db));
             } else {
-                $query = mysql_query("insert into orders_price(order_id,ser_id,name,ratio,price,type,override) values (" . $this->db->qstr($orderid) . "," . $this->db->qstr($ser_id) . "," . $this->db->qstr($name) . "," . $this->db->qstr($ratio) . "," . $this->db->qstr($price) . "," . $this->db->qstr($type) . "," . $this->db->qstr($override) . ");") or die(mysql_error());
+                $query = mysqli_query($this->db, "insert into orders_price(order_id,ser_id,name,ratio,price,type,override) values (" . check_mysql_string($this->db,$orderid) . "," . check_mysql_string($this->db,$ser_id) . "," . check_mysql_string($this->db,$name) . "," . check_mysql_string($this->db,$ratio) . "," . check_mysql_string($this->db,$price) . "," . check_mysql_string($this->db,$type) . "," . check_mysql_string($this->db,$override) . ");") or die(mysqli_error($this->db));
             }
         }
 
@@ -574,16 +574,16 @@ inner join services on (orders.service_id = services.service_id)  where order_id
 
     public function update_order_price($orderid, $name, $type, $ser_id, $override)
     {
-        $query = mysql_query("update orders_price set override = " . $this->db->qstr($override) . " where order_id = " . $this->db->qstr($orderid) . " and ser_id = " . $this->db->qstr($ser_id) . " and type = " . $this->db->qstr($type) . " and name = " . $this->db->qstr($name) . " ") or die(mysql_error());
+        $query = mysqli_query($this->db, "update orders_price set override = " . check_mysql_string($this->db,$override) . " where order_id = " . check_mysql_string($this->db,$orderid) . " and ser_id = " . check_mysql_string($this->db,$ser_id) . " and type = " . check_mysql_string($this->db,$type) . " and name = " . check_mysql_string($this->db,$name) . " ") or die(mysqli_error($this->db));
     }
 
     public function del_order_price($order_id)
     {
-        //$q = mysql_query("select invoiceno from orders where order_id = ".$this->db->qstr($order_id)." ");
-        //$r = mysql_fetch_array($q);
+        //$q = mysqli_query($this->db,"select invoiceno from orders where order_id = ".check_mysql_string($this->db,$order_id)." ");
+        //$r = mysqli_fetch_array($q);
 
         //if($r['invoiceno'] == "0"){
-        $query = mysql_query("delete from orders_price where order_id = " . $this->db->qstr($order_id) . "") or die(mysql_error());
+        $query = mysqli_query($this->db, "delete from orders_price where order_id = " . check_mysql_string($this->db,$order_id) . "") or die(mysqli_error($this->db));
 
         //	}else{
         //	return false;
@@ -602,7 +602,7 @@ inner join services on (orders.service_id = services.service_id)  where order_id
     public function del_order_item($item_id)
     {
         //DELETE FROM orders_package WHERE id =  " 753 "
-        $query = mysql_query("delete from orders_package where id = " . $item_id . "") or die(mysql_error());
+        $query = mysqli_query($this->db, "delete from orders_package where id = " . $item_id . "") or die(mysqli_error($this->db));
 
         if ($query) {
             return true;
@@ -613,28 +613,28 @@ inner join services on (orders.service_id = services.service_id)  where order_id
 
     public function get_order_package($order_id)
     {
-        $query = mysql_query("select * from   orders_package where order_id = " . $this->db->qstr($order_id) . " order by part_order ASC ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from   orders_package where order_id = " . check_mysql_string($this->db,$order_id) . " order by part_order ASC ") or die(mysqli_error($this->db));
 
         $order_package = array();
         $i = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             foreach ($row as $key => $value) {
                 $arr[$key] = $value;
             }
 
             $order_package[] = $arr;
         }
-        //$order_details = mysql_fetch_object($query);
+        //$order_details = mysqli_fetch_object($query);
         return $order_package;
     }
 
     public function get_order_package_group($order_id)
     {
-        $query = mysql_query("select orders_package.* ,  (select count(*) from orders_package as op where op.parent_id = orders_package.id) as parts   from   orders_package where order_id = " . $this->db->qstr($order_id) . "  and parent_id = 0 order by part_order") or die(mysql_error());
+        $query = mysqli_query($this->db, "select orders_package.* ,  (select count(*) from orders_package as op where op.parent_id = orders_package.id) as parts   from   orders_package where order_id = " . check_mysql_string($this->db,$order_id) . "  and parent_id = 0 order by part_order") or die(mysqli_error($this->db));
 
         $order_package = array();
         $i = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $row['parts'] = $row['parts']+1;
 
             foreach ($row as $key => $value) {
@@ -643,7 +643,7 @@ inner join services on (orders.service_id = services.service_id)  where order_id
 
             $order_package[] = $arr;
         }
-        //$order_details = mysql_fetch_object($query);
+        //$order_details = mysqli_fetch_object($query);
         return $order_package;
     }
 
@@ -657,16 +657,16 @@ inner join services on (orders.service_id = services.service_id)  where order_id
             $sql = "id,part_order,length,width,package_type,glasscolour,glassPrint,glassType,glassScarch,glassPointing,glassFixedPointing,noofprinting,colorofprinting";
         }
 
-        $query = mysql_query("select $sql  from orders_package $innerJoin where orders_package.order_id = " . $this->db->qstr($order_id) . " order by part_order ASC ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select $sql  from orders_package $innerJoin where orders_package.order_id = " . check_mysql_string($this->db,$order_id) . " order by part_order ASC ") or die(mysqli_error($this->db));
 
         $order_package = array();
         $i = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             foreach ($row as $key => $value) {
                 $arr[$key] = $value;
             }
 
-            $q = mysql_query("select orders_package_work.* , `users`.`name` from orders_package_work left join users on(orders_package_work.user_id = `users`.`user_id`) where package_id = '" . $row['id'] . "' ") or die(mysql_error());
+            $q = mysqli_query($this->db, "select orders_package_work.* , `users`.`name` from orders_package_work left join users on(orders_package_work.user_id = `users`.`user_id`) where package_id = '" . $row['id'] . "' ") or die(mysqli_error($this->db));
 
             $arr['2']['on'] = "";
             $arr['2']['done'] = "";
@@ -713,7 +713,7 @@ inner join services on (orders.service_id = services.service_id)  where order_id
 
 
 
-            while ($r = mysql_fetch_array($q)) {
+            while ($r = mysqli_fetch_array($q)) {
                 $arr[$r['operation']]['on'] = "1";
                 $arr[$r['operation']]['p_type'] = $r['p_type'];
                 $arr[$r['operation']]['scratche'] = $r['scratche'];
@@ -729,52 +729,52 @@ inner join services on (orders.service_id = services.service_id)  where order_id
 
             $order_package[] = $arr;
         }
-        //$order_details = mysql_fetch_object($query);
+        //$order_details = mysqli_fetch_object($query);
         return $order_package;
     }
 
 
     public function get_addtional_services($order_id)
     {
-        $query = mysql_query("select * from orders_price where order_id = " . $this->db->qstr($order_id) . " and type='addtional_services'") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from orders_price where order_id = " . check_mysql_string($this->db,$order_id) . " and type='addtional_services'") or die(mysqli_error($this->db));
 
         $order_package = array();
         $i = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             foreach ($row as $key => $value) {
                 $arr[$key] = $value;
             }
 
             $order_package[] = $arr;
         }
-        //$order_details = mysql_fetch_object($query);
+        //$order_details = mysqli_fetch_object($query);
         return $order_package;
     }
 
 
     public function delete_order($order_id)
     {
-        mysql_query("delete from order_skid where order_id = '" . $order_id . "' ") or die(mysql_error());
-        mysql_query("delete from orders_price where order_id = '" . $order_id . "' ") or die(mysql_error());
-        mysql_query("delete from orders_package where order_id = '" . $order_id . "' ") or die(mysql_error());
-        mysql_query("delete from orders where order_id = '" . $order_id . "' ") or die(mysql_error());
+        mysqli_query($this->db, "delete from order_skid where order_id = '" . $order_id . "' ") or die(mysqli_error($this->db));
+        mysqli_query($this->db, "delete from orders_price where order_id = '" . $order_id . "' ") or die(mysqli_error($this->db));
+        mysqli_query($this->db, "delete from orders_package where order_id = '" . $order_id . "' ") or die(mysqli_error($this->db));
+        mysqli_query($this->db, "delete from orders where order_id = '" . $order_id . "' ") or die(mysqli_error($this->db));
         return true;
     }
 
 
     public function set_sort_order($order_id, $driver_id1, $driver_id2)
     {
-        $query2 = mysql_query("select order_id,driver_id,driver_id2,sort_driver1,max(sort_driver2) from 
+        $query2 = mysqli_query($this->db, "select order_id,driver_id,driver_id2,sort_driver1,max(sort_driver2) from 
 	orders where (driver_id2 = '" . $driver_id2 . "') 
 	and orders.order_status not in (2,5)  order by sort_driver2 desc  ");
 
         if ($driver_id1 != "" && ($driver_id2 == "" || $driver_id2 == "0")) {
-            $query = mysql_query("select order_id,driver_id,driver_id2,max(sort_driver1) as sort_driver1,sort_driver2 from 
+            $query = mysqli_query($this->db, "select order_id,driver_id,driver_id2,max(sort_driver1) as sort_driver1,sort_driver2 from 
 		orders where (driver_id = '" . $driver_id1 . "') 
 		and orders.order_status not in (2,5)  order by sort_driver1,sort_driver2 desc  ");
 
-            $r = mysql_fetch_array($query);
-            mysql_query("update orders set sort_driver1 = '" . ($r['sort_driver1'] + 1) . "' where order_id = '" . $order_id . "' ") or die(mysql_error());
+            $r = mysqli_fetch_array($query);
+            mysqli_query($this->db, "update orders set sort_driver1 = '" . ($r['sort_driver1'] + 1) . "' where order_id = '" . $order_id . "' ") or die(mysqli_error($this->db));
         }
 
         if ($driver_id2 != "" && ($driver_id1 == "" || $driver_id1 == "0")) {

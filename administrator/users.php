@@ -102,7 +102,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
             break;
 
         case 'show':
-            $console = new console(7);
+            $console = new console(7, $db);
 
             $console->set_page($pageno, PERPAGE);
 

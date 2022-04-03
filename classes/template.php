@@ -3,7 +3,7 @@
 
 class template
 {
-    public function template()
+    public function __construct()
     {
     }
 

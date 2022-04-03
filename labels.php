@@ -41,8 +41,8 @@ include('includes/php-barcode-generator-master/src/BarcodeGeneratorHTML.php');
     // if (!isset($_SESSION['logged_in'] ) ){
     // 	header ("Location: ".SITEURL."");
     // }
-    $qu = mysql_query("select * from status");
-    while ($rs = mysql_fetch_array($qu)) {
+    $qu = mysqli_query($mycon,"select * from status");
+    while ($rs = mysqli_fetch_array($qu)) {
         $package_status[$rs['disporder']] = $rs['statusname'];
     }
 
@@ -139,16 +139,16 @@ include('includes/php-barcode-generator-master/src/BarcodeGeneratorHTML.php');
 
     for ($i = 0; $i < count($pac); $i++) {
 
-        $ri = mysql_query("select *,orders_package.order_status as mainstatus from orders_package 
+        $ri = mysqli_query($mycon,"select *,orders_package.order_status as mainstatus from orders_package 
         inner join orders on (orders_package.order_id = orders.order_id)
         inner join package_type on  (package_type.package_id = orders_package.package_type )
         inner join account on  (account.account_id = orders.account_id )
         where id=" . $pac[$i] . "    ");
 
-        $order = mysql_fetch_array($ri);
+        $order = mysqli_fetch_array($ri);
 
         include "label_print.php";
-        mysql_free_result($ri);
+        mysqli_free_result($ri);
 
 
     }

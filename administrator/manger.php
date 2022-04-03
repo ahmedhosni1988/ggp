@@ -34,7 +34,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
         default:
 
 
-            $conClass = new console(3);
+            $conClass = new console(3, $db);
             $conClass->set_page($pageno, PERPAGE);
 
             //  $coloums_array = array(  array('headername'=>'+','function'=>'show_report_option','pos'=>'last') );
@@ -109,7 +109,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
             }
 
 
-            $console = new console(8);
+            $console = new console(8, $db);
             $console->set_page($pageno, PERPAGE);
 
             $console->set_allowtotal("0");
@@ -200,7 +200,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
             }
 
 
-            $console = new console(8);
+            $console = new console(8, $db);
             $console->set_page($pageno, PERPAGE);
 
             $console->set_allowtotal("0");
@@ -268,7 +268,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
         case 'view':
 
 
-            $conClass = new console(2);
+            $conClass = new console(2, $db);
             // $coloums_array = array(array('headername'=>'+','function'=>'show_row_option_manger','pos'=>'last','width'=>'130px','class'=>'nosort') );
             $conClass->set_page($pageno, PERPAGE);
 
@@ -303,9 +303,9 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
         case 'make_Scratche':
             if ($_POST['id']) {
-                $q = mysql_query("select orders_scratch.*,status.statusname from orders_scratch inner join status on(status.id=orders_scratch.operation_id) where  package_id = '" . $_POST['id'] . "' order by id desc  limit 1 ");
+                $q = mysqli_query($mycon, "select orders_scratch.*,status.statusname from orders_scratch inner join status on(status.id=orders_scratch.operation_id) where  package_id = '" . $_POST['id'] . "' order by id desc  limit 1 ");
 
-                $data = mysql_fetch_assoc($q);
+                $data = mysqli_fetch_assoc($q);
 
                 $newtemp->load_template('scratche_form', 5);
             }
@@ -313,11 +313,11 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
         case 'set_Scratche':
             if ($_POST['id']) {
-                $q = mysql_query("update orders_scratch set perosn = '" . mysql_real_escape_string($_POST['perosn']) . "' ,
-             reason	= '" . mysql_real_escape_string($_POST['reason']) . "' , date_work = '" . date("Y-m-d H:i:s") . "'	,applied_operation = '" . $_POST['applied_operation'] . "' ,status = '1' where id = '" . $_POST['id'] . "' ");
+                $q = mysqli_query($mycon, "update orders_scratch set perosn = '" . mysqli_real_escape_string($mycon, $_POST['perosn']) . "' ,
+             reason	= '" . mysqli_real_escape_string($mycon, $_POST['reason']) . "' , date_work = '" . date("Y-m-d H:i:s") . "'	,applied_operation = '" . $_POST['applied_operation'] . "' ,status = '1' where id = '" . $_POST['id'] . "' ");
 
 
-                $query = mysql_query("delete from orders_package_work where package_id = '" . $_POST['package_id'] . "' ");
+                $query = mysqli_query($mycon, "delete from orders_package_work where package_id = '" . $_POST['package_id'] . "' ");
 
 
                 $workClass->add_operation_package($_POST['package_id'], "1", "1", "1");
@@ -349,7 +349,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
                         $sql = $db->make_insert("inventory_action", $invetory_details);
                         // echo $sql;
-                        $res = mysql_query($sql) or die(mysql_error());
+                        $res = mysqli_query($mycon, $sql) or die(mysqli_error($mycon));
 
 
                         $invClass->update_inventory($_POST['item_id'][$j], (-1 * $_POST['quantity'][$j]), "1");
@@ -373,7 +373,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
         case 'cancel_package':
             if (isset($_POST['id'])) {
                 $workClass->cancel_package($_POST['id'], $_SESSION['user_type']);
-                $query = mysql_query("select * orders_package_work  where package_id = '" .$_POST['id'] . "' ") or die(mysql_error());
+                $query = mysqli_query($mycon, "select * orders_package_work  where package_id = '" .$_POST['id'] . "' ") or die(mysqli_error($mycon));
                 $o=object_to_array($query);
                 $logger->compareAndLogV2((int)$_POST['id'], "Order item", $_SESSION['user_id'], $_SESSION['name'], "scratch", array(), $o);
             }
@@ -403,10 +403,10 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
                 $package_id = explode(",", $_POST['id']);
 
                 for ($i = 0; $i < count($package_id); $i++) {
-                    $query = mysql_query("update orders_package_work set user_id = '".$_SESSION['user_id']."' , status = 3 , end_time = '" . date('Y-m-d H:i:s') . "' where operation = '" . $_POST['operation'] . "'  and package_id = '" . $package_id[$i] . "'  ") or die(mysql_error());
+                    $query = mysqli_query($mycon, "update orders_package_work set user_id = '".$_SESSION['user_id']."' , status = 3 , end_time = '" . date('Y-m-d H:i:s') . "' where operation = '" . $_POST['operation'] . "'  and package_id = '" . $package_id[$i] . "'  ") or die(mysqli_error($mycon));
 
                     if ($_POST['operation'] == '5') {
-                        mysql_query("update orders_package set package_status = '2' where id = '" . $package_id[$i] . "'  ") or die(mysql_error());
+                        mysqli_query($mycon, "update orders_package set package_status = '2' where id = '" . $package_id[$i] . "'  ") or die(mysqli_error($mycon));
 
                         if (isset($_POST['order_id']) && $_POST['order_id'] != "") {
                             $workClass->check_finish($_POST['order_id']);
@@ -426,7 +426,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
         case 'delivery':
 
-            $console = new console(8);
+            $console = new console(8, $db);
             $console->set_page($pageno, PERPAGE);
 
             $console->set_allowtotal("0");

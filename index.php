@@ -227,7 +227,7 @@ if (!empty($_GET["action"])) {
                 $added = $account->add_account($name, $_POST['companyname'], $_POST['address'], $_POST['city'], $_POST['pcode'], $_POST['phone'], $_POST['fax'], 6, 0, 0, 0);
 
                 if (is_numeric($added)) {
-                    mysql_query("update account set billing_code='1', account_billingfreq = '1',  account_method = '1', account_taxgroup = '1' , online_invoicing_email = '" . $_POST['email'] . "' , market_way = '" . $_POST['market_way'] . "' where account_id = '" . $added . "'  ") or die (mysql_error());
+                    mysqli_query($mycon,"update account set billing_code='1', account_billingfreq = '1',  account_method = '1', account_taxgroup = '1' , online_invoicing_email = '" . $_POST['email'] . "' , market_way = '" . $_POST['market_way'] . "' where account_id = '" . $added . "'  ") or die (mysqli_error($mycon));
 
 
                     $password = generateRandomCode(4);

@@ -1,4 +1,6 @@
 <?php
+include("includes/mysql_function.php");
+define("MYSQL_DATETIME", "Y-m-d H:i:s");
 
 $billing_codes = $db->get_table("billing_code");
 

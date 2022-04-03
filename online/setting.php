@@ -49,8 +49,8 @@ $logger = new logger($db);
 
 $c_setting = c_setting();
 
-mysql_query("SET NAMES utf8");
-mysql_query("SET CHARACTER SET utf8");
+mysqli_query($mycon,"SET NAMES utf8");
+mysqli_query($mycon,"SET CHARACTER SET utf8");
 
 //////////////////////////////
 ///Site attibutes/////////////
@@ -125,12 +125,12 @@ for ($i=0;$i<count($notification);$i++) {
 
 function c_setting()
 {
-    $query = mysql_query("select * from options  ") or die(mysql_error());
+    $query = mysqli_query($mycon,"select * from options  ") or die(mysqli_error($mycon));
 
 
     $company_details = array();
 
-    while ($row = mysql_fetch_array($query)) {
+    while ($row = mysqli_fetch_array($query)) {
         $company_details[$row['option_name']] =$row['option_value'];
     }
 

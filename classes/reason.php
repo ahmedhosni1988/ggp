@@ -4,9 +4,9 @@ class reason
 {
     public $db;
 
-    public function reason($db)
+    public function __construct($db)
     {
-        $this->db = $db;
+        $this->db = $db->get_conn();
     }
 
 
@@ -14,11 +14,11 @@ class reason
     {
         $sql = "select * from lookup_error ";
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
 
         $category = array();
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             foreach ($row as $key => $value) {
                 $arr[$key] = $value;
             }
@@ -30,5 +30,3 @@ class reason
         return $category;
     }
 }
-
-?>

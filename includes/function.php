@@ -31,14 +31,14 @@ function CheckCookieLogin()
 
         if ($cok[1] == "admin") {
 
-            $result = mysql_query("select users.*  from users as users 
+            $result = mysqli_query($mycon,"select users.*  from users as users 
 			where 
 			users.cookies = " . $this->db->qstr($uname) . " and
 			users.account_id = '0'
-			") or die (mysql_error());
-            $num = mysql_num_rows($result);
+			") or die (mysqli_error($mycon));
+            $num = mysqli_num_rows($result);
 
-            $login_attribute = mysql_fetch_array($result);
+            $login_attribute = mysqli_fetch_array($result);
 
 
             if ($num == 1) {
@@ -50,16 +50,16 @@ function CheckCookieLogin()
         } elseif ($cok[1] == "client") {
 
 
-            $result = mysql_query("select users.* , account.* from users as users 
+            $result = mysqli_query($mycon,"select users.* , account.* from users as users 
 inner join account as account 
 on (users.account_id = account.account_id) 
 where 
 users.cookies = " . $this->db->qstr($uname) . " and
 (users.status ='1' || users.status ='2' ) and
-(account.status = '1' || account.status = '6' )  ") or die (mysql_error());
-            $num = mysql_num_rows($result);
+(account.status = '1' || account.status = '6' )  ") or die (mysqli_error($mycon));
+            $num = mysqli_num_rows($result);
 
-            $login_attribute = mysql_fetch_array($result);
+            $login_attribute = mysqli_fetch_array($result);
 
 
             if ($num == 1) {
@@ -92,9 +92,9 @@ users.cookies = " . $this->db->qstr($uname) . " and
 function get_account_name($account_id)
 {
 
-    $query = mysql_query("select * from account where account_id = " . $account_id . "") or die(mysql_error());
-    if (mysql_num_rows($query) == 1) {
-        $row = mysql_fetch_array($query);
+    $query = mysqli_query($mycon,"select * from account where account_id = " . $account_id . "") or die(mysqli_error($mycon));
+    if (mysqli_num_rows($query) == 1) {
+        $row = mysqli_fetch_array($query);
         return $row['account_name'];
     } else {
         return false;
@@ -104,9 +104,9 @@ function get_account_name($account_id)
 function get_user_name($value)
 {
     if (is_numeric($value)) {
-        $query = mysql_query("select name from users where user_id = '" . $value . "'") or die (mysql_error());
-        if (mysql_num_rows($query) == 1) {
-            $row = mysql_fetch_assoc($query);
+        $query = mysqli_query($mycon,"select name from users where user_id = '" . $value . "'") or die (mysqli_error($mycon));
+        if (mysqli_num_rows($query) == 1) {
+            $row = mysqli_fetch_assoc($query);
             return $row['name'];
         }
     } else {
@@ -461,8 +461,8 @@ function validate_order()
 
 function get_user($id, $value = "")
 {
-    $q = mysql_query("select * from users where user_id = '$id'") or die(mysql_error());
-    $row = mysql_fetch_array($q);
+    $q = mysqli_query($mycon,"select * from users where user_id = '$id'") or die(mysqli_error($mycon));
+    $row = mysqli_fetch_array($q);
 //echo $row[$value];
     if ($value == "") return $row;
     else return $row[$value];
@@ -521,8 +521,8 @@ function convert_utc_time($date)
 
 function check_duplication($table, $coloum, $value, $status)
 {
-    $query = mysql_query("select count(*) as num from $table where $coloum = '$value'  and status = '" . $status . "' ") or die (mysql_error());
-    $row = mysql_fetch_assoc($query);
+    $query = mysqli_query($mycon,"select count(*) as num from $table where $coloum = '$value'  and status = '" . $status . "' ") or die (mysqli_error($mycon));
+    $row = mysqli_fetch_assoc($query);
 
     if ($query) return $row['num'];
     else return false;
@@ -542,8 +542,8 @@ function remove_elm($arr, $key, $val, $within = FALSE)
 
 function check_duplication_users($table, $coloum, $value, $account_id)
 {
-    $query = mysql_query("select count(*) as num from $table where $coloum = '$value' and account_id='$account_id'") or die (mysql_error());
-    $row = mysql_fetch_array($query);
+    $query = mysqli_query($mycon,"select count(*) as num from $table where $coloum = '$value' and account_id='$account_id'") or die (mysqli_error($mycon));
+    $row = mysqli_fetch_array($query);
 
     if ($query) return $row['num'];
     else return false;
@@ -792,8 +792,8 @@ $x= $x.$pack_options_string;
 
 function get_tax($tax_id)
 {
-    $q = mysql_query("select * from tax where tax_id = '$tax_id'") or die (mysql_error());
-    $z = mysql_fetch_object($q);
+    $q = mysqli_query($mycon,"select * from tax where tax_id = '$tax_id'") or die (mysqli_error($mycon));
+    $z = mysqli_fetch_object($q);
 
     return $z->tax_rate;
 
@@ -805,8 +805,8 @@ function tax_fs_calc($taxg_id, $fsovrd, $lineamount, $chargetype)
     global $taxrate, $grptax1;
 //echo $taxg_id."<br>";
 
-    $q = mysql_query("select * from tax_group where taxgroup_id = '$taxg_id'") or die (mysql_error());
-    $taxgroup_details = mysql_fetch_object($q);
+    $q = mysqli_query($mycon,"select * from tax_group where taxgroup_id = '$taxg_id'") or die (mysqli_error($mycon));
+    $taxgroup_details = mysqli_fetch_object($q);
 
     $fsrate = "";
 
@@ -1354,8 +1354,8 @@ function get_zone_from_postalcode($p, $ranges, $ranges_zone, $singles, $singles_
 function zonevalidate($zone)
 {
     $zone = strtoupper($zone);
-    $rz = mysql_query("select id from pricezones where zone='$zone'");
-    $zonecount = mysql_num_rows($rz);
+    $rz = mysqli_query($mycon,"select id from pricezones where zone='$zone'");
+    $zonecount = mysqli_num_rows($rz);
     if ($zonecount == 0) return "";
     else                  return $zone;
 }

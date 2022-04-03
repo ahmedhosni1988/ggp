@@ -16,7 +16,7 @@ switch ($action) {
     if (isset($_GET['id'])) {
         $id = $_GET['id'];
 
-        $q = mysql_query("select 
+        $q = mysqli_query($mycon,"select 
         invoicehdr.*,
         orders.pieces, 
         orders.service_id, 
@@ -33,12 +33,12 @@ switch ($action) {
         inner join orders on (orders.order_id = invoicehdr.order_id) 
         inner join account on (orders.account_id=account.account_id) 
         inner join services on (orders.service_id = services.service_id) 
-        where invoicehdr.id = '$id' ") or die(mysql_error());
+        where invoicehdr.id = '$id' ") or die(mysqli_error($mycon));
 
-        $invhdr = mysql_fetch_assoc($q);
+        $invhdr = mysqli_fetch_assoc($q);
 
 
-        $qd = mysql_query("select invoicedtl.*,
+        $qd = mysqli_query($mycon,"select invoicedtl.*,
         orders_package.part_order,
         orders_package.length,
         orders_package.width,
@@ -55,13 +55,13 @@ switch ($action) {
         inner join orders_package on (orders_package.id = invoicedtl.waybill ) 
         inner join package_type on (orders_package.package_type = package_type.package_id ) 
 
-        where invoicedtl.invoiceno = '".$invhdr['id']."' order by invoicedtl.lineno ASC , invoicedtl.chgtype DESC ") or die(mysql_error());
+        where invoicedtl.invoiceno = '".$invhdr['id']."' order by invoicedtl.lineno ASC , invoicedtl.chgtype DESC ") or die(mysqli_error($mycon));
 
         $invdetails = array();
 
         $package_division = array();
 
-        while ($row = mysql_fetch_assoc($qd)) {
+        while ($row = mysqli_fetch_assoc($qd)) {
             $invdetails[] = $row;
             
             $package_division[$row['package_type']]['price'] += $row['amount'];

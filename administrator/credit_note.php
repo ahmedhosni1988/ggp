@@ -76,9 +76,9 @@ switch ($action){
             $sql = $db->make_insert("credit_note",$dbarray);
 
 
-            $query = mysql_query($sql) or die (mysql_error());
+            $query = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));
             if($query){
-                $credit_id = mysql_insert_id();
+                $credit_id = mysqli_insert_id($mycon);
 
 
                 echo 'تمت اضافة الاشعار بنجاح';
@@ -127,7 +127,7 @@ switch ($action){
 
                 $sql = $db->make_update("credit_note",$dbarray,"id",$credit_id);
 
-                $query = mysql_query($sql) or die (mysql_error());
+                $query = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));
                 
                 
                    $cashrec["clid"]        = $_POST['account_id'];
@@ -146,7 +146,7 @@ switch ($action){
 
                     $sql2 = $db->make_update("cashreceipts",$cashrec,"creditnote_id",$credit_id);
 
-                    $query = mysql_query($sql2) or die (mysql_error());
+                    $query = mysqli_query($mycon,$sql2) or die (mysqli_error($mycon));
 
 
                 if($query){

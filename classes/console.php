@@ -15,13 +15,16 @@ class console
     public $has_paging = 0;
     public $dba;
 
-    public function console($type)
+    public function __construct($type, $db)
     {
         $this->console_type = $type;
+        $this->dba = $db;
+        $this->set_db(($db));
         $this->perpage = 10;
         $this->page = 1;
         $this->has_paging = 1;
     }
+
 
     public function set_allowtotal($allow_total)
     {
@@ -30,7 +33,7 @@ class console
 
     public function set_db($db)
     {
-        $this->db = $db;
+        $this->db = $db->get_conn();
     }
 
     public function set_ND($nodata)
@@ -90,12 +93,12 @@ class console
     ////
     public function get_coloums_header($col = "null", $so = "null", $item = "null")
     {
-        $query = mysql_query("select c_d.other_table_name,c_d.name as name_def,c_d.status,c_d.Console_details,c_d.coloum_style,c_d.type,c_d.name,c_d.size,c_d.view_value,cd.display_".$_SESSION['language'].",cd.Fieldname,cd.table_name,cd.is_sortable as ordering,c_d.total,c_d.orders,c_d.type from consol_def as c_d inner join  columns_details as cd on (c_d.Console_details = cd.id ) where Console_id = '".$this->console_type."' order by c_d.orders ASC ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select c_d.other_table_name,c_d.name as name_def,c_d.status,c_d.Console_details,c_d.coloum_style,c_d.type,c_d.name,c_d.size,c_d.view_value,cd.display_".$_SESSION['language'].",cd.Fieldname,cd.table_name,cd.is_sortable as ordering,c_d.total,c_d.orders,c_d.type from consol_def as c_d inner join  columns_details as cd on (c_d.Console_details = cd.id ) where Console_id = '".$this->console_type."' order by c_d.orders ASC ") or die(mysqli_error($this->db));
 
         $coloums = array();
 
 
-        while ($row = mysql_fetch_array($query)) {
+        while ($row = mysqli_fetch_array($query)) {
             if (!is_array($so) && $so != "null" && $item == $row['Fieldname']) {
                 $sort = $so;
             } else {
@@ -148,8 +151,8 @@ class console
             $csql = substr($sql, strpos($sql, " from "), strlen($sql));
             $countsql = "select count(*) as num ".$csql;
     
-            $cq = mysql_query($countsql) or die(mysql_error());
-            $cr = mysql_fetch_assoc($cq);
+            $cq = mysqli_query($this->db, $countsql) or die(mysqli_error($this->db));
+            $cr = mysqli_fetch_assoc($cq);
             $this->set_count($cr['num']);
             //echo $countsql;
     
@@ -158,13 +161,13 @@ class console
             $sql = $sql." Limit ".(($this->page - 1) * $this->perpage)." , ".$this->perpage." ";
         }
 
-     //   echo $sql;
+        //   echo $sql;
 
         $selected = "";
         $coloums_data = array();
 
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
         $request_array = "";
 
@@ -172,7 +175,7 @@ class console
         $request_array = substr_replace($request_array, "", -1);
 
         $y = 0;
-        while ($row = mysql_fetch_array($query)) {
+        while ($row = mysqli_fetch_array($query)) {
             for ($x = 0; $x < count($header); $x++) {
                 if ($header[$x]['table_name'] == '') {
                     $header[$x]['coloum_fieldname'] = $header[$x]['view_value'];
@@ -186,7 +189,7 @@ class console
             }
             $y++;
         }
-        //$row = mysql_fetch_array($query);
+        //$row = mysqli_fetch_array($query);
         return $coloums_data;
     }
 
@@ -203,7 +206,7 @@ class console
 
         $sql = "select " . substr($selected, 0, strlen($selected) - 2) . " from " . $after_from;
 
-        $query = mysql_query($sql) or die($sql);
+        $query = mysqli_query($this->db, $sql) or die($sql);
 
         $request_array = "";
 
@@ -211,13 +214,13 @@ class console
         $request_array = substr_replace($request_array, "", -1);
 
         $y = 0;
-        while ($row = mysql_fetch_array($query)) {
+        while ($row = mysqli_fetch_array($query)) {
             for ($x = 0; $x < count($header); $x++) {
                 $coloums_data[$y][$x] = array($header[$x]['coloum_header'] => $row[$header[$x]['coloum_fieldname']]);
             }
             $y++;
         }
-        //$row = mysql_fetch_array($query);
+        //$row = mysqli_fetch_array($query);
         return $coloums_data;
     }
 
@@ -288,7 +291,7 @@ class console
     {
         $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
 
-        $actual_link = $protocol.$_SERVER['HTTP_HOST'].(strpos($_SERVER['REQUEST_URI'], '.php') ? $_SERVER['REQUEST_URI'].(strpos($_SERVER['REQUEST_URI'],'?') !== false ? '&' : '?' ).'ajax=1&pageno=' : $_SERVER['REQUEST_URI'].'index.php?&ajax=1&pageno=');
+        $actual_link = $protocol.$_SERVER['HTTP_HOST'].(strpos($_SERVER['REQUEST_URI'], '.php') ? $_SERVER['REQUEST_URI'].(strpos($_SERVER['REQUEST_URI'], '?') !== false ? '&' : '?').'ajax=1&pageno=' : $_SERVER['REQUEST_URI'].'index.php?&ajax=1&pageno=');
 
         $header = "";
         if ($des != "") {
@@ -483,10 +486,10 @@ class console
                                 }
                                     
                                 if ($coloum[$t]['type'] == "lookup_table") {
-                                    $query = mysql_query("select " . $coloum[$t]['view_value'] . " from " . $coloum[$t]['other_table_name'] . " where " . $coloum[$t]['name'] . " = '" . $value . "' ");
+                                    $query = mysqli_query($this->db, "select " . $coloum[$t]['view_value'] . " from " . $coloum[$t]['other_table_name'] . " where " . $coloum[$t]['name'] . " = '" . $value . "' ");
                                     
-                                    if (mysql_num_rows($query) == "1") {
-                                        $rr = mysql_fetch_array($query);
+                                    if (mysqli_num_rows($query) == "1") {
+                                        $rr = mysqli_fetch_array($query);
                                     
                                         $header .= '<td>' . $rr[$coloum[$t]['view_value']] . '</td>';
                                     } else {
@@ -692,9 +695,9 @@ class console
 //                                     $header .= '<td>' . date($coloum[$t]['name'], strtotime($value)) . '</td>';
 //                                 }
 //                                 if ($coloum[$t]['type'] == "order_price") {
-//                                     $op = mysql_query("select * from orders_price where order_id = '" . $ro[0]['order_id'] . "' and type in (" . $coloum[$t]['name'] . ") ") or die(mysql_error());
+//                                     $op = mysqli_query($this->db,"select * from orders_price where order_id = '" . $ro[0]['order_id'] . "' and type in (" . $coloum[$t]['name'] . ") ") or die(mysqli_error($this->db));
 //                                     $price = 0;
-//                                     while ($ops = mysql_fetch_array($op)) {
+//                                     while ($ops = mysqli_fetch_array($op)) {
 //                                         if ($ops['override'] != '') {
 //                                             $price += $ops['override'];
 //                                         } else {
@@ -782,10 +785,10 @@ class console
 //                                 }
 
 //                                 if ($coloum[$t]['type'] == "lookup_table") {
-//                                     $query = mysql_query("select " . $coloum[$t]['view_value'] . " from " . $coloum[$t]['other_table_name'] . " where " . $coloum[$t]['name'] . " = '" . $value . "' ");
+//                                     $query = mysqli_query($this->db,"select " . $coloum[$t]['view_value'] . " from " . $coloum[$t]['other_table_name'] . " where " . $coloum[$t]['name'] . " = '" . $value . "' ");
 
-//                                     if (mysql_num_rows($query) == "1") {
-//                                         $rr = mysql_fetch_array($query);
+//                                     if (mysqli_num_rows($query) == "1") {
+//                                         $rr = mysqli_fetch_array($query);
 
 //                                         $header .= '<td>' . $rr[$coloum[$t]['view_value']] . '</td>';
 //                                     } else {
@@ -905,9 +908,9 @@ class console
                                     $data[$r + 1][] = date($coloum[$t]['name'], strtotime($value));
                                 }
                                 if ($coloum[$t]['type'] == "order_price") {
-                                    $op = mysql_query("select * from orders_price where order_id = '" . $ro[0]['order_id'] . "' and type in (" . $coloum[$t]['name'] . ") ") or die(mysql_error());
+                                    $op = mysqli_query($this->db, "select * from orders_price where order_id = '" . $ro[0]['order_id'] . "' and type in (" . $coloum[$t]['name'] . ") ") or die(mysqli_error($this->db));
                                     $price = 0;
-                                    while ($ops = mysql_fetch_array($op)) {
+                                    while ($ops = mysqli_fetch_array($op)) {
                                         if ($ops['override'] != '') {
                                             $price += $ops['override'];
                                         } else {
@@ -921,9 +924,9 @@ class console
                                     }
                                 }
                                 if ($coloum[$t]['type'] == "driver_price") {
-                                    $op = mysql_query("select * from orders_driver_commission where order_id = '" . $ro[0]['order_id'] . "' and commission_name in (" . $coloum[$t]['name'] . ")  ") or die(mysql_error() . "x");
+                                    $op = mysqli_query($this->db, "select * from orders_driver_commission where order_id = '" . $ro[0]['order_id'] . "' and commission_name in (" . $coloum[$t]['name'] . ")  ") or die(mysqli_error($this->db) . "x");
                                     $price = 0;
-                                    while ($ops = mysql_fetch_array($op)) {
+                                    while ($ops = mysqli_fetch_array($op)) {
                                         if ($ops['commission_override'] != '' && $ops['commission_override'] > 0) {
                                             $price += $ops['commission_override'];
                                         } else {
@@ -1066,7 +1069,7 @@ class console
 
                         if ($coloum[$t]['type'] == "combo") {
 
-                            //$qu = mysql_query("select * from ".$coloum[$t]['table_name']." ");
+                            //$qu = mysqli_query($this->db,"select * from ".$coloum[$t]['table_name']." ");
 
                             $_SESSION['status_table'] = $this->db->get_table("status where id < 4 ");
 
@@ -1118,7 +1121,7 @@ class console
                                 $header .= '<option value = "' . $sarray[$s][$coloum[$t]['coloum_fieldname']] . '"      ' . (isset($post_input[$coloum[$t]['table_name'] . '__' . $coloum[$t]['coloum_fieldname']][$r]) && $post_input[$coloum[$t]['table_name'] . '__' . $coloum[$t]['coloum_fieldname']][$r] == $sarray[$s][$coloum[$t]['coloum_fieldname']] ? 'selected' : '') . '   ' . (!isset($post_input[$coloum[$t]['table_name'] . '__' . $coloum[$t]['coloum_fieldname']][$r]) && $sarray[$s][$coloum[$t]['coloum_fieldname']] == $default_input[$coloum[$t]['name_def']] ? 'selected' : '') . ' >' . $viewvalue . '</option>';
                             }
 
-                            // while($row = mysql_fetch_array($qu)){
+                            // while($row = mysqli_fetch_array($qu)){
                             // $header .= '<option value = "'.$row[$coloum[$t]['name']].'" '.($row[$coloum[$t]['name']] == $value ? 'selected' : '' ).'>'.$row[$coloum[$t]['view_value']].'</option>';
                             // }
 
@@ -1161,9 +1164,9 @@ class console
 
     public function get_console_details($id)
     {
-        $query = mysql_query("select consol_def.id,consol_def.is_default,consol_def.status,consol_def.orders,columns_details.display_" . $_SESSION['language'] . " as display from consol_def inner join columns_details on (columns_details.id = consol_def.console_details) where consol_def.console_id = '" . $id . "' ORDER BY consol_def.orders ASC ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select consol_def.id,consol_def.is_default,consol_def.status,consol_def.orders,columns_details.display_" . $_SESSION['language'] . " as display from consol_def inner join columns_details on (columns_details.id = consol_def.console_details) where consol_def.console_id = '" . $id . "' ORDER BY consol_def.orders ASC ") or die(mysqli_error($this->db));
         $category = array();
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             foreach ($row as $key => $value) {
                 $arr[$key] = $value;
             }
@@ -1179,14 +1182,14 @@ class console
     {
         foreach ($status as $key => $value) {
             //	echo $key.'--'.$value;
-            mysql_query("update consol_def  set orders = '" . $orders[$key] . "',status = '" . $status[$key] . "'  where console_id = '" . $id . "' and id = '" . $key . "' ") or die(mysql_error());
+            mysqli_query($this->db, "update consol_def  set orders = '" . $orders[$key] . "',status = '" . $status[$key] . "'  where console_id = '" . $id . "' and id = '" . $key . "' ") or die(mysqli_error($this->db));
         }
     }
 
 
     public function update_console_details_sortable($id, $data)
     {
-        mysql_query("update consol_def set orders = 0 where console_id = '" . $id . "' and is_default = '1'");
+        mysqli_query($this->db, "update consol_def set orders = 0 where console_id = '" . $id . "' and is_default = '1'");
         $x = explode("|", $data);
 
 
@@ -1194,14 +1197,14 @@ class console
         $in = explode(",", $x[1]);
 
         for ($i = 0; $i < count($not); $i++) {
-            mysql_query("update consol_def  set orders = '" . ($i + 1) . "',status = '1'  where console_id = '" . $id . "' and id = '" . $not[$i] . "' ") or die(mysql_error());
+            mysqli_query($this->db, "update consol_def  set orders = '" . ($i + 1) . "',status = '1'  where console_id = '" . $id . "' and id = '" . $not[$i] . "' ") or die(mysqli_error($this->db));
         }
 
 
         for ($i = 0; $i < count($in); $i++) {
-            mysql_query("update consol_def  set orders = '" . ($i + 1) . "',status = '0'  where console_id = '" . $id . "' and id = '" . $in[$i] . "' ") or die(mysql_error());
+            mysqli_query($this->db, "update consol_def  set orders = '" . ($i + 1) . "',status = '0'  where console_id = '" . $id . "' and id = '" . $in[$i] . "' ") or die(mysqli_error($this->db));
         }
 
-        mysql_query("update consol_def set orders = '-1' where console_id = '" . $id . "' and name = 'order_checked' ");
+        mysqli_query($this->db, "update consol_def set orders = '-1' where console_id = '" . $id . "' and name = 'order_checked' ");
     }
 }

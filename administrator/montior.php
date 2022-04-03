@@ -87,7 +87,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
     switch ($action) {
 
         case 'all':
-            $console = new console(8);
+            $console = new console(8, $db);
             $console->set_allowtotal("0");
             $console->set_ND("Y");
             if (isset($_GET['pageno'])) {
@@ -187,7 +187,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
 
 
                   
-                            mysql_query("update orders set last_update_time = '" . date("Y-m-d H:i:s") . "' where order_id = '" . $_POST['order_id'] . "'  ") or die(mysql_error());
+                            mysqli_query($mycon, "update orders set last_update_time = '" . date("Y-m-d H:i:s") . "' where order_id = '" . $_POST['order_id'] . "'  ") or die(mysqli_error($mycon));
 
 
                             $o['office_name'] = $_POST['office_name'];
@@ -225,7 +225,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
                                 if ($_POST['new_easy_number'] != ''  && is_numeric($_POST['new_easy_number'])) {
                                     $o['easy_order_id'] = $_POST['new_easy_number'];
                                     $_POST['easy_order'] = $_POST['new_easy_number'];
-                                    mysql_query("update orders_package set easy_order_id = '".$_POST['new_easy_number']."'  where order_id = '".$_POST['order_id']."' ") or die(mysql_error());
+                                    mysqli_query($mycon, "update orders_package set easy_order_id = '".$_POST['new_easy_number']."'  where order_id = '".$_POST['order_id']."' ") or die(mysqli_error($mycon));
                                     $log = array();
                                     $log['OBJECT_ID'] = $_POST['order_id'];
                                     $log['OBJECT_NAME'] = 'Order';
@@ -246,7 +246,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
                             $glasscolour = $_POST['glasscolour'];
                             $glassType = $_POST['glassType'];
 
-                            mysql_query("update orders_package set glasscolour = '".$glasscolour."' , glassType ='".$glassType."' , package_type = '".$pac_type."'  where order_id = '".$_POST['order_id']."' ") or die(mysql_error());
+                            mysqli_query($mycon, "update orders_package set glasscolour = '".$glasscolour."' , glassType ='".$glassType."' , package_type = '".$pac_type."'  where order_id = '".$_POST['order_id']."' ") or die(mysqli_error($mycon));
 
                             //Add Multi Package Details
 
@@ -408,12 +408,12 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
                                 $order->update_orders($t, $order_id);
 
 
-                                mysql_query("update orders set pieces = (select count(*) from orders_package where order_id = '".$order_id."') where order_id = '".$order_id."' ") or die(mysql_error());
+                                mysqli_query($mycon, "update orders set pieces = (select count(*) from orders_package where order_id = '".$order_id."') where order_id = '".$order_id."' ") or die(mysqli_error($mycon));
 
                                 $glasscolour = $_POST['glasscolour'];
                                 $glassType = $_POST['glassType'];
     
-                                mysql_query("update orders_package set glasscolour = '".$glasscolour."' , glassType ='".$glassType."' , package_type = '".$pac_type."'  where order_id = '".$_POST['order_id']."' ") or die(mysql_error());
+                                mysqli_query($mycon, "update orders_package set glasscolour = '".$glasscolour."' , glassType ='".$glassType."' , package_type = '".$pac_type."'  where order_id = '".$_POST['order_id']."' ") or die(mysqli_error($mycon));
                             } else {
                                 if ($_SESSION['user_type'] == 'manmanger') {
                                     ///update working package every important and diffuclt process
@@ -426,14 +426,14 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
 
                                     for ($i=0;$i<count($pID);$i++) {
                                         if ($pID[$i]  != '') {
-                                            mysql_query("update orders_package set  
+                                            mysqli_query($mycon, "update orders_package set  
                                             length = '".$weight[$i]."' , 
                                             width = '".$volume[$i]."' , 
                                             details = '".$_POST['order_comment']."' , 
                                             details_2 = '".$details_2[$i]."' ,
                                             glassPointing = '".$glassPointing[$i]."' where id = '".$pID[$i]."'  or parent_id = '".$pID[$i]."'  ");
                                         } else {
-                                            //  mysql_query("insert into orders_package (order_id,length,width,details,details_2,glassPointing) ");
+                                            //  mysqli_query($mycon,"insert into orders_package (order_id,length,width,details,details_2,glassPointing) ");
                                         }
                                     }
                                 }
@@ -443,7 +443,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
                             // $glasscolour = $_POST['glasscolour'];
                             // $glassType = $_POST['glassType'];
 
-                            // mysql_query("update orders_package set glasscolour = '".$glassColor."' , glassType ='".$glassType."' , package_type = '".$pac_type."'  where order_id = '".$_POST['order_id']."' ") or die(mysql_error());
+                            // mysqli_query($mycon,"update orders_package set glasscolour = '".$glassColor."' , glassType ='".$glassType."' , package_type = '".$pac_type."'  where order_id = '".$_POST['order_id']."' ") or die(mysqli_error($mycon));
 
 
                             $workClass->calc_order_package($_POST['order_id']);
@@ -468,7 +468,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
                                     if (move_uploaded_file($_FILES['order_image']['tmp_name'][$i], $uploadfile)) {
                                         echo "File is valid, and was successfully uploaded.\n";
                                         $uploadfile = str_replace("../", "", $uploadfile);
-                                        mysql_query("insert into orders_image (order_id,image_url,date_update) values ('" . $_POST['order_id'] . "','" . $uploadfile . "','" . date("Y-m-d H:i:s") . "') ;");
+                                        mysqli_query($mycon, "insert into orders_image (order_id,image_url,date_update) values ('" . $_POST['order_id'] . "','" . $uploadfile . "','" . date("Y-m-d H:i:s") . "') ;");
                                     } else {
                                         echo "Possible file upload attack!\n";
                                     }
@@ -485,7 +485,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
 
         case 'delete_photo':
             if (isset($_POST['id'])) {
-                mysql_query("update orders_image set image_status = '1' where id = '" . $_POST['id'] . "'   ");
+                mysqli_query($mycon, "update orders_image set image_status = '1' where id = '" . $_POST['id'] . "'   ");
             }
             break;
 
@@ -564,7 +564,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
                 //   $logger->compareAndLogV2($_POST['order_id'],"Order", $_SESSION['user_id'],  $_SESSION['name'], "stop",array(),$o);
 
                 $workClass->stop_play_work($_POST['order_id'], "stop");
-                $q = mysql_query("update invoicehdr set reviewed = 0  where order_id = '".$_POST['order_id']."'  ") or die(mysql_error());
+                $q = mysqli_query($mycon, "update invoicehdr set reviewed = 0  where order_id = '".$_POST['order_id']."'  ") or die(mysqli_error($mycon));
             }
             break;
 
@@ -574,8 +574,8 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
 
                 //$logger->compareAndLogV2($_POST['order_id'],"Order", $_SESSION['user_id'],  $_SESSION['name'], "Cancel",array(),$o);
 
-                mysql_query("update orders set order_status = '5',user_cancel='".$_SESSION['user_id']."' ,cancel_date='".date("Y-m-d H:i:s")."' where order_id = '" . $_POST['order_id'] . "'  ");
-                $q = mysql_query("update invoicehdr set reviewed = 0 where order_id = '".$_POST['order_id']."'  ") or die(mysql_error());
+                mysqli_query($mycon, "update orders set order_status = '5',user_cancel='".$_SESSION['user_id']."' ,cancel_date='".date("Y-m-d H:i:s")."' where order_id = '" . $_POST['order_id'] . "'  ");
+                $q = mysqli_query($mycon, "update invoicehdr set reviewed = 0 where order_id = '".$_POST['order_id']."'  ") or die(mysqli_error($mycon));
             }
             break;
 
@@ -628,7 +628,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
 
                         $update_query .= " where order_id = '" . $data[$i]['order_id'] . "'  ";
 
-                        $q = mysql_query($update_query) or die(mysql_error() . "---" . $update_query);
+                        $q = mysqli_query($mycon, $update_query) or die(mysqli_error($mycon) . "---" . $update_query);
                     }
 
                     $all_query .= $update_query;
@@ -666,7 +666,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
             }
 
 
-            $console = new console(8);
+            $console = new console(8, $db);
             $console->set_allowtotal("0");
             $console->set_ND("Y");
 

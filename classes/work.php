@@ -11,79 +11,79 @@ class work
 {
     public $db;
 
-    public function work($db)
+    public function __construct($db)
     {
-        $this->db = $db;
+        $this->db = $db->get_conn();
     }
 
 
     public function delete_order($order_id)
     {
-        $q = mysql_query("delete from orders_package_work where order_id = '" . $order_id . "' ");
-        $q = mysql_query("delete from orders_package where order_id = '" . $order_id . "' ");
-        $q = mysql_query("delete from orders where order_id = '" . $order_id . "'");
+        $q = mysqli_query($this->db, "delete from orders_package_work where order_id = '" . $order_id . "' ");
+        $q = mysqli_query($this->db, "delete from orders_package where order_id = '" . $order_id . "' ");
+        $q = mysqli_query($this->db, "delete from orders where order_id = '" . $order_id . "'");
     }
 
 
     public function add_operation_package($pack_id, $p_type = "1", $status = "1", $scratch = "0")
     {
-        $qp = mysql_query("select * from orders_package where id = '" . $pack_id . "'  ");
-        $row = mysql_fetch_array($qp);
+        $qp = mysqli_query($this->db, "select * from orders_package where id = '" . $pack_id . "'  ");
+        $row = mysqli_fetch_array($qp);
 
         $case = explode(',', $row['order_status']);
 
         if (count($case) == "1") {
             if ($case[0] == "1") {
-                $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche,start_time) 
+                $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche,start_time) 
 				value ('" . $row['order_id'] . "','" . $row['id'] . "','2','2','" . $p_type . "','" . $scratch . "','" . date('Y-m-d H:i:s') . "')");
 
-                $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
+                $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
 				value ('" . $row['order_id'] . "','" . $row['id'] . "','3','" . $status . "','" . $p_type . "','" . $scratch . "')");
 
-                $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
+                $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
 				value ('" . $row['order_id'] . "','" . $row['id'] . "','4','" . $status . "','" . $p_type . "','" . $scratch . "')");
 
-                $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
+                $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
 				value ('" . $row['order_id'] . "','" . $row['id'] . "','7','" . $status . "','" . $p_type . "','" . $scratch . "')");
             }
 
             if ($case[0] == "2") {
-                $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche,start_time) 
+                $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche,start_time) 
 				value ('" . $row['order_id'] . "','" . $row['id'] . "','3','2','" . $p_type . "','" . $scratch . "','" . date('Y-m-d H:i:s') . "')");
 
-                $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
+                $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
 				value ('" . $row['order_id'] . "','" . $row['id'] . "','4','" . $status . "','" . $p_type . "','" . $scratch . "')");
                
-                $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
+                $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
 				value ('" . $row['order_id'] . "','" . $row['id'] . "','7','" . $status . "','" . $p_type . "','" . $scratch . "')");
             }
 
             if ($case[0] == "3") {
-                $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche,start_time) 
+                $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche,start_time) 
 				value ('" . $row['order_id'] . "','" . $row['id'] . "','" . ($case[0] - 1) . "','2','" . $p_type . "','" . $scratch . "','" . date('Y-m-d H:i:s') . "')");
             }
 
             if ($case[0] == "4") {
-                $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche,start_time) 
+                $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche,start_time) 
 				value ('" . $row['order_id'] . "','" . $row['id'] . "','" . ($case[0] - 1) . "','2','" . $p_type . "','" . $scratch . "','" . date('Y-m-d H:i:s') . "')");
             }
 
             if ($case[0] == "5") {
-                $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche,start_time) 
+                $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche,start_time) 
 				value ('" . $row['order_id'] . "','" . $row['id'] . "','7','2','" . $p_type . "','" . $scratch . "','" . date('Y-m-d H:i:s') . "')");
             }
 
             if ($case[0] == "6") {
-                $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche,start_time) 
+                $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche,start_time) 
 				value ('" . $row['order_id'] . "','" . $row['id'] . "','4','2','" . $p_type . "','" . $scratch . "','" . date('Y-m-d H:i:s') . "')");
             }
 
 
 
-            $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
+            $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
 			value ('" . $row['order_id'] . "','" . $row['id'] . "','5','" . $status . "','" . $p_type . "','" . $scratch . "')");
 
-            $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
+            $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
 			value ('" . $row['order_id'] . "','" . $row['id'] . "','6','" . $status . "','" . $p_type . "','" . $scratch . "')");
        
        
@@ -114,15 +114,15 @@ class work
                     $mycase = '4';
                 }
                 
-                $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche,start_time) 
+                $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche,start_time) 
 				value ('" . $row['order_id'] . "','" . $row['id'] . "','" . $mycase. "','" . $status . "','" . $p_type . "','" . $scratch . "','" . $date . "')");
             }
 
 
-            $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
+            $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
 				value ('" . $row['order_id'] . "','" . $row['id'] . "','5','" . $status . "','1','" . $scratch . "')");
 
-            $q = mysql_query("insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
+            $q = mysqli_query($this->db, "insert into orders_package_work (order_id,package_id,operation,status,p_type,scratche) 
 				value ('" . $row['order_id'] . "','" . $row['id'] . "','6','" . $status . "','1','" . $scratch . "')");
         }
     }
@@ -130,47 +130,47 @@ class work
 
     public function start_work($order_id)
     {
-        $q = mysql_query("select * from orders where order_id = '" . $order_id . "' ");
-        $r = mysql_fetch_array($q);
+        $q = mysqli_query($this->db, "select * from orders where order_id = '" . $order_id . "' ");
+        $r = mysqli_fetch_array($q);
 
         if ($r['order_status'] != "0") {
             return;
         }
 
-        $qp = mysql_query("select id from orders_package where order_id = '" . $order_id . "'  ");
+        $qp = mysqli_query($this->db, "select id from orders_package where order_id = '" . $order_id . "'  ");
 
         if ($r['service_id'] == "2") {
-            while ($pack = mysql_fetch_array($qp)) {
+            while ($pack = mysqli_fetch_array($qp)) {
                 $this->add_operation_package($pack['id'], $r['work_status']);
             }
         } else {
         }
 
 
-        mysql_query("update orders set order_status = '1',start_work_date = '" . date("Y-m-d H:i:s") . "' where order_id = '" . $order_id . "' ");
+        mysqli_query($this->db, "update orders set order_status = '1',start_work_date = '" . date("Y-m-d H:i:s") . "' where order_id = '" . $order_id . "' ");
     }
 
 
     public function stop_play_work($order_id, $type)
     {
         if ($type == "stop") {
-            mysql_query("update orders set order_status = '4' where order_id = '" . $order_id . "' ");
+            mysqli_query($this->db, "update orders set order_status = '4' where order_id = '" . $order_id . "' ");
         }
 
         if ($type == "play") {
-            mysql_query("update orders set order_status = '1' where order_id = '" . $order_id . "' ");
+            mysqli_query($this->db, "update orders set order_status = '1' where order_id = '" . $order_id . "' ");
         }
     }
 
 
     public function check_finish($order_id)
     {
-        $query = mysql_query("select * from orders_package where order_id = '" . $order_id . "' and package_status != '2' ");
+        $query = mysqli_query($this->db, "select * from orders_package where order_id = '" . $order_id . "' and package_status != '2' ");
 
-        if (mysql_num_rows($query) > 0) {
+        if (mysqli_num_rows($query) > 0) {
             return false;
         } else {
-            mysql_query("update orders set order_status = '2' , finish_work_date = '" . date("Y-m-d H:i:s") . "' where order_id = '" . $order_id . "' ");
+            mysqli_query($this->db, "update orders set order_status = '2' , finish_work_date = '" . date("Y-m-d H:i:s") . "' where order_id = '" . $order_id . "' ");
             return true;
         }
     }
@@ -178,11 +178,11 @@ class work
 
     public function deliver_order($order_id)
     {
-        $o = mysql_query("select * from orders where order_id = '" . $order_id . "'  ");
-        $oDetails = mysql_fetch_assoc($o);
+        $o = mysqli_query($this->db, "select * from orders where order_id = '" . $order_id . "'  ");
+        $oDetails = mysqli_fetch_assoc($o);
         
-        $q = mysql_query("SELECT GROUP_CONCAT(id) as items  FROM orders_package where order_id = '".$order_id."' and package_status = '1' ");
-        $qDetails = mysql_fetch_assoc($q);
+        $q = mysqli_query($this->db, "SELECT GROUP_CONCAT(id) as items  FROM orders_package where order_id = '".$order_id."' and package_status = '1' ");
+        $qDetails = mysqli_fetch_assoc($q);
         $outOrder = array();
         $outOrder['account_id'] = $oDetails['account_id'];
         $outOrder['status'] = 1;
@@ -193,12 +193,12 @@ class work
         $outOrder['added_name'] = $_SESSION['name'];
         $osql =  $this->db->make_insert('out_orders', $outOrder);
 
-        mysql_query($osql) or die(mysql_error());
+        mysqli_query($this->db, $osql) or die(mysqli_error($this->db));
 
 
-        mysql_query("update orders_package_work set status = 3 , end_time = '" . date('Y-m-d H:i:s') . "' " . $sql . " where status != 3 and  operation in (6,5) and order_id = '" . $order_id . "'  ") or die(mysql_error());
-        mysql_query("update orders_package set package_status = '2' where order_id = '" . $order_id . "' and package_status != '2'  ") or die(mysql_error());
-        $query = mysql_query("update orders set order_status = '3' , actual_delivery_date = '" . date("Y-m-d H:i:s") . "'  where order_status != '3' and order_id = '" . $order_id . "' ");
+        mysqli_query($this->db, "update orders_package_work set status = 3 , end_time = '" . date('Y-m-d H:i:s') . "' " . $sql . " where status != 3 and  operation in (6,5) and order_id = '" . $order_id . "'  ") or die(mysqli_error($this->db));
+        mysqli_query($this->db, "update orders_package set package_status = '2' where order_id = '" . $order_id . "' and package_status != '2'  ") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "update orders set order_status = '3' , actual_delivery_date = '" . date("Y-m-d H:i:s") . "'  where order_status != '3' and order_id = '" . $order_id . "' ");
 
         if ($query) {
             return true;
@@ -212,8 +212,8 @@ class work
 
         //this code for cancel pckage from mottabe user only
         if ($operation == "manger") {
-            $q = mysql_query("select * from orders_package_work where package_id= '$package_id' and status = '2'") or die(mysql_error());
-            $r = mysql_fetch_assoc($q);
+            $q = mysqli_query($this->db, "select * from orders_package_work where package_id= '$package_id' and status = '2'") or die(mysqli_error($this->db));
+            $r = mysqli_fetch_assoc($q);
             $operation = $r['operation'];
         }
 
@@ -224,7 +224,7 @@ class work
             if ($pak_id[$i] != '') {
                 $order_id = $this->get_package_orderid($pak_id[$i]);
 
-                $query = mysql_query("insert into orders_scratch (
+                $query = mysqli_query($this->db, "insert into orders_scratch (
 				package_id,
 				order_id,
 				operation_id,
@@ -237,10 +237,10 @@ class work
 					'" . $_SESSION['name'] . "',
 					'" . $_SESSION['user_id'] . "',
 					'" . date('Y-m-d H:i:s') . "'
-				);") or die(mysql_error());
+				);") or die(mysqli_error($this->db));
 
-                $query = mysql_query("update orders_package_work set status = 5 where package_id = '" . $pak_id[$i] . "' ") or die(mysql_error());
-                $query = mysql_query("update orders_package set scratche = scratche + 1 where id = '" . $pak_id[$i] . "' ") or die(mysql_error());
+                $query = mysqli_query($this->db, "update orders_package_work set status = 5 where package_id = '" . $pak_id[$i] . "' ") or die(mysqli_error($this->db));
+                $query = mysqli_query($this->db, "update orders_package set scratche = scratche + 1 where id = '" . $pak_id[$i] . "' ") or die(mysqli_error($this->db));
 
                 //	$this->add_operation_package($pak_id[$i],"1","1","1");
             }
@@ -250,12 +250,12 @@ class work
 
     public function package_next_operation($package_id)
     {
-        $q = mysql_query("select * from orders_package_work where package_id = '" . $package_id . "' and status = '1' order by field(operation,2,3,7,4,5,6) ");
+        $q = mysqli_query($this->db, "select * from orders_package_work where package_id = '" . $package_id . "' and status = '1' order by field(operation,2,3,7,4,5,6) ");
 
         $i = 0;
-        while ($r = mysql_fetch_array($q)) {
+        while ($r = mysqli_fetch_array($q)) {
             if ($i == 0) {
-                mysql_query("update orders_package_work set status = 2 , start_time = '" . date('Y-m-d H:i:s') . "'  where operation = '" . $r['operation'] . "'  and package_id = '" . $r['package_id'] . "'  ");
+                mysqli_query($this->db, "update orders_package_work set status = 2 , start_time = '" . date('Y-m-d H:i:s') . "'  where operation = '" . $r['operation'] . "'  and package_id = '" . $r['package_id'] . "'  ");
             }
 
             $i++;
@@ -267,7 +267,7 @@ class work
 
         //	echo "select * from orders_package inner join orders_package_work on (orders_package_work.package_id == orders_package.id) where orders_package_work.operation= '".$user_type."'  and  orders_package.barcode = '".$barcode."' ";
 
-        $query = mysql_query("select orders_package.*,
+        $query = mysqli_query($this->db, "select orders_package.*,
 		 orders.glass_type,
 		 orders.office_name,
 		 orders.operation_name,
@@ -278,11 +278,11 @@ class work
 		inner join orders_package_work on (orders_package_work.package_id = orders_package.id) 
 		inner join orders on (orders_package.order_id = orders.order_id) 
 		inner join inventory_items_company on (orders.glass_type = inventory_items_company.id)
-		where orders_package_work.operation= '" . $user_type . "' and orders_package_work.status = '2'  and  orders_package.barcode = '" . $barcode . "' and orders.order_status = '1'  ") or die(mysql_error());
+		where orders_package_work.operation= '" . $user_type . "' and orders_package_work.status = '2'  and  orders_package.barcode = '" . $barcode . "' and orders.order_status = '1'  ") or die(mysqli_error($this->db));
 
 
-        if (mysql_num_rows($query) > 0) {
-            return mysql_fetch_assoc($query);
+        if (mysqli_num_rows($query) > 0) {
+            return mysqli_fetch_assoc($query);
         } else {
             return "0";
         }
@@ -304,7 +304,7 @@ class work
             $sql = "  orders_package_work.operation= '" . $user_type . "' and orders_package_work.status in (1,2) " ;
         }
 
-        $query = mysql_query("select orders_package.*,
+        $query = mysqli_query($this->db, "select orders_package.*,
 			orders.glass_type,
 			orders.office_name,
 			orders.operation_name,
@@ -315,11 +315,11 @@ class work
 		   inner join orders_package_work on (orders_package_work.package_id = orders_package.id) 
 		   inner join orders on (orders_package.order_id = orders.order_id) 
 		   inner join inventory_items_company on (orders.glass_type = inventory_items_company.id)
-			where $sql  and  orders_package.easy_order_id = '" . $order_id . "' and orders_package.part_order = '" . $part_no . "' and orders.order_status = '1'  order by orders_package.id desc limit 1  ") or die(mysql_error());
+			where $sql  and  orders_package.easy_order_id = '" . $order_id . "' and orders_package.part_order = '" . $part_no . "' and orders.order_status = '1'  order by orders_package.id desc limit 1  ") or die(mysqli_error($this->db));
 
 
-        if (mysql_num_rows($query) > 0) {
-            return mysql_fetch_assoc($query);
+        if (mysqli_num_rows($query) > 0) {
+            return mysqli_fetch_assoc($query);
         } else {
             return "0";
         }
@@ -327,7 +327,7 @@ class work
 
     public function get_package($order_id, $part_no)
     {
-        $query = mysql_query("select orders_package.*,
+        $query = mysqli_query($this->db, "select orders_package.*,
 			orders.glass_type,
 			orders.office_name,
 			orders.operation_name,
@@ -341,11 +341,11 @@ class work
            inner join status on (orders_package_work.operation = status.id) 
 
 		   inner join orders on (orders_package.order_id = orders.order_id) 
-			where  orders_package.easy_order_id = '" . $order_id . "' and orders_package.part_order = '" . $part_no . "' and orders_package_work.status = 2  order by orders_package.id desc limit 1  ") or die(mysql_error());
+			where  orders_package.easy_order_id = '" . $order_id . "' and orders_package.part_order = '" . $part_no . "' and orders_package_work.status = 2  order by orders_package.id desc limit 1  ") or die(mysqli_error($this->db));
 
 
-        if (mysql_num_rows($query) > 0) {
-            return mysql_fetch_assoc($query);
+        if (mysqli_num_rows($query) > 0) {
+            return mysqli_fetch_assoc($query);
         } else {
             return "0";
         }
@@ -358,7 +358,7 @@ class work
         //	orders_package_work.operation= '5' and
         //	orders_package_work.status = '2'  and
 
-        $query = mysql_query("select 
+        $query = mysqli_query($this->db, "select 
 	    	orders_package.*,
 		 orders.glass_type,
 		 account.account_company,
@@ -374,10 +374,10 @@ class work
 		where 
 	
 		orders_package.id in (" . $package_id . ") 
-		order by account.account_id  ") or die(mysql_error());
+		order by account.account_id  ") or die(mysqli_error($this->db));
 
 
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $res[] = $row;
         }
 
@@ -387,12 +387,12 @@ class work
 
     public function get_image($order_id)
     {
-        $query = mysql_query("select * from orders_image where order_id = '" . $order_id . "' and image_status = '0'  ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from orders_image where order_id = '" . $order_id . "' and image_status = '0'  ") or die(mysqli_error($this->db));
 
-        if (mysql_num_rows($query) < 1) {
+        if (mysqli_num_rows($query) < 1) {
             return false;
         } else {
-            while ($row = mysql_fetch_assoc($query)) {
+            while ($row = mysqli_fetch_assoc($query)) {
                 $re[] = $row;
             }
 
@@ -402,9 +402,9 @@ class work
 
     public function get_package_orderid($package_id)
     {
-        $q = mysql_query("select order_id from orders_package where id = '" . $package_id . "' ");
+        $q = mysqli_query($this->db, "select order_id from orders_package where id = '" . $package_id . "' ");
 
-        $row = mysql_fetch_array($q);
+        $row = mysqli_fetch_array($q);
 
         return $row['order_id'];
     }
@@ -416,9 +416,9 @@ class work
             $msql = ' and account.billing_code = \''.$billing_code.'\' ';
         }
 
-        $query = mysql_query("select out_orders.*, account.account_company from  out_orders inner join account on (account.account_id = out_orders.account_id) where out_orders.status = '" . $status . "' and out_orders.finished = '" . $finished . "' $msql order by id desc limit 50");
+        $query = mysqli_query($this->db, "select out_orders.*, account.account_company from  out_orders inner join account on (account.account_id = out_orders.account_id) where out_orders.status = '" . $status . "' and out_orders.finished = '" . $finished . "' $msql order by id desc limit 50");
 
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $res[] = $row;
         }
 
@@ -447,9 +447,9 @@ class work
         }
 
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $res[] = $row;
         }
 
@@ -496,9 +496,9 @@ class work
 
         $sql = substr($sql, 0, strlen($sql) - 3);
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $res[] = $row;
         }
 
@@ -544,9 +544,9 @@ class work
 
         $sql = substr($sql, 0, strlen($sql) - 3);
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $row['option_type'] = $option_type_lang[$row['option_type']];
             $res[] = $row;
         }
@@ -589,9 +589,9 @@ class work
 
         $sql = substr($sql, 0, strlen($sql) - 3);
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $row['option_type'] = $option_type_lang[$row['option_type']];
             $res[] = $row;
         }
@@ -680,9 +680,9 @@ class work
 
         $sql .= " and orders.order_status in  (1,2,3)  order by status.id,orders.order_id,account.account_id";
         echo $sql;
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $res[] = $row;
         }
 
@@ -746,19 +746,19 @@ class work
         // and orders_package_work.status in (1,2)
         // and orders_package_work.operation not in (5,6) group by orders_package.id order by orders_package_work.order_id  ";
             
-        $query = mysql_query("select $sql  from orders_package_work $innerJoin where 
+        $query = mysqli_query($this->db, "select $sql  from orders_package_work $innerJoin where 
         orders_package_work.order_id in (select orders.order_id from orders where orders.order_status = '1' and delivery_date >=' $date ' and delivery_date <= ' $to_date '  $account_id ) 
         and orders_package_work.status in (1,2) 
-        and orders_package_work.operation not in (5,6) $sql2 group by orders_package.id order by orders_package_work.order_id  ") or die(mysql_error());
+        and orders_package_work.operation not in (5,6) $sql2 group by orders_package.id order by orders_package_work.order_id  ") or die(mysqli_error($this->db));
 
         $order_package = array();
         $i = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             foreach ($row as $key => $value) {
                 $arr[$key] = $value;
             }
 
-            $q = mysql_query("select * from orders_package_work where package_id = '" . $row['id'] . "' ") or die(mysql_error());
+            $q = mysqli_query($this->db, "select * from orders_package_work where package_id = '" . $row['id'] . "' ") or die(mysqli_error($this->db));
 
             $arr['2']['on'] = "";
             $arr['2']['done'] = "";
@@ -798,7 +798,7 @@ class work
             $arr['6']['out_work'] = "";
 
             $del = 0 ;
-            while ($r = mysql_fetch_array($q)) {
+            while ($r = mysqli_fetch_array($q)) {
 
                 //this option to remove pieces from elnoqes report if delviverd and dirty code
                 if (($r['operation'] == '5' ||  $r['operation'] == '6') && $r['in_work'] == "1") {
@@ -821,37 +821,37 @@ class work
                 $order_package[] = $arr;
             }
         }
-        //$order_details = mysql_fetch_object($query);
+        //$order_details = mysqli_fetch_object($query);
         return $order_package;
     }
 
 
     public function stop_package($package_id)
     {
-        $o = mysql_query("SELECT * FROM  `orders_package` where id = '".$package_id."'  ") or die(mysql_error());
-        $ro = mysql_fetch_assoc($o);
+        $o = mysqli_query($this->db, "SELECT * FROM  `orders_package` where id = '".$package_id."'  ") or die(mysqli_error($this->db));
+        $ro = mysqli_fetch_assoc($o);
         $order_id = $ro['order_id'];
 
-        $q = mysql_query("update orders_package set package_status = '4' where id = '".$package_id."' ") or die(mysql_error());
-        $s = mysql_query("update orders_package_work set status = '4' where status = '2' and package_id = '".$package_id."'  ") or die(mysql_error());
+        $q = mysqli_query($this->db, "update orders_package set package_status = '4' where id = '".$package_id."' ") or die(mysqli_error($this->db));
+        $s = mysqli_query($this->db, "update orders_package_work set status = '4' where status = '2' and package_id = '".$package_id."'  ") or die(mysqli_error($this->db));
 
         /////////////// recalc invoice////////////
-        $pac = mysql_query("SELECT * FROM  `invoicedtl` where waybill = '".$package_id."' ") or die(mysql_error());
+        $pac = mysqli_query($this->db, "SELECT * FROM  `invoicedtl` where waybill = '".$package_id."' ") or die(mysqli_error($this->db));
         
-        while ($row = mysql_fetch_array($pac)) {
+        while ($row = mysqli_fetch_array($pac)) {
             $amount= (double)$row['amount'];
             $invoiceno=$row['invoiceno'];
         }
 
-        mysql_query("delete  FROM  `invoicedtl` where waybill = '".$package_id."' ") or die(mysql_error());
+        mysqli_query($this->db, "delete  FROM  `invoicedtl` where waybill = '".$package_id."' ") or die(mysqli_error($this->db));
 
-        $pac = mysql_query("SELECT * FROM  `invoicehdr` where id = '".$invoiceno."' ") or die(mysql_error());
+        $pac = mysqli_query($this->db, "SELECT * FROM  `invoicehdr` where id = '".$invoiceno."' ") or die(mysqli_error($this->db));
 
-        while ($row = mysql_fetch_array($pac)) {
+        while ($row = mysqli_fetch_array($pac)) {
             $subtotal= (double)$row['subtotal'];
         }
         $new_total=$subtotal-$amount;
-        $q = mysql_query("update invoicehdr set reviewed = 0 ,  subtotal = '".$new_total."'  where id = '".$invoiceno."' ") or die(mysql_error());
+        $q = mysqli_query($this->db, "update invoicehdr set reviewed = 0 ,  subtotal = '".$new_total."'  where id = '".$invoiceno."' ") or die(mysqli_error($this->db));
 
         $this->calc_order_package($order_id);
         /////////////// end recalc invoice////////////
@@ -860,21 +860,21 @@ class work
     public function calc_order_package($order_id)
     {
         $size = 0;
-        $pac = mysql_query("SELECT * FROM  `orders_package` where order_id = '".$order_id."' and package_status != '4' ") or die(mysql_error());
+        $pac = mysqli_query($this->db, "SELECT * FROM  `orders_package` where order_id = '".$order_id."' and package_status != '4' ") or die(mysqli_error($this->db));
 
-        while ($r = mysql_fetch_assoc($pac)) {
+        while ($r = mysqli_fetch_assoc($pac)) {
             $size += ($r['length'] * $r['width']);
         }
 
-        mysql_query("update orders set order_size  = '".$size."'  where order_id = '".$order_id."' ") or die(mysql_error());
+        mysqli_query($this->db, "update orders set order_size  = '".$size."'  where order_id = '".$order_id."' ") or die(mysqli_error($this->db));
     }
 
     public function get_Pack_options($account_id=0)
     {
-        $query = mysql_query("select * from addtional_services  where account_id=$account_id") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from addtional_services  where account_id=$account_id") or die(mysqli_error($this->db));
         $arr = array();
         $i = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $arr[$row['id']] = $row['name'];
         }
 
@@ -883,10 +883,10 @@ class work
 
     public function get_package_type()
     {
-        $query = mysql_query("select * from package_type") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from package_type") or die(mysqli_error($this->db));
         $arr = array();
         $i = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $arr[$row['package_id']] = $row['package_name'];
         }
 
@@ -896,20 +896,20 @@ class work
 
     public function play_package($package_id)
     {
-        $q = mysql_query("update orders_package set package_status = '1' where id = '".$package_id."' ") or die(mysql_error());
-        $s = mysql_query("update orders_package_work set status = '2' where status = '4' and package_id = '".$package_id."'  ") or die(mysql_error());
+        $q = mysqli_query($this->db, "update orders_package set package_status = '1' where id = '".$package_id."' ") or die(mysqli_error($this->db));
+        $s = mysqli_query($this->db, "update orders_package_work set status = '2' where status = '4' and package_id = '".$package_id."'  ") or die(mysqli_error($this->db));
 
         /////////////// recalc invoice////////////
-        $query = mysql_query("select orders_package.*,account.account_id,account.account_name from orders_package
+        $query = mysqli_query($this->db, "select orders_package.*,account.account_id,account.account_name from orders_package
         inner join orders on (orders.order_id = orders_package.order_id) 
         inner join account on (account.account_id = orders.account_id) 
-        where  orders_package.id = '".$package_id."' ") or die(mysql_error());
+        where  orders_package.id = '".$package_id."' ") or die(mysqli_error($this->db));
         
         $Pack_options=$this->get_Pack_options();
         $pack_type=$this->get_package_type();
 
         $lineno = 0;
-        while ($nrow = mysql_fetch_array($query)) {
+        while ($nrow = mysqli_fetch_array($query)) {
             $order_inv_prices = $this->get_inv_order_prices($nrow["id"]);
          
             $services_charges = setup_serviceprices($order_inv_prices, $add_ser, $nrow, $pack_type, $Pack_options);
@@ -950,22 +950,22 @@ class work
         }
 
 
-        $pac = mysql_query("SELECT * FROM  `invoicehdr` where id = '".$invoiceno."' ") or die(mysql_error());
+        $pac = mysqli_query($this->db, "SELECT * FROM  `invoicehdr` where id = '".$invoiceno."' ") or die(mysqli_error($this->db));
 
-        while ($row = mysql_fetch_array($pac)) {
+        while ($row = mysqli_fetch_array($pac)) {
             $subtotal= (double)$row['subtotal'];
         }
         $new_total=$subtotal+$amount;
-        $q = mysql_query("update invoicehdr set subtotal = '".$new_total."' where id = '".$invoiceno."' ") or die(mysql_error());
+        $q = mysqli_query($this->db, "update invoicehdr set subtotal = '".$new_total."' where id = '".$invoiceno."' ") or die(mysqli_error($this->db));
 
         /////////////// end recalc invoice////////////
     }
     public function get_inv_order_prices($order_id)
     {
-        $query = mysql_query("select * from orders_price where package_id = " . $this->db->qstr($order_id) . " ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from orders_price where package_id = " . check_mysql_string($this->db,$order_id) . " ") or die(mysqli_error($this->db));
         $order_details = array();
         $i = 0;
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $order_details[$i][$row["type"]] = $row;
             $i++;
         }
@@ -978,10 +978,10 @@ class work
         $sql = $this->db->make_insert("invoicedtl", $array);
 
 
-        $query = mysql_query($sql) or die(mysql_error());
+        $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
         if ($query) {
-            return mysql_insert_id();
+            return mysqli_insert_id($this->db);
         } else {
             return false;
         }
@@ -989,21 +989,21 @@ class work
 
     public function delete_package($package_id)
     {
-        $q = mysql_query("delete from orders_package_work where package_id = '".$package_id."' ") or die(mysql_error());
+        $q = mysqli_query($this->db, "delete from orders_package_work where package_id = '".$package_id."' ") or die(mysqli_error($this->db));
 
-        $s = mysql_query("select * from  orders_package where id = '".$package_id."' ") or die(mysql_error());
+        $s = mysqli_query($this->db, "select * from  orders_package where id = '".$package_id."' ") or die(mysqli_error($this->db));
 
-        $r = mysql_fetch_array($s);
+        $r = mysqli_fetch_array($s);
 
-        mysql_query("update orders set pieces = pieces -1 , order_size = order_size - (".$r['length']." * ".$r['width'].")  where order_id = '".$r['order_id']."' ") or die(mysql_error());
+        mysqli_query($this->db, "update orders set pieces = pieces -1 , order_size = order_size - (".$r['length']." * ".$r['width'].")  where order_id = '".$r['order_id']."' ") or die(mysqli_error($this->db));
 
-        mysql_query("delete from orders_package where id = '".$package_id."' ") or die(mysql_error());
+        mysqli_query($this->db, "delete from orders_package where id = '".$package_id."' ") or die(mysqli_error($this->db));
     }
     public function get_combo_box($name)
     {
-        $query = mysql_query("select * from lookup_addtional where type = '$name' ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from lookup_addtional where type = '$name' ") or die(mysqli_error($this->db));
         $result = array();
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $result[] = $row;
         }
         return $result;
@@ -1011,11 +1011,11 @@ class work
 
     public function get_invoice_order($invoice_id)
     {
-        $query = mysql_query("select * from orders where invoice_no = '$invoice_id'  ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from orders where invoice_no = '$invoice_id'  ") or die(mysqli_error($this->db));
 
         $result = array();
 
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $result[] = $row;
         }
 
@@ -1026,8 +1026,8 @@ class work
     public function check_accountinvoice($account_id, $invoice_id)
     {
         $num = 0;
-        $query = mysql_query("select * from invoicehdr where clid = '$account_id' and  id = '$invoice_id'  ") or die(mysql_error());
-        $num = mysql_num_rows($query);
+        $query = mysqli_query($this->db, "select * from invoicehdr where clid = '$account_id' and  id = '$invoice_id'  ") or die(mysqli_error($this->db));
+        $num = mysqli_num_rows($query);
 
         if ($num) {
             return true;
@@ -1037,12 +1037,12 @@ class work
     }
     public function get_Credit($data)
     {
-        $query = mysql_query("select credit_note.*,users.user_name,account.account_name,account.account_company from credit_note
+        $query = mysqli_query($this->db, "select credit_note.*,users.user_name,account.account_name,account.account_company from credit_note
 		inner join account on (account.account_id = credit_note.account_id ) 
-		inner join users on (users.user_id = credit_note.user_id ) order by credit_note.id desc ") or die(mysql_error($this->db));
+		inner join users on (users.user_id = credit_note.user_id ) order by credit_note.id desc ") or die(mysqli_error($this->db));
     
         $result = array();
-        while ($row = mysql_fetch_assoc($query)) {
+        while ($row = mysqli_fetch_assoc($query)) {
             $result[] = $row;
         }
         return $result;
@@ -1050,11 +1050,11 @@ class work
 
     public function get_credit_id($id)
     {
-        $query = mysql_query("select credit_note.*,users.user_name,account.account_name,account.account_company from credit_note
+        $query = mysqli_query($this->db, "select credit_note.*,users.user_name,account.account_name,account.account_company from credit_note
 		inner join account on (account.account_id = credit_note.account_id ) 
-		inner join users on (users.user_id = credit_note.user_id )  where  id = '$id' ") or die(mysql_error());
+		inner join users on (users.user_id = credit_note.user_id )  where  id = '$id' ") or die(mysqli_error($this->db));
 
-        $result = mysql_fetch_object($query);
+        $result = mysqli_fetch_object($query);
 
         return $result;
     }

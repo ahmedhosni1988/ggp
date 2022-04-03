@@ -25,18 +25,18 @@
 include "../unique/unique.php";
 include("mysql.php");
 $ri = runsql("select * from control where id=1");
-    $control = mysql_fetch_array($ri);
-    mysql_free_result($ri);
+    $control = mysqli_fetch_array($ri);
+    mysqli_free_result($ri);
 
 $ordernum=9652;
 
 $ri = runsql("select * from orders where id=$ordernum");
-$order = mysql_fetch_array($ri);
-mysql_free_result($ri);
+$order = mysqli_fetch_array($ri);
+mysqli_free_result($ri);
 $acctno = "AAA001";
 
 $ri = runsql("select * from client where acctno = '$acctno'");
-$client = mysql_fetch_array($ri);
+$client = mysqli_fetch_array($ri);
 
 $copy = 2;  $copies = 3;
  */

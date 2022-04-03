@@ -91,7 +91,7 @@ case 'account_serves':
 $account_id=$_GET['account_id'];
 if(isset($_POST['price']) && isset($_GET['account_id']) )
 	{	$good=false;
-		mysql_query("DELETE FROM `pack` WHERE `pack`.`account_id` = $account_id");
+		mysqli_query($mycon,"DELETE FROM `pack` WHERE `pack`.`account_id` = $account_id");
 		foreach ($_POST['price'] as $id => $value) {
 			foreach ($value as $id2 => $value2) { 
 				// echo '['.$id.']['.$id2.'] val=>'.$value2.'<br>'; 
@@ -225,7 +225,7 @@ case 'add_new_price':
 		}else $billing_code = '1';
 
         echo "why";
-		$q = mysql_query("insert into price_version
+		$q = mysqli_query($mycon,"insert into price_version
 		(parent_id,system_date,user_id,billing_id,account_id,item_colour) values (
 			'".$parent_id."',
 			'".$system_date."',
@@ -233,7 +233,7 @@ case 'add_new_price':
 			'".$billing_code."',
 			'".$account_id."',
 			'0'
-		)") or die (mysql_error());
+		)") or die (mysqli_error($mycon));
 
 		if($query) return true;
 		else return false;
@@ -258,22 +258,22 @@ $price_version = $_POST['price_version'];
     }
     else $account_id='0';
 if($itemColor > '0' && $price_version > '0'){
-	mysql_query("DELETE FROM package_status_price WHERE account_id ='".$account_id."' 
+	mysqli_query($mycon,"DELETE FROM package_status_price WHERE account_id ='".$account_id."' 
 	and item_colour = '$itemColor' and version_id = '$price_version' and Glass_type = '$Glass_type'  ");
 }
 // //check if price version and color found or not 
 
-// $query = mysql_query("select * from price_version where price ");
+// $query = mysqli_query($mycon,"select * from price_version where price ");
 // ////////////////////////////////////////////////
-// mysql_query("insert into price_version (user_id,billing_id,item_colour) values ('".$_SESSION['user_id']."','".$_SESSION['billing_code']."','".$itColor."')");
-// $version_id = mysql_insert_id();
+// mysqli_query($mycon,"insert into price_version (user_id,billing_id,item_colour) values ('".$_SESSION['user_id']."','".$_SESSION['billing_code']."','".$itColor."')");
+// $version_id = mysqli_insert_id($mycon);
 
 foreach ($prices as $package_id => $value) {
 
 	foreach ($value as $status_id => $val){
 	//	echo "value : ".$val;
 
-	if($val != '') mysql_query("insert into package_status_price (	account_id,	package_id,status_id,	fee,version_id,item_colour,glass_type) 
+	if($val != '') mysqli_query($mycon,"insert into package_status_price (	account_id,	package_id,status_id,	fee,version_id,item_colour,glass_type) 
 	values ('".$account_id."','".$package_id."','".$status_id."','".$val."','".$price_version."','".$itemColor."','".$Glass_type."')");
 
 }

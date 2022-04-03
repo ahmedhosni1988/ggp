@@ -87,7 +87,7 @@ if(isset($_POST['x'])){
 	
       if(isset($_POST['order_id'])){
 
-$rh = mysql_query("UPDATE  `invoicehdr` SET  `reviewed` =  '1' WHERE id=".$_POST['order_id'].";");
+$rh = mysqli_query($mycon,"UPDATE  `invoicehdr` SET  `reviewed` =  '1' WHERE id=".$_POST['order_id'].";");
 
       }
 
@@ -96,8 +96,8 @@ if ($_GET['return'] == "process_invoice" ) $return_to = 'administrator/accountin
 if ($_GET['return'] == "process_invoice" ) $return_to = 'administrator/accounting.php?action=process_invoice';
 
 
-$q = mysql_query("select count(*) as num from orders_package where invoice_no = '".$_GET['oi']."' ") or die (mysql_error());
-$on = mysql_fetch_array($q);
+$q = mysqli_query($mycon,"select count(*) as num from orders_package where invoice_no = '".$_GET['oi']."' ") or die (mysqli_error($mycon));
+$on = mysqli_fetch_array($q);
 $ordernos = $on['num'];
 
 for ($n = 0; $n<120; $n++) $fmt1[] = "bgcolor = eeeeee";     // light grey
@@ -239,9 +239,9 @@ $invoiceoption_rb9  = $control["co_invoiceoption_rb9"];
 //******************************************************************************
 if ($_GET['task'] == "online"  or  $_GET['task'] == "co"  or $_GET['task'] == "qp"  or $_GET['task'] == "open")  $invoiceno = $_GET['oi'];
 
-$rh = mysql_query("select * from invoicehdr where id=$invoiceno"); 
-$invhdr = mysql_fetch_array($rh);
-mysql_free_result($rh);
+$rh = mysqli_query($mycon,"select * from invoicehdr where id=$invoiceno"); 
+$invhdr = mysqli_fetch_array($rh);
+mysqli_free_result($rh);
 
 //$invoiceno = $invhdr["id"];
 $reviewed= $invhdr["reviewed"];
@@ -268,7 +268,7 @@ if ($task == "online"  or  $task == "co")  {
  $upd_invhdr["id"]     = $invoiceno;
  $upd_invhdr["posted"] = "V";
  $sql = $db->make_update("invoicehdr", $upd_invhdr, "id", $invoiceno);
- mysql_query($sql);
+ mysqli_query($mycon,$sql);
  //update("invoicehdr",$upd_invhdr);
  }
 
@@ -295,9 +295,9 @@ if (!isset($online_badlink))  {
  //*                                                                            *
  //*******************   DUPLICATE CODE: INVOICEALL.PHP  ************************
  //******************************************************************************
- $rc = mysql_query("select * from account where account_name='$acctno'");
- $customer = mysql_fetch_array($rc);
- mysql_free_result($rc);
+ $rc = mysqli_query($mycon,"select * from account where account_name='$acctno'");
+ $customer = mysqli_fetch_array($rc);
+ mysqli_free_result($rc);
  //$clid  = $customer["id"];
  $name             = $customer["account_company"];
  if ($name == "***Deleted***")  $name .= "(".$customer["account_shortname"].")";
@@ -481,14 +481,14 @@ if (!isset($online_badlink))  {
   $orderby = "waybill_ref, lineno";
  else
   $orderby = "lineno";
- $rd = mysql_query("select invoicedtl.*, orders_package.*
+ $rd = mysqli_query($mycon,"select invoicedtl.*, orders_package.*
  from invoicedtl INNER JOIN orders_package ON invoicedtl.waybill = orders_package.id 
- where invoicedtl.invoiceno=$invoiceno order by $orderby") or die (mysql_error());
+ where invoicedtl.invoiceno=$invoiceno order by $orderby") or die (mysqli_error($mycon));
 
- for ($n = 0; $n < mysql_num_rows($rd); $n++) {
-  $invoicedtl    = mysql_fetch_array($rd);
+ for ($n = 0; $n < mysqli_num_rows($rd); $n++) {
+  $invoicedtl    = mysqli_fetch_array($rd);
 
- $package_type = mysql_result(mysql_query("SELECT package_name FROM package_type WHERE package_id =". $invoicedtl['package_type']." LIMIT 1"),0);
+ $package_type = mysqli_result(mysqli_query($mycon,"SELECT package_name FROM package_type WHERE package_id =". $invoicedtl['package_type']." LIMIT 1"),0);
 
   $li_length[$n+1]   = $invoicedtl["length"];
   $li_width[$n+1]   = $invoicedtl["width"];
@@ -524,10 +524,10 @@ if (!isset($online_badlink))  {
  // if ($invoiceoption_rb3 < 3)  {
   if ($invoicedtl["chgtype"] == "S")  {
    $orderid = $invoicedtl["waybill"];
-   $ro = mysql_query("select o.*,s.service_name from orders as o left join services as s on (o.service_id = s.service_id) 
+   $ro = mysqli_query($mycon,"select o.*,s.service_name from orders as o left join services as s on (o.service_id = s.service_id) 
    		 where order_id=$orderid");
-   $order = mysql_fetch_array($ro);
-   mysql_free_result($ro);
+   $order = mysqli_fetch_array($ro);
+   mysqli_free_result($ro);
    $servicetype = "";
    
    //var_dump($order);
@@ -550,11 +550,11 @@ if (!isset($online_badlink))  {
     }
  // }
 
-  } //for ($n = 0; $n < mysql_num_rows($rd); $n++)
+  } //for ($n = 0; $n < mysqli_num_rows($rd); $n++)
 
 
- $showlines_count =  mysql_num_rows($rd);
- mysql_free_result($rd);
+ $showlines_count =  mysqli_num_rows($rd);
+ mysqli_free_result($rd);
 
  //******************************************************************************
  //* Assemble the Statement Info.                                               *
@@ -716,7 +716,7 @@ echo '
 </div> 
 ';
 
-// $rh = mysql_query("UPDATE  `invoicehdr` SET  `reviewed` =  '1' WHERE id=$invoiceno;");
+// $rh = mysqli_query($mycon,"UPDATE  `invoicehdr` SET  `reviewed` =  '1' WHERE id=$invoiceno;");
 
  //******************************************************************************
  //* They need thier own Division.                                              *

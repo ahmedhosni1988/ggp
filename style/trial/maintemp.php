@@ -1503,7 +1503,7 @@ function breadcrumbs()
                                 <a href="' . formurl . '">' . $lang[1] . '</a>
                             </li>';
 
-    if (count($breadarray) > 0) {
+    if (is_array($breadarray) && count($breadarray) > 0) {
         for ($i = 0; $i < count($breadarray); $i++) {
             if ($i == (count($breadarray) - 1)) {
                 $x .= '<li class="active">' . $breadarray[$i]['name'] . '</li>';
@@ -1559,7 +1559,7 @@ function template_console()
         
         <table>';
 
-    while ($grid2 = mysql_fetch_array($grid)) {
+    while ($grid2 = mysqli_fetch_array($grid)) {
         echo '<tr>';
         for ($i = 0; $i < count($header); $i++) {
             $mm = explode($header[$i]['fieldname'], ".");

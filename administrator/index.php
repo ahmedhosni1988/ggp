@@ -116,8 +116,8 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) &&
                 }
 
                 // Get Client Data
-                $ri = mysql_query("select * from account where account_id = '" . $_POST['account_id'] . "' ") or die(mysql_error());
-                $client = mysql_fetch_array($ri);
+                $ri = mysqli_query($mycon, "select * from account where account_id = '" . $_POST['account_id'] . "' ") or die(mysqli_error($mycon));
+                $client = mysqli_fetch_array($ri);
 
                 ////Add Order
 
@@ -148,7 +148,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) &&
                 ///check day
                 if ($c_setting['easy_order']  >= "3000") {
                     $easy_order = "1000";
-                    mysql_query("update options set option_value = '1000' where option_name = 'easy_order' ");
+                    mysqli_query($mycon, "update options set option_value = '1000' where option_name = 'easy_order' ");
                 } else {
                     $easy_order = $c_setting['easy_order'] + 1;
                 }
@@ -164,7 +164,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) &&
 
                 ////adding order
                 $order_id = $order->add_new_orders($o);
-                mysql_query("update options set option_value = '".$easy_order."' where option_name = 'easy_order' ");
+                mysqli_query($mycon, "update options set option_value = '".$easy_order."' where option_name = 'easy_order' ");
                 //echo count($result);
 
                 //  $logger->compareAndLogV2($order_id,"Order", $_SESSION['user_id'],  $_SESSION['name'], "Add",array(), $o);
@@ -367,10 +367,10 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) &&
 
             //echo $_GET['q'];
             if (isset($_GET['q'])) {
-                $query = mysql_query("select account_name,account_id,account_company,account_address,pcode,phone from account where account_name like '%" . $_GET['q'] . "%' ") or die(mysql_error());
+                $query = mysqli_query($mycon, "select account_name,account_id,account_company,account_address,pcode,phone from account where account_name like '%" . $_GET['q'] . "%' ") or die(mysqli_error($mycon));
 
-                if (mysql_num_rows($query) > 0) {
-                    while ($row = mysql_fetch_array($query)) {
+                if (mysqli_num_rows($query) > 0) {
+                    while ($row = mysqli_fetch_array($query)) {
                         $add[] = array('label' => $row['account_name'], 'value' => $row['account_name'], $row);
                     }
                 } else {

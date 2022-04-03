@@ -4,19 +4,19 @@ class package
 {
     public $db;
 
-    public function package($db)
+    public function __construct($db)
     {
-        $this->db = $db;
+        $this->db = $db->get_conn();
     }
 
 
     public function get_package()
     {
-        $query = mysql_query("select * from  package_type order by package_order ASC ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from  package_type order by package_order ASC ") or die(mysqli_error($this->db));
 
         $pack = array();
         $i = 0;
-        while ($row = mysql_fetch_array($query)) {
+        while ($row = mysqli_fetch_array($query)) {
             $pack[$i] = array('package_id' => $row['package_id'], 'package_name' => $row['package_name'], 'package_short' => $row['package_short']);
             $i++;
         }
@@ -26,11 +26,11 @@ class package
 
     public function get_package_id()
     {
-        $query = mysql_query("select * from  package_type order by package_order ASC ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from  package_type order by package_order ASC ") or die(mysqli_error($this->db));
 
         $pack = array();
         $i = 0;
-        while ($row = mysql_fetch_array($query)) {
+        while ($row = mysqli_fetch_array($query)) {
             $pack[$row['package_id']] = $row;
             $i++;
         }
@@ -40,11 +40,11 @@ class package
 
     public function get_package_vechile()
     {
-        $query = mysql_query("select * from  package_type order by package_id ASC ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from  package_type order by package_id ASC ") or die(mysqli_error($this->db));
 
         $pack = array();
         $i = 0;
-        while ($row = mysql_fetch_array($query)) {
+        while ($row = mysqli_fetch_array($query)) {
             $pack[$i] = array('package_id' => $row['package_id'], 'package_name' => $row['package_name']);
             $i++;
         }
@@ -77,24 +77,24 @@ class package
         // var_dump($pac_status);
         $pac_status=implode(",", $pac_status);
         // echo $pac_status;
-        $query = mysql_query("UPDATE orders_package set
-    order_id=" . $this->db->qstr($order_id) . ", 
-    service_id=" . $this->db->qstr($otype) . ",
-     length=" . $this->db->qstr($weight) . ",
-     width=" . $this->db->qstr($volume) . ", 
-     details=" . $this->db->qstr($details) . ", 
-     parts=" . $this->db->qstr($parts) . ",
-     package_type=" . $this->db->qstr($pac_type) . ",
-     order_status=" . $this->db->qstr($pac_status) . ", 
-     glasscolour=" . $this->db->qstr($glasscolour) . ",
-     glassPrint=" . $this->db->qstr($glassPrint) . ",
-     glassType=" . $this->db->qstr($glassType) . ",
-     glassScarch=" . $this->db->qstr($glassScarch) . ",
-     glassPointing=" . $this->db->qstr($glassPointing) . ",
-     glassFixedPointing=" . $this->db->qstr($glassFixedPointing) . ",
-     noofprinting=" . $this->db->qstr($noofprinting) . ",
-     colorofprinting= " . $this->db->qstr($colorofprinting) . "
-     WHERE orders_package.id=".$id. "") or die(mysql_error());
+        $query = mysqli_query($this->db, "UPDATE orders_package set
+    order_id=" . check_mysql_string($this->db,$order_id) . ", 
+    service_id=" . check_mysql_string($this->db,$otype) . ",
+     length=" . check_mysql_string($this->db,$weight) . ",
+     width=" . check_mysql_string($this->db,$volume) . ", 
+     details=" . check_mysql_string($this->db,$details) . ", 
+     parts=" . check_mysql_string($this->db,$parts) . ",
+     package_type=" . check_mysql_string($this->db,$pac_type) . ",
+     order_status=" . check_mysql_string($this->db,$pac_status) . ", 
+     glasscolour=" . check_mysql_string($this->db,$glasscolour) . ",
+     glassPrint=" . check_mysql_string($this->db,$glassPrint) . ",
+     glassType=" . check_mysql_string($this->db,$glassType) . ",
+     glassScarch=" . check_mysql_string($this->db,$glassScarch) . ",
+     glassPointing=" . check_mysql_string($this->db,$glassPointing) . ",
+     glassFixedPointing=" . check_mysql_string($this->db,$glassFixedPointing) . ",
+     noofprinting=" . check_mysql_string($this->db,$noofprinting) . ",
+     colorofprinting= " . check_mysql_string($this->db,$colorofprinting) . "
+     WHERE orders_package.id=".$id. "") or die(mysqli_error($this->db));
     }
     public function add_package(
         $number,
@@ -141,34 +141,34 @@ class package
                  noofprinting,
                  colorofprinting
                  ) VALUES 
-            (". $this->db->qstr($order_id) . ",
-            " . $this->db->qstr($otype) . ",
-            " . $this->db->qstr($weight) . ",
-            " . $this->db->qstr($volume) . ",
-            " . $this->db->qstr($details) . ",
-            " . $this->db->qstr($details_2) . ",
-            " . $this->db->qstr($parts) . ",
-            " . $this->db->qstr($pac_type) . ",
-            " . $this->db->qstr($pac_status) . ",
-            " . $this->db->qstr($glasscolour) . ",
-            " . $this->db->qstr($glassPrint) . ",
-            " . $this->db->qstr($glassType) . ",
-            " . $this->db->qstr($glassScarch) . ",
-            " . $this->db->qstr($glassPointing) . ",
-            " . $this->db->qstr($glassFixedPointing) . ",
-            " . $this->db->qstr($noofprinting) . ",
-            " . $this->db->qstr($colorofprinting) . "
+            (". check_mysql_string($this->db,$order_id) . ",
+            " . check_mysql_string($this->db,$otype) . ",
+            " . check_mysql_string($this->db,$weight) . ",
+            " . check_mysql_string($this->db,$volume) . ",
+            " . check_mysql_string($this->db,$details) . ",
+            " . check_mysql_string($this->db,$details_2) . ",
+            " . check_mysql_string($this->db,$parts) . ",
+            " . check_mysql_string($this->db,$pac_type) . ",
+            " . check_mysql_string($this->db,$pac_status) . ",
+            " . check_mysql_string($this->db,$glasscolour) . ",
+            " . check_mysql_string($this->db,$glassPrint) . ",
+            " . check_mysql_string($this->db,$glassType) . ",
+            " . check_mysql_string($this->db,$glassScarch) . ",
+            " . check_mysql_string($this->db,$glassPointing) . ",
+            " . check_mysql_string($this->db,$glassFixedPointing) . ",
+            " . check_mysql_string($this->db,$noofprinting) . ",
+            " . check_mysql_string($this->db,$colorofprinting) . "
             )";
             echo $sql;
 
-            $query = mysql_query($sql) or die(mysql_error());
+            $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
-            $id = mysql_insert_id();
+            $id = mysqli_insert_id($this->db);
 
             //$barcode = $account_id.'-'.$order_id.'-'.$id;
 
             $barcode = $order_id . '00' . $id;
-            $update = mysql_query("update orders_package set barcode = '" . $barcode . "' where id = '" . $id . "' ");
+            $update = mysqli_query($this->db, "update orders_package set barcode = '" . $barcode . "' where id = '" . $id . "' ");
         } elseif ($otype == "2") {
             $parent_id = 0;
             for ($i = 1; $i < $parts + 1; $i++) {
@@ -187,7 +187,7 @@ class package
                 }
               
 
-                $query = mysql_query("INSERT INTO orders_package(
+                $query = mysqli_query($this->db, "INSERT INTO orders_package(
 				order_id, 
                 easy_order_id,
 				service_id,
@@ -209,29 +209,29 @@ class package
 				 colorofprinting,
 			     part_order
 				 ) VALUES 
-            (" . $this->db->qstr($order_id) . ",
-            " . $this->db->qstr($easy_order) . ",
-			" . $this->db->qstr($otype) . ",
-			" . $this->db->qstr($weight) . ",
-			" . $this->db->qstr($volume) . ",
-			" . $this->db->qstr($details) . ",
-            " . $this->db->qstr($details_2) . ",
+            (" . check_mysql_string($this->db,$order_id) . ",
+            " . check_mysql_string($this->db,$easy_order) . ",
+			" . check_mysql_string($this->db,$otype) . ",
+			" . check_mysql_string($this->db,$weight) . ",
+			" . check_mysql_string($this->db,$volume) . ",
+			" . check_mysql_string($this->db,$details) . ",
+            " . check_mysql_string($this->db,$details_2) . ",
 			'1',
-			" . $this->db->qstr($pac_type) . ",
-            " . $this->db->qstr($status) . ",
-            " . $this->db->qstr($packoptions) . ",
-			" . $this->db->qstr($glasscolour) . ",
-			" . $this->db->qstr($glassPrint) . ",
-			" . $this->db->qstr($glassType) . ",
-			" . $this->db->qstr($glassScarch) . ",
-			" . $this->db->qstr($glassPointing) . ",
-			" . $this->db->qstr($glassFixedPointing) . ",
-			" . $this->db->qstr($noofprinting) . ",
-			" . $this->db->qstr($colorofprinting) . ",
+			" . check_mysql_string($this->db,$pac_type) . ",
+            " . check_mysql_string($this->db,$status) . ",
+            " . check_mysql_string($this->db,$packoptions) . ",
+			" . check_mysql_string($this->db,$glasscolour) . ",
+			" . check_mysql_string($this->db,$glassPrint) . ",
+			" . check_mysql_string($this->db,$glassType) . ",
+			" . check_mysql_string($this->db,$glassScarch) . ",
+			" . check_mysql_string($this->db,$glassPointing) . ",
+			" . check_mysql_string($this->db,$glassFixedPointing) . ",
+			" . check_mysql_string($this->db,$noofprinting) . ",
+			" . check_mysql_string($this->db,$colorofprinting) . ",
 			'" . ($cpCount) . "'
-			)") or die(mysql_error());
+			)") or die(mysqli_error($this->db));
 
-                $id = mysql_insert_id();
+                $id = mysqli_insert_id($this->db);
 
                 if ($i == 1) {
                     $parent_id = $id;
@@ -241,7 +241,7 @@ class package
 
                 $barcode = $order_id . '00' . $id;
                 $cpCount++;
-                $update = mysql_query("update orders_package set barcode = '" . $barcode . "' , parent_id = '".($i == 1 ? 0 : $parent_id)."'  where id = '" . $id . "' ");
+                $update = mysqli_query($this->db, "update orders_package set barcode = '" . $barcode . "' , parent_id = '".($i == 1 ? 0 : $parent_id)."'  where id = '" . $id . "' ");
             }
         }
 
@@ -255,17 +255,17 @@ class package
 
     public function update_package($order_id, $weight, $volume, $details, $parts, $account_id, $pac_id)
     {
-        $result = mysql_query("SELECT max(id) as id FROM orders_package") or die(mysql_error());
+        $result = mysqli_query($this->db, "SELECT max(id) as id FROM orders_package") or die(mysqli_error($this->db));
 
         if (!$result) {
-            die('Could not query:' . mysql_error());
+            die('Could not query:' . mysqli_error($this->db));
         }
 
-        $id = mysql_fetch_array($result);
+        $id = mysqli_fetch_array($result);
 
         $barcode = $order_id . '00' . $id['id'];
 
-        $query = mysql_query("INSERT INTO orders_package(order_id, weight, volume, details, parts,barcode) VALUES (" . $this->db->qstr($order_id) . "," . $this->db->qstr($weight) . "," . $this->db->qstr($volume) . "," . $this->db->qstr($details) . "," . $this->db->qstr($parts) . "," . $this->db->qstr($barcode) . ")") or die(mysql_error());
+        $query = mysqli_query($this->db, "INSERT INTO orders_package(order_id, weight, volume, details, parts,barcode) VALUES (" . check_mysql_string($this->db,$order_id) . "," . check_mysql_string($this->db,$weight) . "," . check_mysql_string($this->db,$volume) . "," . check_mysql_string($this->db,$details) . "," . check_mysql_string($this->db,$parts) . "," . check_mysql_string($this->db,$barcode) . ")") or die(mysqli_error($this->db));
 
 
         if ($query) {
@@ -278,7 +278,7 @@ class package
 
     public function delete_order_package($order_id)
     {
-        $query = mysql_query("delete from orders_package  where order_id = " . $this->db->qstr($order_id) . " ") or die(mysql_error());
+        $query = mysqli_query($this->db, "delete from orders_package  where order_id = " . check_mysql_string($this->db,$order_id) . " ") or die(mysqli_error($this->db));
 
         if ($query) {
             return true;
@@ -290,7 +290,7 @@ class package
 
     public function delete_package($id)
     {
-        $query = mysql_query("delete from package_type where package_id = '$id'  ") or die(mysql_error());
+        $query = mysqli_query($this->db, "delete from package_type where package_id = '$id'  ") or die(mysqli_error($this->db));
         if ($query) {
             return true;
         } else {
@@ -299,7 +299,7 @@ class package
     }
     public function delete_item($id)
     {
-        $query = mysql_query("delete from orders_package where id = '$id'  ") or die(mysql_error());
+        $query = mysqli_query($this->db, "delete from orders_package where id = '$id'  ") or die(mysqli_error($this->db));
         if ($query) {
             return $query;
         } else {
@@ -309,19 +309,19 @@ class package
 
     public function get_item($id)
     {
-        $query = mysql_query("select *  from orders_package where id = '$id'  ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select *  from orders_package where id = '$id'  ") or die(mysqli_error($this->db));
         if ($query) {
-            return mysql_fetch_array($query, MYSQL_ASSOC);
+            return mysqli_fetch_assoc($query);
         } else {
             return false;
         }
     }
     public function get_packages($id)
     {
-        $query = mysql_query("select * from  package_type where package_id = '$id' ") or die(mysql_error());
+        $query = mysqli_query($this->db, "select * from  package_type where package_id = '$id' ") or die(mysqli_error($this->db));
 
         $pack = array();
-        $pack = mysql_fetch_object($query);
+        $pack = mysqli_fetch_object($query);
 
         return $pack;
     }
@@ -329,7 +329,7 @@ class package
 
     public function edit_package($id, $name, $shortname)
     {
-        $query = mysql_query("update package_type set package_name = " . $this->db->qstr($name) . ", package_short = " . $this->db->qstr($shortname) . " where package_id = " . $this->db->qstr($id) . " ") or die(mysql_error());
+        $query = mysqli_query($this->db, "update package_type set package_name = " . check_mysql_string($this->db,$name) . ", package_short = " . check_mysql_string($this->db,$shortname) . " where package_id = " . check_mysql_string($this->db,$id) . " ") or die(mysqli_error($this->db));
 
         if ($query) {
             return true;
@@ -340,7 +340,7 @@ class package
 
     public function add_pack_type($name, $shortname)
     {
-        $query = mysql_query("insert into package_type ( package_name ,package_short) values(" . $this->db->qstr($name) . ", " . $this->db->qstr($shortname) . ");  ") or die(mysql_error());
+        $query = mysqli_query($this->db, "insert into package_type ( package_name ,package_short) values(" . check_mysql_string($this->db,$name) . ", " . check_mysql_string($this->db,$shortname) . ");  ") or die(mysqli_error($this->db));
 
         if ($query) {
             return true;
