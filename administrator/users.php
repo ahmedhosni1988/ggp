@@ -74,7 +74,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
 
 
                     if ($error_msg == '') {
-                        $sql = $db->make_insert("users", $_POST);
+                        $sql = make_insert("users", $_POST);
                         //echo 'ahmed';
 
                         $ed = $db->make_query($sql);

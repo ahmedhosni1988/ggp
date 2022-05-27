@@ -191,7 +191,7 @@ class work
         $outOrder['finishe_date'] = date('Y-m-d H:i:s');
         $outOrder['added_by'] = $_SESSION['user_id'];
         $outOrder['added_name'] = $_SESSION['name'];
-        $osql =  $this->db->make_insert('out_orders', $outOrder);
+        $osql =  make_insert('out_orders', $outOrder);
 
         mysqli_query($this->db, $osql) or die(mysqli_error($this->db));
 
@@ -975,7 +975,7 @@ class work
 
     public function insert_invoicedetails($array)
     {
-        $sql = $this->db->make_insert("invoicedtl", $array);
+        $sql = make_insert("invoicedtl", $array);
 
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));

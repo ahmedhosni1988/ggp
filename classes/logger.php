@@ -23,7 +23,7 @@ class logger
 
     public function add_new_log($array)
     {
-        $sql = $this->db->make_insert("logs", $array);
+        $sql = make_insert("logs", $array);
 
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
@@ -42,7 +42,7 @@ class logger
         $q = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
         if (mysqli_num_rows($q) > 0) {
-            $result = $this->db->build_array($q);
+            $result = build_array($q);
             return $result;
         } else {
             return false;

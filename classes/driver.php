@@ -201,7 +201,7 @@ class driver
 
         if (mysqli_num_rows($query) > 0) {
             //$row = mysqli_fetch_object($query);
-            $row = $this->db->build_array($query);
+            $row = build_array($query);
             /*
             $q = mysqli_query($this->db,"update orders set driver_id = ".check_mysql_string($this->db,$row->id)." where order_id = ".check_mysql_string($this->db,$order_id)." ") or die (mysqli_error($this->db));
             */
@@ -220,7 +220,7 @@ class driver
 
         if (mysqli_num_rows($query) > 0) {
             //$row = mysqli_fetch_object($query);
-            $row = $this->db->build_array($query);
+            $row = build_array($query);
 
             return $row[0];
         } else {
@@ -238,7 +238,7 @@ class driver
 
         if (mysqli_num_rows($query) > 0) {
             //$row = mysqli_fetch_object($query);
-            $row = $this->db->build_array($query);
+            $row = build_array($query);
 
             return $row[0];
         } else {
@@ -292,7 +292,7 @@ class driver
 
     public function update_driver_order_commission($driver_id, $order_id, $data)
     {
-        $sql = $this->db->make_insert("orders_driver_commission", $data);
+        $sql = make_insert("orders_driver_commission", $data);
         //echo $sql;
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 

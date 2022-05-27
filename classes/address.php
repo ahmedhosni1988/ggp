@@ -24,7 +24,7 @@ class address
 
     public function edit_full_address($post, $id)
     {
-        $sql = $this->db->make_update("addrbook", $post, "id", $id);
+        $sql = make_update("addrbook", $post, "id", $id);
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
@@ -37,7 +37,7 @@ class address
 
     public function add_full_address($post)
     {
-        $sql = $this->db->make_insert("addrbook", $post);
+        $sql = make_insert("addrbook", $post);
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 

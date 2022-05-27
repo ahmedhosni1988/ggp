@@ -3,9 +3,11 @@
 class invoices
 {
     public $db;
+    public $dbclass;
 
     public function __construct($db)
     {
+        $this->dbclass = $db;
         $this->db = $db->get_conn();
     }
 
@@ -190,8 +192,8 @@ class invoices
         }
         //echo " yessssss ";
 
-        $packageList = $this->db->get_table_by_id_all("package_type", "package_id");
-        $statusList = $this->db->get_table_by_id("status", "disporder", "statusname");
+        $packageList = $this->dbclass->get_table_by_id_all("package_type", "package_id");
+        $statusList = $this->dbclass->get_table_by_id("status", "disporder", "statusname");
         $price_list = array();
 
         $q = mysqli_query($this->db, "select * from package_status_price where account_id = 0 ") or die(mysqli_error($this->db));
@@ -371,8 +373,8 @@ class invoices
             break;
         }
     
-        $packageList = $this->db->get_table_by_id_all("package_type", "package_id");
-        $statusList = $this->db->get_table_by_id("status", "disporder", "statusname");
+        $packageList = $this->dbclass->get_table_by_id_all("package_type", "package_id");
+        $statusList = $this->dbclass->get_table_by_id("status", "disporder", "statusname");
         $price_list = array();
         $addtional_services =array();
         $q = mysqli_query($this->db, "select * from package_status_price where account_id = 0  and version_id='$price_version_system_id'") or die(mysqli_error($this->db));
@@ -557,8 +559,8 @@ class invoices
         // / hsht'l fe el 7eta hnaked'
 
 
-        $packageList = $this->db->get_table_by_id_all("package_type", "package_id");
-        $statusList = $this->db->get_table_by_id("status", "disporder", "statusname");
+        $packageList = $this->dbclass->get_table_by_id_all("package_type", "package_id");
+        $statusList = $this->dbclass->get_table_by_id("status", "disporder", "statusname");
         $price_list = array();
         $addtional_services =array();
         // echo "select * from package_status_price where account_id = 0  and version_id='$price_version_system_id'";
@@ -794,7 +796,7 @@ class invoices
 
         $ordupd["invoice_no"] = $invoiceno;
 
-        $sql = $this->db->make_update("orders", $ordupd, "order_id", $order_id);
+        $sql = make_update("orders", $ordupd, "order_id", $order_id);
 
   
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
@@ -825,7 +827,7 @@ class invoices
 
     public function insert_invoice($array)
     {
-        $sql = $this->db->make_insert("invoicehdr", $array);
+        $sql = make_insert("invoicehdr", $array);
 
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
@@ -840,7 +842,7 @@ class invoices
 
     public function insert_invoicedetails($array)
     {
-        $sql = $this->db->make_insert("invoicedtl", $array);
+        $sql = make_insert("invoicedtl", $array);
 
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
@@ -965,13 +967,13 @@ class invoices
         from cashreceipts,account where cashreceipts.clid=account.account_id  and date >= '2013-07-01' and date <= '2013-07-31'
         order by date asc, acctno, ref asc, invoiceno asc") or die(mysqli_error($this->db));
 
-        return $this->db->build_array($query);
+        return build_array($query);
     }
 
 
     public function create_invoice_header($invoice_details)
     {
-        $sql = $this->db->make_insert("invoicehdr", $invoice_details);
+        $sql = make_insert("invoicehdr", $invoice_details);
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
@@ -1036,7 +1038,7 @@ class invoices
 
     public function update_invoice($invoice_id, $array)
     {
-        $sql = $this->db->make_update("invoicehdr", $array, "id", $invoice_id);
+        $sql = make_update("invoicehdr", $array, "id", $invoice_id);
 
         //echo $sql;
 
@@ -1051,7 +1053,7 @@ class invoices
 
     public function insert_cash($array)
     {
-        $sql = $this->db->make_insert("cashreceipts", $array);
+        $sql = make_insert("cashreceipts", $array);
 
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));

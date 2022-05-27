@@ -1,23 +1,20 @@
 <?php
 session_start();
-ini_set('memory_limit', '-1');
-ini_set('max_execution_time', '-1');
-ini_set('max_input_vars', 10000);
-ini_set('post_max_size', '-1');
 
 
-include("../setting.php");
-include("../" . STYLE . "/consoletemp.php");
-include("../" . STYLE . "/worktemp.php");
-include("../".STYLE."/accountingtemp.php");
+include("../../setting.php");
+include("../../" . STYLE . "/consoletemp.php");
+include("../../" . STYLE . "/worktemp.php");
+include("../../".STYLE."/accountingtemp.php");
 
-include("../classes/console.php");
-include("../classes/account.php");
-include("../classes/package.php");
-include("../classes/invoices.php");
-include("../classes/price.php");
-include("../classes/company.php");
+include("../../classes/console.php");
+include("../../classes/account.php");
+include("../../classes/package.php");
+include("../../classes/invoices.php");
+include("../../classes/price.php");
+include("../../classes/company.php");
 
+include("../../classes/payment.php");
 
 $newtemp = new template();
 $account = new account($db);
@@ -25,6 +22,7 @@ $package = new package($db);
 $invoices = new invoices($db);
 $priceClass = new price($db);
 $companyClass = new company($db);
+$paymentClass = new payment($db);
 
 
 if (!empty($_GET["action"])) {
@@ -43,7 +41,7 @@ case 'discount_req':
         if (isset($_POST['invoiceid'])&&isset($_POST['amount'])) {
             $invoiceid=$_POST['invoiceid'];
             $amount=$_POST['amount'];
-            $query=mysqli_query($mycon,"select * from invoicehdr  where id='".$invoiceid."'") or die(mysqli_error($mycon));
+            $query=mysqli_query($mycon, "select * from invoicehdr  where id='".$invoiceid."'") or die(mysqli_error($mycon));
 
             if ($query) {
                 $return = mysqli_fetch_array($query);
@@ -52,26 +50,26 @@ case 'discount_req':
                     if ($return['discount_value'] != 0) {
                         $update = true;
                     }
-                    $query = mysqli_query($mycon,"Update invoicehdr Set discount_value='" . $amount . "' where id='" . $invoiceid . "'") or die(mysqli_error($mycon));
+                    $query = mysqli_query($mycon, "Update invoicehdr Set discount_value='" . $amount . "' where id='" . $invoiceid . "'") or die(mysqli_error($mycon));
                     if ($query) {
                         $date_added = date("Y-m-d H:i:s");
                         if ($update) {
-                            $query = mysqli_query($mycon,"Update  credit_note set user_id='" . $_SESSION['user_id'] . "', credit_value ='" . $amount . "'  ,date_edit='" . $date_added . "', edit_user='" . $_SESSION['user_id'] . "' where invoice_id ='" . $invoiceid . "'  ") or die(mysqli_error($mycon));
+                            $query = mysqli_query($mycon, "Update  credit_note set user_id='" . $_SESSION['user_id'] . "', credit_value ='" . $amount . "'  ,date_edit='" . $date_added . "', edit_user='" . $_SESSION['user_id'] . "' where invoice_id ='" . $invoiceid . "'  ") or die(mysqli_error($mycon));
                             $date = date("Y-m-d");
-                            $query = mysqli_query($mycon,"Update cashreceipts set pymt_amount='" . $amount . "' ,date='" . $date . "' where invoiceno='" . $invoiceid . "' ") or die(mysqli_error($mycon));
+                            $query = mysqli_query($mycon, "Update cashreceipts set pymt_amount='" . $amount . "' ,date='" . $date . "' where invoiceno='" . $invoiceid . "' ") or die(mysqli_error($mycon));
                             if ($query) {
                                 echo "تم تعديل الخصم";
                             } else {
                                 echo "حاول لاحقاً";
                             }
                         } else {
-                            $query = mysqli_query($mycon,"select * from invoicehdr  where id='" . $invoiceid . "'") or die(mysqli_error($mycon));
+                            $query = mysqli_query($mycon, "select * from invoicehdr  where id='" . $invoiceid . "'") or die(mysqli_error($mycon));
                             $clid = mysqli_fetch_array($query)['clid'];
-                            $query = mysqli_query($mycon,"insert into credit_note (user_id,credit_value,account_id,invoice_id,date_added,credit_type) values ('" . $_SESSION['user_id'] . "','" . $amount . "','" . $clid . "','" . $invoiceid . "','" . $date_added . "' , '2' )") or die(mysqli_error($mycon));
+                            $query = mysqli_query($mycon, "insert into credit_note (user_id,credit_value,account_id,invoice_id,date_added,credit_type) values ('" . $_SESSION['user_id'] . "','" . $amount . "','" . $clid . "','" . $invoiceid . "','" . $date_added . "' , '2' )") or die(mysqli_error($mycon));
                             if (mysqli_insert_id($mycon)) {
                                 $credit_note_id = mysqli_insert_id($mycon);
                                 $date = date("Y-m-d");
-                                $query = mysqli_query($mycon,"insert into cashreceipts  (clid,date,invoiceno,user_id,creditnote_id,pymt_amount,system_date) 
+                                $query = mysqli_query($mycon, "insert into cashreceipts  (clid,date,invoiceno,user_id,creditnote_id,pymt_amount,system_date) 
                                     values ('" . $clid . "','" . $date . "','" . $invoiceid . "','" . $_SESSION['user_id'] . "','" . $credit_note_id . "','" . $amount . "' , '".date('Y-m-d H:i:s')."' )") or die(mysqli_error($mycon));
                                 if (mysqli_insert_id($mycon)) {
                                     echo "تم إضافة الخصم";
@@ -89,742 +87,6 @@ case 'discount_req':
     }
 break;
         
-case 'prepare_invoice':
-if (isset($_POST['order_id'])) {
-    $invcount =  0;
-    $wbcount  =  0;
-    $cocount  =  0;
- 
- 
-    // $pac = $package->get_package_id();
-    // $inv_detail = $company->get_option("invoice_");
-    // $price_detail = $company->get_option("price_");
-    // $termlist = $payment->get_payment_term_list();
-    // $taxonfuels = $company->get_taxgrouponfs_list();
-
-
-    // //$vec_ser = $ser->get_addtional_services();
-    // $add_ser = $price->get_add_check_price();
-
-
-
-    $order = 0;
-    $out_order = 0;
-    $query = "";
-
-    if ($_POST['order_id'] != "") {
-        $query = mysqli_query($mycon,"select orders_package.*,account.account_id,account.account_name from orders_package
-    inner join orders on (orders.order_id = orders_package.order_id) 
-    inner join account on (account.account_id = orders.account_id) 
-    where orders_package.invoice_no = 0 and orders_package.order_id = '".$_POST['order_id']."' ") or die(mysqli_error($mycon));
-
-        $order = 1;
-    }
-
-    if ($_POST['outorder_id'] != "") {
-        $query = mysqli_query($mycon,"select orders_package.*,account.account_id,account.account_name from orders_package
-     inner join orders on (orders.order_id = orders_package.order_id) 
-     inner join account on (account.account_id = orders.account_id) 
-     where orders_package.invoice_no = 0 and orders_package.id in (select items from out_orders where id = '".$_POST['outorder_id']."' ) ") or die(mysqli_error($mycon));
-        $out_order = 1;
-    }
-
-
-    if ($query == "" || mysqli_num_rows($query) < 1) {
-        echo "لا توجد قطع";
-        break;
-    }
-
-
-
-    ///shoud check if invoiced before or not
-    $packageList = $package->get_package_id();
-    $statusList = $db->get_table_by_id("status", "disporder", "statusname");
-    $price_list = array();
-    $q = mysqli_query($mycon,"select * from package_status_price where account_id = 0 ") or die(mysqli_error($mycon));
-
-    while ($r = mysqli_fetch_array($q)) {
-        $price_list[$r['package_id']][$r['status_id']] = $r['fee'];
-    }
-
-    //var_dump($price_list);
-    while ($row = mysqli_fetch_array($query)) {
-
-//var_dump($row);
-        ///cala
-
-        $meter = $row['length'] * $row['width'] / 10000;
-
-
-        // echo $row['order_status']."<br>";
-
-        $m = explode(',', $row['order_status']);
-        //var_dump($m);
-        mysqli_query($mycon,"delete from orders_price where order_id = '".$row['order_id']."' ");
-        for ($j =0 ;$j<count($m);$j++) {
-            if ($m[$j] != "6" && $m[$j] != "7") {
-                $price = $price_list[$row['package_type']][$m[$j]];
-        
-                $pactotal = $price * $meter;
-
-                mysqli_query($mycon,"insert into orders_price (order_id,package_id,price,type,name,ratio) 
-        values ('".$row['order_id']."','".$row['id']."','".$pactotal."','".$m[$j]."','".$statusList[$m[$j]]."','".$meter."');") or die(mysqli_error($mycon));
-            }
-        }
-    }
-
-
-    if ($_POST['order_id'] != "") {
-        $query = mysqli_query($mycon,"select orders_package.*,account.account_id,account.account_name from orders_package
-    inner join orders on (orders.order_id = orders_package.order_id) 
-    inner join account on (account.account_id = orders.account_id) 
-    where orders_package.invoice_no = 0 and orders_package.order_id = '".$_POST['order_id']."' ") or die(mysqli_error($mycon));
-
-        $order = 1;
-    }
-
-    if ($_POST['outorder_id'] != "") {
-        $query = mysqli_query($mycon,"select orders_package.*,account.account_id,account.account_name from orders_package
-     inner join orders on (orders.order_id = orders_package.order_id) 
-     inner join account on (account.account_id = orders.account_id) 
-     where orders_package.invoice_no = 0 and orders_package.id in (select items from out_orders where id = '".$_POST['outorder_id']."' ) ") or die(mysqli_error($mycon));
-        $out_order = 1;
-    }
-
-    $row = mysqli_fetch_array($query);
-    $invhdr = array();
-    $invhdr["clid"]          = $row["account_id"];
-    $invhdr["acctno"]        = $row["account_name"];
-    //tracer $c .= " ".$customer["acctno"]." ";
-
-    $invhdr["date"]          = $_POST['invoice_date'];
-    // $invhdr["terms"]         = $termlist[$customer["account_terms"]]['pt_name'];
-    // $invhdr["duedate"]       = $duedate;
-    // $invhdr["billingpd"]     = $_POST['order_from_Date'].$_POST['order_to_Date'];
-    // //* SQL - Save the Invoice Header Record, to obtain an invoice number.
-    $invoiceno = $invoices->insert_invoice($invhdr);
-        
-    $invcount = $invcount + 1;
-
-
-    if ($_POST['order_id'] != "") {
-        $query = mysqli_query($mycon,"select orders_package.*,account.account_id,account.account_name from orders_package
-            inner join orders on (orders.order_id = orders_package.order_id) 
-            inner join account on (account.account_id = orders.account_id) 
-            where orders_package.invoice_no = 0 and orders_package.order_id = '".$_POST['order_id']."' ") or die(mysqli_error($mycon));
-        
-        $order = 1;
-    }
-        
-    if ($_POST['outorder_id'] != "") {
-        $query = mysqli_query($mycon,"select orders_package.*,account.account_id,account.account_name from orders_package
-             inner join orders on (orders.order_id = orders_package.order_id) 
-             inner join account on (account.account_id = orders.account_id) 
-             where orders_package.invoice_no = 0 and orders_package.id in (select items from out_orders where id = '".$_POST['outorder_id']."' ) ") or die(mysqli_error($mycon));
-        $out_order = 1;
-    }
-
-    $lineno = 0;
-    while ($nrow = mysqli_fetch_array($query)) {
-        $order_inv_prices = $priceClass->get_inv_order_prices($nrow["id"]);
-
-        $services_charges = setup_serviceprices($order_inv_prices, $add_ser, $nrow);
-
-        $detailrec = array();
-        $detailrec["clid"]          = $nrow["account_id"];
-        $detailrec["acctno"]        = $nrow["account_name"];
-        $detailrec["invoiceno"]     = $invoiceno;
-        $detailrec["waybill"]       = $nrow["id"];
-        $detailrec["waybill_ref"]   = $nrow["chargecode"];
-        $detailrec["item"]          = $nrow["order_id"].'-'.$nrow['part_order'];
-   
- 
-   
-        for ($sc = 0; $sc < count($services_charges); $sc++) {
-            $detailrec["lineno"]        = $lineno;
-        
-            //  $txcalcs = tax_fs_calc($customer["account_taxgroup"],$fsrate,$services_charges[$sc]["chg"],$services_charges[$sc]["typ"]);
-            $detailrec["amount"]        = sprintf("%01.2f", round($services_charges[$sc]["chg"], 2));
-        
-
-            $detailrec["chgtype"]       = $services_charges[$sc]["typ"];
-        
-  
-            $detailrec["descn"] = $services_charges[$sc]["des"];
-
-            //* SQL - Save the Invoice Detail Record.
-            $invoicedet = $invoices->insert_invoicedetails($detailrec);
-        
-
-            $lineno = $lineno + 1;
-            $subtotal = $subtotal + $detailrec["amount"];
-        
-            mysqli_query($mycon,"update orders_package set invoice_no = '".$invoiceno."' where id = '".$nrow['id']."' ");
-        }
-        $wbcount++;
-
-        // var_dump($services_charges);
-    }
-
-    $invhdr["id"]          = $invoiceno;
-    $invhdr["subtotal"]    = $subtotal;
-
-
-    //$invhdr["prepaid"]     = 0;
-    $invhdr["printed"]     = "N";
-    $invhdr["delivered"]   = "N";
-    $invhdr["posted"]      = "N";
-    $invhdr["paid"]        = "N";
-    $invhdr["source"]      = "W";
-    $invhdr["message"]     = $c_setting["co_invoice_message"];
-    $invoices->update_invoice($invoiceno, $invhdr);
-
-
-    //client//
-    // if($_POST['auto_account_name'] != '' ){
-    // 	$acc_id = $account->get_account_id_byname($_POST['auto_account_name']);
-    
-    // 	$where_o .= " and account.account_id = '".$acc_id."' ";
-    // 	$where_c .= " and contracts.clid = '".$acc_id."' ";
-    // }else{
-    
-    // if ($_POST["client"] != "*" ){
-    // $where_o .= " and account.account_id = '".$_POST["client"]."' ";
-    // $where_c .= " and contracts.clid = '".$_POST["client"]."' ";
-    // }else if($_POST['account_acctname'] != ''){
-    // 		$where_o .= " and account.account_id = '".$_POST['account_acctname']."' ";
-    // $where_c .= " and contracts.clid = '".$_POST['account_acctname']."' ";
-    // }
-
-    // //echo $where_o;
-    // }
-
-    //billing code//
-    // if (isset($_POST["billingfreq"]) && $_POST["billingfreq"] != "*" ){
-    // $where_o .= " and account.account_billingfreq = '".$_POST["billingfreq"]."' ";
-    // $where_c .= " and contracts.billing_freq = '".$_POST["billingfreq"]."' ";
-    // }
-
-    //billing frequency
-    // if (isset($_POST["billingcode"]) && $_POST["billingcode"] != '*'){
-    // $where_o .= " and account.billing_code ='".$_POST["billingcode"]."' ";
-    // //$where_c .= " and contracts.account_billingfreq ='".$_POST["billingcode"]."'";
-    // }
-
-    //echo $where_o.$where_c;
-
-    // $customerlist = array();           // Clear these, they were built...
-    // $clidlist     = array();           // above with all customers.
-    // //   if ($wherebf  and  $wherebc)
-    // 	//    $wherebf_bc = " and ".$wherebf." and ".$wherebc;
-    // 	//   else
-    // 		//    $wherebf_bc = " and ".$wherebf.$wherebc;
-
-
-    // $ri = mysqli_query($mycon,"select account.account_id,
-    // 		account.account_name,
-    // 		account.account_company
-    // 		from    account
-    // 		where   (account.account_company != '***Deleted***') and (account.status = '1' || account.status = '6' )  ".$where_o." order by account.account_name") or die(mysqli_error($mycon));
-
-    // 		$custcount_retreived = mysqli_num_rows($ri);
-    // 		$real_custcount = 0;
-    // 		for ($n = 0; $n < $custcount_retreived; $n++) {
-    // 		$customers = mysqli_fetch_array($ri);
-    // 		$customers["account_name"] = strtoupper($customers["account_name"]);
-    // 		$customers["account_company"] = ucwords(strtolower(substr($customers["account_company"],0,30)));
-    // 				//* since we are pulling from client & contract tables, we may get the same acctno twice, if looking for a specific billing_freq.
-    
-    // if ($customers["account_name"] != $lastacctno)  {
-    // $customerlist[] = $customers["account_name"]." | ".$customers["account_company"];
-    // $clidlist[]     = $customers["account_id"];
-    // $lastacctno     = $customers["account_name"];
-    // $real_custcount++;
-    // }
-    // }
-    // mysqli_free_result($ri);
-    // $custcount = $real_custcount;  //without the dups.
-
-
-
-    //	echo "ahmed".$custcount;
-              
-
-
-
-
-
-    //********************************************
-    //*loop thru the whole client list array.    *
-    //********************************************
-    //for ($n = 0; $n < $custcount; $n++) {
-    //*Select (in english), all the waybills who,
-    //* clid = client id in the list of clients,
-    //* status is Complete,
-    //* have not been invoiced,
-    //* orderdate is within the daterange requested.
-    //* Note: we WILL pick zero-priced waybills, they should be shown on invoice....BUT....
-    //* NOT BLANK PRICED WAYBILLS.
-    //skip contract orders(this can cause a zero value invoice) also may as well include messages, even tho it cant be status=2*complete*
-
-
-
-    //******TESTING*******(DO NOT REMOVE THIS CODE - IT IS CONDITIONAL)***********
-
-
-
-    $where = "";
-    ///date///
-    $selectdate="";
-    if ($_POST['searchdate'] == "1") {
-        $selectdate = "order_date";
-    }
-    if ($_POST['searchdate'] == "2") {
-        $selectdate = "actual_delivery_time";
-    }
-    
-    
-    if (is_date($_POST['order_from_Date'])) {
-        $where .= " and orders.".$selectdate." >= '".$_POST['order_from_Date']." 00:00:00'";
-        //$where_c .= " and account.account_billingfreq ='".$billingfreq."'";
-    }
-    
-    if (is_date($_POST['order_to_Date'])) {
-        $where .= " and orders.".$selectdate." <= '".$_POST['order_to_Date']." 23:59:59'";
-    }
-    
-    
-    $where .= " and  service_id>'0' 
-			 and  (orders.order_status=2)
-              and  (orders.invoiceno<1)
-			  ";
-    
-    //*Good-to-go: add this in Select, if option set.
-    if ($c_setting["co_invoicing_goodtogo"] == "Y") {
-        $where .= " and (invoice_goodtogo = 'Y')";
-    }
-
-    
-    //echo $where;
-    //**********************************************
-    //* Get Customer record for this Invoice.      *
-    //**********************************************
-
-    //$clid = $clidlist[$n];
-    
-    //echo "select * from account where account_id = '$clid' ";
-    //$ri = mysqli_query($mycon,"select * from account where account_id = '$clid' ") or die(mysqli_error($mycon)) ;
-    
-    //$customer = mysqli_fetch_array($ri);
-    
-    //if ($customer["account_taxgroup"] == 0)  $customer["account_taxgroup"] = 1;
-
-
-    //* Orders for this customer
-    $ordercount = 0;
-    //$where = " (account_id='$clid') ".$where;
-    
-    if (isset($_POST['orderbilling'])) {
-        //echo "select * from orders where $where order by order_id ";
-        $or = mysqli_query($mycon,"select * from orders where $where order by order_id ") or die(mysqli_error($mycon)."select * from orders where $where order by order_id ") ;
-        $ordercount = mysqli_num_rows($or);
-        //echo $ordercount;
-    }
-
-
-
-
-    //*******************************************************************************************
-    //* First, Avoid Nickel&Dime invoices...                                                    *
-    //  run thru the order records,  read & tally values, see if we want to skip this customer  *
-    //*******************************************************************************************
-    //	echo $oldestdate.'-'.$wbdays_sec.'-'.date("Y-m-d",$today_fmt);
-    for ($i = 0; $i < $ordercount; $i++) {
-        //echo $ordercount;
-        $order = mysqli_fetch_array($or);
-        //print_r($order["order_id"]);
-        //* Pick Which Price to use
-        $order_inv_prices = $price->get_inv_order_prices($order["order_id"]);
-     
-        $piecestype = "";
-        if ($order['packagetype'] != '0') {
-            $piecestype = $pac[$order['packagetype']]['package_name'];
-        }
-         
-        //echo $order["order_id"].'-'.count($order_inv_prices)."<br>";
-        // var_dump($order_inv_prices);
-     
-        $services_charges = setup_serviceprices($order_inv_prices, $add_ser, $vec_ser, $order['has_skid'], $order);
-        //print_r($services_charges);
-        
-     
-        //     $ovr_p = $price->get_addprice_type("total",$order["order_id"]);
-        //var_dump($ovr_p);
-        //	$ovrdprice =  trim($ovr_p[0]['override']);
-        //echo $ovrdprice;
-        
-        if ($ovrdprice != "") {
-            $orderprice = $ovrdprice;
-        } else {
-            $orderprice = $componentprices;
-        }
-
-        //echo $componentprices;
-        //* get the appropriate date from the order, format it & save the Oldest.
-        if ($searchdate == 1) {
-            $orderdate = $order["order_date"];
-        } else {
-            $orderdate = $order["actual_delivery_time"];
-        }
-        $yy = substr($orderdate, 0, 4);                         // tracers      $lastcust=$order["from_name"];
-        $mm = substr($orderdate, 5, 2);                         //              $lastordr=$order["id"];
-        $dd = substr($orderdate, 8, 2);                         //              $lastordt=$orderdate;
-        $orderdate_fmt = mktime(0, 0, 0, $mm, $dd, $yy);
-
-        //*F.S.Rate
-        //* Get the Fuel Surcharge Rate (many vaiables - needed in multiple places - that's why it's in a function).
-        //* it's expecting data in $row, $client... fill up the fields it needs.
-        $row["taxgroup"]     = $customer["account_taxgroup"];
-        $row["calc_vehicle"] = $order["transport_id"];
-        $row["fs_ovrd"]      = $customer["fs_ovrd"]; //*Note: in status.php order & client table read is a join, goes in $row
-        //	get_fsrate();  //puts it in $fsrate
-
-        if ($orderdate_fmt < $oldestdate) {
-            $oldestdate = $orderdate_fmt;
-        }
-        $fsrate =  $price->get_fuelsurcharge($order['order_id'])->ratio;
-        if ($customer["fs_ovrd"] != '') {
-            $fsrate = $customer["fs_ovrd"];
-        }
-        //var_dump($services_charges);
-        
-        for ($s=0;$s<count($services_charges);$s++) {
-            $txcalcs = tax_fs_calc($customer['account_taxgroup'], $fsrate, $services_charges[$s]["chg"], $services_charges[$s]["typ"]);
-            $itotal = $itotal + $orderprice +
-            $txcalcs[0] + $txcalcs[1] + $txcalcs[2] + $txcalcs[3] + $txcalcs[4]+ $txcalcs[5];
-        }
-        
-        //echo "-".$itotal."-";
-    }
-
-    $traceordercount = $ordercount;  //++++++++++
-
-    //* check for, either nickle&dime ordertallies  -or-  all were InComplete=> completed orders,but-no quoted prices or overrides.
-    //* either kill this invoice, or go get the waybill records again.
-    //if (($itotal < $_POST['skipvalue'] and $oldestdate+$wbdays_sec >= $today_fmt)  or  ($itotal == 0))
-    
-    if (($itotal < $_POST['skipvalue'] and $oldestdate+$wbdays_sec >= $today_fmt)  or  ($itotal == 0)) {
-        $ordercount=0;
-    } else {
-        $or = mysqli_query($mycon,"select * from orders where $where order by order_id ");
-    }
-    //*** We have non-nickel&dime orders to bill *** Read them Again ***
-    //echo "count".$ordercount;
-
-    //**************************************************************
-    //* This is where we loop thru the waybills & create an invoice. (It goes for about next 5 pages)
-    //**************************************************************
-    if ($ordercount > 0  or  $contractcount > 0) {
-        //echo "ahmed";
-        //tracer $c .= $clidlist[$n];
-
-        //* Got some Orders AND/OR Contracts to make an invoice.
-
-        //* get terms code+days & check for client override, then lookup to get days.
-        $termscode = $termlist[$customer["account_terms"]]['pt_name'];
-        $termsdays = $termlist[$customer["account_terms"]]['pt_due'];
-        //*verify, in case the termscode for this customer has been removed from the
-        // control table, revert to the 1st entry.
-        if (trim($termscode) == "") {
-            $termscode = $termlist[1]['pt_name'];
-            $termsdays = $termlist[1]['pt_due'];
-        }
-        //* calc duedate
-        $yr = substr($_POST['invoice_date'], 0, 4);
-        $mo = substr($_POST['invoice_date'], 5, 2);
-        $dy = substr($_POST['invoice_date'], 8, 2);
-        $invd = mktime(0, 0, 0, $mo, $dy, $yr);
-        $dd   = $invd + $termsdays*24*60*60;
-        $duedate =  strftime("%Y-%m-%d", $dd);
-        mysqli_free_result($ri);
-        //* order tally buckets for hdr: f.s. + taxes.
-        $hdrtotals = array();
-        $subtotal = 0;
-        //* then, we need an invoice number, so write header, to get the id=invoiceno.
-        $invhdr = array();
-        $invhdr["clid"]          = $customer["account_id"];
-        $invhdr["acctno"]        = $customer["account_name"];
-        //tracer $c .= " ".$customer["acctno"]." ";
-
-        $invhdr["date"]          = $_POST['invoice_date'];
-        $invhdr["terms"]         = $termlist[$customer["account_terms"]]['pt_name'];
-        $invhdr["duedate"]       = $duedate;
-        $invhdr["billingpd"]     = $_POST['order_from_Date'].$_POST['order_to_Date'];
-        //* SQL - Save the Invoice Header Record, to obtain an invoice number.
-        $invoiceno = $invoices->insert_invoice($invhdr);
-        
-        $invcount = $invcount + 1;
-        //tracer $c .= $invoiceno."<br>";
-        //*********************************************************
-        //* Loop thru the selected orders for this customer &     *
-        //* create the InvoiceDetail records.                     *
-        //*********************************************************
-        
-        $lineno = 1;
-        for ($i = 0; $i < $ordercount; $i++) {
-            $order = mysqli_fetch_array($or);
-            //* Pick Which Price to use
-            $notify->remove_order_notify("new_order", $order["order_id"]);
-            $notify->remove_order_notify("updated_order", $order["order_id"]);
-            
-            $order_inv_prices = $price->get_inv_order_prices($order["order_id"]);
-
-            $piecestype = "";
-            if ($order['packagetype'] != '0') {
-                $piecestype = $pac[$order['packagetype']]['package_name'];
-            }
-
-            $services_charges = setup_serviceprices($order_inv_prices, $add_ser, $vec_ser, $order['has_skid'], $order);
-            
-            
-            $ovrdprice =  trim($order["price"]);
-            
-            if ($ovrdprice != "") {
-                $orderprice = $ovrdprice;
-            } else {
-                $orderprice = $componentprices;
-            }
-            
-            //* First, do we skip this one
-            //*** This is all about distiguishing between zero & blank overrideprice with no calculated price.
-            //    Zero means a zeroprice order - blank means InComplete.
-            $incompletewb = "N";
-            if ($order["price"] == "" || $order["price"] == 0) {
-                $incompletewb = "Y";
-            }
-
-            //echo $incompletewb;
-            
-            if ($incompletewb == "N") {
-                //*F.S.Rate
-                //* Get the Fuel Surcharge Rate (many vaiables - needed in multiple places - that's why it's in a function).
-                //* it's expecting data in $row, $client... fill up the fields it needs.
-                $row["taxgroup"]     = $customer["account_taxgroup"];
-                $row["calc_vehicle"] = $order["transport_id"];
-                $row["fs_ovrd"]      = $customer["fs_ovrd"]; //*Note: in status.php order & client table read is a join, goes in $row
-            
-                
-                $fsrate =  $price->get_fuelsurcharge($order['order_id'])->ratio;
-                if ($customer["fs_ovrd"] != '') {
-                    $fsrate = $customer["fs_ovrd"];
-                }
-
-                //	echo $fsrate;
-                
-                //******************************************************************
-                //* do lineitems, per order/waybill, then update header with tallys.
-                //******************************************************************
-                //* do a lineitem for the "Service-price" on the waybill.
-                //*******************************************************
-                $detailrec = array();
-                $detailrec["clid"]          = $customer["account_id"];
-                $detailrec["acctno"]        = $customer["account_name"];
-                $detailrec["invoiceno"]     = $invoiceno;
-                $detailrec["waybill"]       = $order["order_id"];
-                $detailrec["waybill_ref"]   = $order["chargecode"];
-                $detailrec["item"]          = $order["order_id"];
-                $x = trim($order["manual_wb"]);
-                if ($x != "") {
-                    $detailrec["item"] = $x."�".$detailrec["item"];
-                }
-
-                if ($searchdate == 1) {
-                    $deldescn  = substr($order["order_date"], 0, 10);
-                } else {
-                    $deldescn  = substr($order["actual_delivery_time"], 0, 10);
-                }
-
-                for ($sc = 0; $sc < count($services_charges); $sc++) {
-                    $detailrec["lineno"]        = $lineno;
-                    
-                    $txcalcs = tax_fs_calc($customer["account_taxgroup"], $fsrate, $services_charges[$sc]["chg"], $services_charges[$sc]["typ"]);
-                    $detailrec["amount"]        = sprintf("%01.2f", round($services_charges[$sc]["chg"], 2));
-                    
-                    $detailrec["taxgroup"]      = $customer["account_taxgroup"];
-                    $detailrec["fsamount"]      = $txcalcs[0];
-                    $detailrec["fsrate"]        = $txcalcs[6];
-                    $detailrec["tax1amount"]    = $txcalcs[1];
-                    $detailrec["tax2amount"]    = $txcalcs[2];
-                    $detailrec["chgtype"]       = $services_charges[$sc]["typ"];
-                    
-                    if ($services_charges[$sc]["svc"] == "del") {
-                        $detailrec["descn"] = $services_charges[$sc]["des"];
-                    } else {
-                        $detailrec["descn"] = $services_charges[$sc]["des"];
-                    }
-
-                    //* SQL - Save the Invoice Detail Record.
-                    $invoicedet = $invoices->insert_invoicedetails($detailrec);
-                    
-                    $lineno = $lineno + 1;
-                    $subtotal = $subtotal + $detailrec["amount"];
-                    
-                    for ($j = 0; $j < 3; $j++) {
-                        $hdrtotals[$j] = $hdrtotals[$j] + $txcalcs[$j];
-                    }
-                }
-                $wbcount++;
-        
-            
-                //*Update the order with the Invoice.No. & the Fuel Surcharge settings.
-                $ordupd = array();
-                
-                $ordupd["invoiceno"] = $invoiceno;
-                //$ordupd["fs_rate"]       = sprintf("%01.4f",$grptaxfsrate[$customer["taxgroup"]]*100);
-                //if (trim($customer["fs_ovrd"]) != "")
-                // $ordupd["fs_rate"]  =  $customer["fs_ovrd"];
-                $ordupd["fs_rate"]       =  $fsrate;
-                $ordupd["fs_on_service"] = $taxonfuels[$customer["taxgroup"]]['taxfsonwb'];
-                $ordupd["fs_on_wait"]    = $taxonfuels[$customer["taxgroup"]]['taxfsonwt'];
-                $ordupd["fs_on_xtra"]    = $taxonfuels[$customer["taxgroup"]]['taxfsonot'];
-                $orders->update_orders($ordupd, $order["order_id"]);
-            } //*do we want this one
-        } //* for orders loop
-        mysqli_free_result($or);
-
-        //*************************************************
-        //* Create lineitems for the Contracts.           *
-        //*************************************************
-        for ($i = 0; $i < $contractcount; $i++) {
-            $contract = mysqli_fetch_array($rc);
-            $cocount++;
-            //.......... Do this again, in case there were no orders, or the last order was a different taxgroup or had a vehicle adjustment.
-            //*F.S.Rate
-            //* Get the Fuel Surcharge Rate (many vaiables - needed in multiple places - that's why it's in a function).
-            //* it's expecting data in $row, $client... fill up the fields it needs.
-            $row["taxgroup"]     = $customer["taxgroup"];
-            $row["calc_vehicle"] = $order["calc_vehicle"];
-            $row["fs_ovrd"]      = $customer["fs_ovrd"]; //*Note: in status.php order & client table read is a join, goes in $row
-            //get_fsrate();  //puts it in $fsrate
-            
-            $detailrec["clid"]          = $customer["id"];
-            $detailrec["acctno"]        = $customer["acctno"];
-            $detailrec["invoiceno"]     = $invoiceno;
-            $detailrec["lineno"]  = $lineno;
-            $detailrec["chgtype"] = "C";
-            $detailrec["waybill"] = "";
-            $detailrec["waybill_ref"] = "";
-            $detailrec["item"]    = "Contract";
-            if ($contract["invnote"] != "") {
-                $contract["invnote"] = ": ".$contract["invnote"];
-            }
-            $detailrec["descn"]   = $contract["contractno"].$contract["invnote"];
-            $detailrec["amount"]  = sprintf("%01.2f", round($contract["billing_amount"], 2));
-            $chgtype = "S";
-            if ($contract["fsovrd"] != "") {
-                $cont_fsrate = $contract["fsovrd"];
-            } else {
-                $cont_fsrate = $fsrate;
-            }
-            $txcalcs = tax_fs_calc($customer["taxgroup"], $cont_fsrate, $detailrec["amount"], $chgtype);
-            $detailrec["taxgroup"]      = $customer["taxgroup"];
-            $detailrec["fsamount"]      = $txcalcs[0];
-            $detailrec["fsrate"]        = $cont_fsrate;
-            $detailrec["tax1amount"]    = $txcalcs[1];
-            $detailrec["tax2amount"]    = $txcalcs[2];
-            $detailrec["tax3amount"]    = $txcalcs[3];
-            $detailrec["tax4amount"]    = $txcalcs[4];
-            $detailrec["tax5amount"]    = $txcalcs[5];
-            //* SQL - Save the Invoice Detail Record.
-            
-            $s = make_insert("invoicedtl", $detailrec);
-            mysqli_query($mycon,$s);
-            //update("invoicedtl",$detailrec);
-            $lineno = $lineno + 1;
-            $subtotal = $subtotal + $detailrec["amount"];
-            for ($j = 0; $j < 6; $j++) {
-                $hdrtotals[$j] = $hdrtotals[$j] + $txcalcs[$j];
-            }
-        } //* for contracts loop
-        if ($contractcount >0) {
-            mysqli_free_result($rc);
-        }
-
-        //****************************************************************
-        //* If, we did any contracts...                                  *
-        //* Mark all uninvoiced "CO" orders as belonging to this invoice *
-        //****************************************************************
-        if ($contractcount > 0) {
-            $sql = "select order_id from orders where account_id=$clid and order_status=2 and service_id='0' and invoiceno='' " ;
-            $or = mysqli_query($mycon,$sql) or die(mysqli_error($mycon));
-            $ordercount = mysqli_num_rows($or);
-            for ($i = 0; $i < $ordercount; $i++) {
-                $order = mysqli_fetch_array($or);
-                $ordupd = array();
-                $ordupd["order_id"]        = $order["order_id"];
-                $ordupd["invoiceno"] = $invoiceno;
-                $db->make_update("orders", $ordupd, "order_id", $order['order_id']);
-                //update("orders",$ordupd);
-            }
-        }
-
-        $taxgroup_det = $company->get_tax_group_id($customer["account_taxgroup"]);
-        //	var_dump($taxgroup_det);
-        //**************************************************************
-        //* now, update the header after writing the detail records.   *
-        //**************************************************************
-        $invhdr["id"]          = $invoiceno;
-        $invhdr["subtotal"]    = $subtotal;
-        $invhdr["tax1type"]    = $company->get_tax_id($taxgroup_det->taxgroup_tax1)->tax_name;
-        $invhdr["tax2type"]    = $company->get_tax_id($taxgroup_det->taxgroup_tax2)->tax_name;
-        $invhdr["fsapply"]     = "Y";
-        $invhdr["fs_rate_txgrp1"] = $company->get_tax_id($taxgroup_det->taxgroup_tax1)->tax_rate;
-        $invhdr["fs_rate_txgrp2"] = $company->get_tax_id($taxgroup_det->taxgroup_tax2)->tax_rate;
-        
-        //**See notes in get_fsrate function in order_calc_functions.php... re:fs application priorities.
-        // If Client ovrd is set, keep that as the rate for all tax groups.
-        // These will be used in case any lineitems are added later.
-        // Any lines that have a Vehicle specific fs rate, will show on the detail record.
-
-        if (trim($customer["fs_ovrd"] != "")) {
-            $invhdr["fs_rate_txgrp1"] = sprintf("%01.2f", round(($customer["fs_ovrd"]/100), 2));
-            $invhdr["fs_rate_txgrp2"] = sprintf("%01.2f", round(($customer["fs_ovrd"]/100), 2));
-        }
-        $invhdr["fsamount"]    = $hdrtotals[0];
-        $invhdr["tax1amount"]  = $hdrtotals[1];
-        $invhdr["tax2amount"]  = $hdrtotals[2];
-        //$invhdr["prepaid"]     = 0;
-        $invhdr["printed"]     = "N";
-        $invhdr["delivered"]   = "N";
-        $invhdr["posted"]      = "N";
-        $invhdr["paid"]        = "N";
-        $invhdr["source"]      = "W";
-        $invhdr["message"]     = $c_setting["co_invoice_message"];
-        $invoices->update_invoice($invoiceno, $invhdr);
-        //	update("invoicehdr",$invhdr);
-    } //* if orders-or-contracts
-
-    //} //* for customers (loop thru each clid in the array)
-
-    $resultmessage                         = "$invcount invoices prepared,<br>";
-    if ($orderbilling) {
-        $resultmessage .= "from $wbcount orders.<br>";
-    }       //* wbcount not always the same as ordercount, as some orders may be "incomplete".
-    if ($contractbilling) {
-        $resultmessage .= "from $cocount contracts.<br>";
-    }
-
-
-
-    echo $resultmessage;
-//echo "Invoice Created : ".$invcount."<br> From Orders : ".$wbcount." <br> From Contract : ".$cocount;
-} else {
-    $acc = $account->get_all_accounts(1);
-
-    $page_title = $lang[112];
-    $newtemp->load_template('prepare_invoice', 4);
-}
-break;
 
 case 'revise_account':
     {
@@ -942,50 +204,6 @@ case 'revise_account':
     }
 break;
 
-case 'process_invoice':
-if (!empty($_GET["type"])) {
-    $type = $_GET["type"];
-} else {
-    $type = "";
-}
-if ($_GET['reviewed']) {
-    $reviewed=$_GET['reviewed'];
-} else {
-    $reviewed=0;
-}
-if ($type == "get_data") {
-    if (isset($_GET['pageno'])) {
-        $pageno = $_GET['pageno'];
-    } else {
-        $pageno = 1;
-    }
-    //var_dump($pageno);
-    $no_of_records_per_page = 50;
-    $offset = ($pageno-1) * $no_of_records_per_page;
-
-
-    if ($reviewed==1) {
-        $proce = $invoices->get_process_invoices($offset, $no_of_records_per_page, $_SESSION['billing_code'], 1);
-    } else {
-        $proce = $invoices->get_process_invoices($offset, $no_of_records_per_page, $_SESSION['billing_code']);
-    }
-
-    $total_pages_sql = "select count(*) as num from invoicehdr 
-	left join orders on (`orders`.`order_id` = `invoicehdr`.`order_id`) 
-	inner join account on (invoicehdr.clid = account.account_id) 
-	where invoicehdr.paid <> 'Y' and invoicehdr.printed <> 'Y' and invoicehdr.delivered <> 'Y' and invoicehdr.reviewed=$reviewed";
-    $total_rows = mysqli_query($mycon,$total_pages_sql) or die(mysqli_error($mycon));
-    $res = mysqli_fetch_array($total_rows);
-    $total_pages = ceil($res['num'] / $no_of_records_per_page);
-
-    $tab = "process_invoice" ;
-    $newtemp->load_template('process_invoice_data', 4);
-} else {
-    $page_title = $lang[113];
-    $newtemp->load_template('process_invoice', 4);
-}
-
-break;
 
 case 'show_invoice':
     
@@ -1042,10 +260,10 @@ case 'cash':
             $oldCash= $db->get_table($sql);
                 
             if ($oldCash[0]['pymt_amount'] > $_POST['pymt_amount']) {
-                mysqli_query($mycon,'UPDATE `account` SET `credit_hold` = credit_hold-'.($oldCash[0]['pymt_amount']-$_POST['pymt_amount']).' WHERE `account_id` ='.$_POST['clid']);
+                mysqli_query($mycon, 'UPDATE `account` SET `credit_hold` = credit_hold-'.($oldCash[0]['pymt_amount']-$_POST['pymt_amount']).' WHERE `account_id` ='.$_POST['clid']);
             // echo 'الجديد اصغر';
             } elseif ($oldCash[0]['pymt_amount'] < $_POST['pymt_amount']) {
-                mysqli_query($mycon,'UPDATE `account` SET `credit_hold` = credit_hold+'.($_POST['pymt_amount']-$oldCash[0]['pymt_amount']).' WHERE `account_id` ='.$_POST['clid']);
+                mysqli_query($mycon, 'UPDATE `account` SET `credit_hold` = credit_hold+'.($_POST['pymt_amount']-$oldCash[0]['pymt_amount']).' WHERE `account_id` ='.$_POST['clid']);
                 // echo 'الجديد اكبر';
             }
             unset($data['cash_id']);
@@ -1054,7 +272,7 @@ case 'cash':
             // var_dump($data);
             $s=$db->make_update("cashreceipts", $data, 'id', $_POST['cash_id']);
             //  echo$s;
-            mysqli_query($mycon,$s);
+            mysqli_query($mycon, $s);
             echo 'تمت التعديل بنجاح';
         } else {
             $newtemp->load_template('cash', 5);
@@ -1078,10 +296,10 @@ case 'cashreceipts':
             $_POST['date'] = date('Y-m-d H:i:s');
             $sql = make_insert("cashreceipts", $_POST);
             // echo $sql;
-            mysqli_query($mycon,$sql);
-            mysqli_query($mycon,'UPDATE `account` SET `credit_hold` = credit_hold+'.$_POST['pymt_amount'].' WHERE `account_id` ='.$_POST['clid'].' ');
+            mysqli_query($mycon, $sql);
+            mysqli_query($mycon, 'UPDATE `account` SET `credit_hold` = credit_hold+'.$_POST['pymt_amount'].' WHERE `account_id` ='.$_POST['clid'].' ');
     
-            $re = mysqli_query($mycon,'select cashreceipts.*,account.account_company,payment_type.payment_name from `cashreceipts`  
+            $re = mysqli_query($mycon, 'select cashreceipts.*,account.account_company,payment_type.payment_name from `cashreceipts`  
 		inner join account on (cashreceipts.clid = account.account_id)
 		inner join payment_type on (payment_type.payment_id = cashreceipts.paymethod)
 		WHERE account.account_id = '.$_POST['clid'].' and cashreceipts.`clid` ='.$_POST['clid'].' ORDER BY id DESC LIMIT 1 ')  or die(mysqli_error($mycon));
@@ -1107,7 +325,7 @@ break;
 case 'cashreceipts_print':
 
     if (isset($_POST['id'])) {
-        $re = mysqli_query($mycon,'select cashreceipts.*,account.account_company,payment_type.payment_name from `cashreceipts`  
+        $re = mysqli_query($mycon, 'select cashreceipts.*,account.account_company,payment_type.payment_name from `cashreceipts`  
 		inner join account on (cashreceipts.clid = account.account_id)
 		inner join payment_type on (payment_type.payment_id = cashreceipts.paymethod)
 		WHERE  cashreceipts.id ='.$_POST['id'].' ORDER BY id DESC LIMIT 1 ')  or die(mysqli_error($mycon));
@@ -1133,15 +351,15 @@ case 'edit_invoice':
         $type= "process";
     }
     
-    //$taxname = $company->get_tax_name();
-    //$taxrate = $company->get_tax_rate();
-    $termlist = $payment->get_payment_term_list();
+    //$taxname = $companyClass->get_tax_name();
+    //$taxrate = $companyClass->get_tax_rate();
+    $termlist = $paymentClass->get_payment_term_list();
     
-    //$tax_group = $company->get_tax_group();
-    $payment_term = $payment->get_payment_term();
-    $payment_type = $payment->get_payment();
+    //$tax_group = $companyClass->get_tax_group();
+    $payment_term = $paymentClass->get_payment_term();
+    $payment_type = $paymentClass->get_payment();
     
-    $grpnames = $company->get_tax_group_list();
+    $grpnames = $companyClass->get_tax_group_list();
     
     $def_message = $c_setting["co_invoice_message"];
     $def_copies  = $c_setting["co_invoiceoption_rb5"];
@@ -1170,7 +388,7 @@ case 'edit_invoice':
         // this means we r coming in from "Process Console", not view or process button from this page.*
         // *** !!!  Only want to do this once, when coming in here the first time on an edit.
         //* pull up the invoice header, get acctno & date
-        $ri = mysqli_query($mycon,"select * from invoicehdr where id=$invoiceno");
+        $ri = mysqli_query($mycon, "select * from invoicehdr where id=$invoiceno");
         $invhdr        =  mysqli_fetch_array($ri);
         $acctno        = $invhdr["acctno"];
         $clid        = $invhdr["clid"];
@@ -1240,7 +458,7 @@ case 'edit_invoice':
     
     
         //* load up the $li_ arrays with the detail records coming in.
-        $ri = mysqli_query($mycon,"select * from invoicedtl where invoiceno=$invoiceno order by lineno");
+        $ri = mysqli_query($mycon, "select * from invoicedtl where invoiceno=$invoiceno order by lineno");
         for ($i = 1; $i <= mysqli_num_rows($ri); $i++) {
             $detailrec =  mysqli_fetch_array($ri);
             $li_lineno[$i]    = $i;
@@ -1319,7 +537,7 @@ case 'edit_invoice':
     //******************************************************************************
     // Get the customer record                                                     *
     //******************************************************************************
-    $ri = mysqli_query($mycon,"select * from account where account_id='".$clid."'");
+    $ri = mysqli_query($mycon, "select * from account where account_id='".$clid."'");
     $customer = mysqli_fetch_array($ri);
     mysqli_free_result($ri);
     $clid = $customer["account_id"];
@@ -1663,7 +881,7 @@ case 'edit_invoice':
         //* Create cash-receipt record, for PREpayment.                                    *
         //* ...delete it first.
         if (isset($edit)) {
-            mysqli_query($mycon,"delete from cashreceipts where (invoiceno=$invoiceno)
+            mysqli_query($mycon, "delete from cashreceipts where (invoiceno=$invoiceno)
 					and   (ppd='Y') ");
         }
         if ($ppd_amount != 0) {
@@ -1688,7 +906,7 @@ case 'edit_invoice':
         if (isset($edit)) {
             //* but before we trash it all...
             //* load up the $li_ arrays with the fields not going back & forth to the form.
-            $ri = mysqli_query($mycon,"select * from invoicedtl where invoiceno=$invoiceno order by lineno");
+            $ri = mysqli_query($mycon, "select * from invoicedtl where invoiceno=$invoiceno order by lineno");
             for ($i = 1; $i <= mysqli_num_rows($ri); $i++) {
                 $detailrec =  mysqli_fetch_array($ri);
                 $li_waybills[$i]      = $detailrec["waybill"];
@@ -1697,7 +915,7 @@ case 'edit_invoice':
             }
             mysqli_free_result($ri);
     
-            mysqli_query($mycon,"delete from invoicedtl where invoiceno=$invoiceno");
+            mysqli_query($mycon, "delete from invoicedtl where invoiceno=$invoiceno");
         }
     
         for ($n = 1; $n < $showlines_count+1; $n++) {
@@ -1909,10 +1127,16 @@ case 'edit_invoice':
     //echo $def_copies.'-'.$def_message;
     //var_dump($termlist);
     
+    $breadarray[0]['url'] = "index.php?action=accounts";
+    $breadarray[0]['name'] = "الفواتير";
+
+     $breadarray[1]['url'] = "";
+     $breadarray[1]['name'] = "تعديل فاتورة";
+
     if ($_GET['from'] == "open") {
-        $newtemp->load_template('edit_invoice', 4);
+        $newtemp->load_template('edit_invoice', 1,'accounting_menu');
     } else {
-        $newtemp->load_template('edit_invoice', 5);
+        $newtemp->load_template('edit_invoice', 1,'accounting_menu');
     }
     
 break;
@@ -2001,7 +1225,7 @@ if (isset($_POST['account_id'])) {
                     $cashrec = array();
                     $cashrec["clid"]        = $acc->account_id;
                     $cashrec["acctno"]      = $acc->account_name;
-                    $cashrec["ref"]         = mysqli_real_escape_string($mycon,$_POST['payment_ref']);
+                    $cashrec["ref"]         = mysqli_real_escape_string($mycon, $_POST['payment_ref']);
                     $cashrec["link"]        = $link;      //*fist record shows zero link
                     $cashrec["date"]        = $_POST['payment_date'];
                     $cashrec["paymethod"]   = $_POST['payment_method'];
@@ -2017,13 +1241,13 @@ if (isset($_POST['account_id'])) {
                     } //*all records link back to the First record. (First record link is zero)
                     //3. NOT deposits: Set the "paid-in-full flag (if applied=balance ).  Update the record.
                     if ($invoiceno != 0) {
-                        $ri = mysqli_query($mycon,"select id,payment_refs,payment_links from invoicehdr where id=$invoiceno") or die(mysqli_error($mycon));
+                        $ri = mysqli_query($mycon, "select id,payment_refs,payment_links from invoicehdr where id=$invoiceno") or die(mysqli_error($mycon));
                         $invhdr = mysqli_fetch_array($ri);
                         mysqli_free_result($ri);
                         if ($balance == $apply) {
                             $invhdr["paid"]     = "Y";
                         }
-                        $invhdr["payment_refs"]  .= mysqli_real_escape_string($mycon,$payment_ref).",";
+                        $invhdr["payment_refs"]  .= mysqli_real_escape_string($mycon, $payment_ref).",";
                         $invhdr["payment_links"] .= $crid.",";
                         //* SQL - Save the Invoice Header Record.
                         $invoices->update_invoice($invoiceno, $invhdr);
@@ -2050,7 +1274,7 @@ if (isset($_POST['account_id'])) {
                     $cashrec = array();
                     $cashrec["clid"]        = $acc->account_id;
                     $cashrec["acctno"]      = $acc->account_name;
-                    $cashrec["ref"]         = mysqli_real_escape_string($mycon,$_POST['payment_ref']);
+                    $cashrec["ref"]         = mysqli_real_escape_string($mycon, $_POST['payment_ref']);
                     $cashrec["link"]        = $link;      //*fist record shows zero link
                     $cashrec["date"]        = $_POST['payment_date'];
                     $cashrec["paymethod"]   = $_POST['payment_method'];
@@ -2151,7 +1375,7 @@ case 'cash_receipts_new':
         //******************************************************************************
         //* Pull in the Records, one at a time in the loop                             *
         //******************************************************************************
-        $ri = mysqli_query($mycon,$sql) or die(mysqli_error($mycon));
+        $ri = mysqli_query($mycon, $sql) or die(mysqli_error($mycon));
         $rowcount = mysqli_num_rows($ri);
         $col0 = array();                  // invoice no
         $col1 = array();                  // invoice date
@@ -2178,7 +1402,7 @@ case 'cash_receipts_new':
             //* get all cash receipts against this invoice.
             // now need to specify acctno, b/c of invoice #0 - for deposits.
             $payments = 0;
-            $rc = mysqli_query($mycon,"select * from cashreceipts where invoiceno=$invoiceno and clid='".$_POST['account_id']."'");
+            $rc = mysqli_query($mycon, "select * from cashreceipts where invoiceno=$invoiceno and clid='".$_POST['account_id']."'");
             for ($i = 0; $i < mysqli_num_rows($rc); $i++) {
                 $cashrcpt = mysqli_fetch_array($rc);
                 //if($cashrcpt['ppd'] == 'Y')
@@ -2291,7 +1515,7 @@ case 'cash_receipts_new':
                         $cashrec = array();
                         $cashrec["clid"]        = $clid;
                         $cashrec["acctno"]      = $acctno;
-                        $cashrec["ref"]         = mysqli_real_escape_string($mycon,$payment_ref);
+                        $cashrec["ref"]         = mysqli_real_escape_string($mycon, $payment_ref);
                         $cashrec["link"]        = $link;      //*fist record shows zero link
                         $cashrec["date"]        = $_POST['payment_date'];
                         $cashrec["paymethod"]   = $payment_method;
@@ -2306,13 +1530,13 @@ case 'cash_receipts_new':
                         } //*all records link back to the First record. (First record link is zero)
                         //3. NOT deposits: Set the "paid-in-full flag (if applied=balance ).  Update the record.
                         if ($invoiceno != 0) {
-                            $ri = mysqli_query($mycon,"select id,payment_refs,payment_links from invoicehdr where id=$invoiceno");
+                            $ri = mysqli_query($mycon, "select id,payment_refs,payment_links from invoicehdr where id=$invoiceno");
                             $invhdr = mysqli_fetch_array($ri);
                             mysqli_free_result($ri);
                             if ($balance == $apply) {
                                 $invhdr["paid"]     = "Y";
                             }
-                            $invhdr["payment_refs"]  .= mysqli_real_escape_string($mycon,$payment_ref).",";
+                            $invhdr["payment_refs"]  .= mysqli_real_escape_string($mycon, $payment_ref).",";
                             $invhdr["payment_links"] .= $crid.",";
                             //* SQL - Save the Invoice Header Record.
                             $invoices->update_invoice($invoiceno, $invhdr);
@@ -2341,7 +1565,7 @@ case 'cash_receipts_new':
             //******************************************************************************
             //* Pull in the Records, one at a time in the loop                             *
             //******************************************************************************
-            $ri = mysqli_query($mycon,$sql) or die(mysqli_error($mycon));
+            $ri = mysqli_query($mycon, $sql) or die(mysqli_error($mycon));
             $rowcount = mysqli_num_rows($ri);
             $col0 = array();                  // invoice no
             $col1 = array();                  // invoice date
@@ -2368,7 +1592,7 @@ case 'cash_receipts_new':
                 //* get all cash receipts against this invoice.
                 // now need to specify acctno, b/c of invoice #0 - for deposits.
                 $payments = 0;
-                $rc = mysqli_query($mycon,"select * from cashreceipts where invoiceno=$invoiceno and clid='".$_POST['account_id']."'");
+                $rc = mysqli_query($mycon, "select * from cashreceipts where invoiceno=$invoiceno and clid='".$_POST['account_id']."'");
                 for ($i = 0; $i < mysqli_num_rows($rc); $i++) {
                     $cashrcpt = mysqli_fetch_array($rc);
                     $payments = $payments + $cashrcpt["applied"];
@@ -2654,7 +1878,7 @@ if (isset($_GET['account_id'])) {
     $data['billing_code'] = $_GET["billing_code"];
     $client_name = $data;
     //$data['to_invoice_date'] = $due_date;
-    //$tax = $company->get_tax_name();
+    //$tax = $companyClass->get_tax_name();
     $deposits = $invoices->get_cash_receipt_deposit($data);
     $print = "1";
     $tab = "search_invoice";

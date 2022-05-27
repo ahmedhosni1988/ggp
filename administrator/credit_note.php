@@ -73,7 +73,7 @@ switch ($action){
                 $dbarray['user_id'] = $_SESSION['user_id'];
                 $dbarray['date_added'] = date("Y-m-d H:i:s");
 
-            $sql = $db->make_insert("credit_note",$dbarray);
+            $sql = make_insert("credit_note",$dbarray);
 
 
             $query = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));

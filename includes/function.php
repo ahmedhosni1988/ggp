@@ -1,17 +1,16 @@
 <?php
 
 
-function fd($dep) {
+function fd($dep)
+{
     return implode(',', array_keys(array_flip(explode(', ', $dep))));
 }
 
 function object_to_array($data)
 {
-    if (is_array($data) || is_object($data))
-    {
+    if (is_array($data) || is_object($data)) {
         $result = array();
-        foreach ($data as $key => $value)
-        {
+        foreach ($data as $key => $value) {
             $result[$key] = object_to_array($value);
         }
         return $result;
@@ -22,20 +21,19 @@ function object_to_array($data)
 
 function CheckCookieLogin()
 {
-
     global $user;
+    global $mycon;
 
     $uname = $_COOKIE['username'];
     if (!empty($uname)) {
         $cok = explode("_", $uname);
 
         if ($cok[1] == "admin") {
-
-            $result = mysqli_query($mycon,"select users.*  from users as users 
+            $result = mysqli_query($mycon, "select users.*  from users as users 
 			where 
 			users.cookies = " . $this->db->qstr($uname) . " and
 			users.account_id = '0'
-			") or die (mysqli_error($mycon));
+			") or die(mysqli_error($mycon));
             $num = mysqli_num_rows($result);
 
             $login_attribute = mysqli_fetch_array($result);
@@ -46,17 +44,14 @@ function CheckCookieLogin()
             } else {
                 $login_attribute['login'] = false;
             }
-
         } elseif ($cok[1] == "client") {
-
-
-            $result = mysqli_query($mycon,"select users.* , account.* from users as users 
+            $result = mysqli_query($mycon, "select users.* , account.* from users as users 
 inner join account as account 
 on (users.account_id = account.account_id) 
 where 
 users.cookies = " . $this->db->qstr($uname) . " and
 (users.status ='1' || users.status ='2' ) and
-(account.status = '1' || account.status = '6' )  ") or die (mysqli_error($mycon));
+(account.status = '1' || account.status = '6' )  ") or die(mysqli_error($mycon));
             $num = mysqli_num_rows($result);
 
             $login_attribute = mysqli_fetch_array($result);
@@ -67,8 +62,6 @@ users.cookies = " . $this->db->qstr($uname) . " and
             } else {
                 $login_attribute['login'] = false;
             }
-
-
         }
 
 
@@ -76,7 +69,9 @@ users.cookies = " . $this->db->qstr($uname) . " and
         //print_r($Login_attribute);
 
         foreach ($Login_attribute as $key => $var) {
-            if (!is_numeric($key)) $_SESSION[$key] = $var;
+            if (!is_numeric($key)) {
+                $_SESSION[$key] = $var;
+            }
         }
         $_SESSION['logged_in'] = true;
 
@@ -91,8 +86,7 @@ users.cookies = " . $this->db->qstr($uname) . " and
 //Start koko
 function get_account_name($account_id)
 {
-
-    $query = mysqli_query($mycon,"select * from account where account_id = " . $account_id . "") or die(mysqli_error($mycon));
+    $query = mysqli_query($mycon, "select * from account where account_id = " . $account_id . "") or die(mysqli_error($mycon));
     if (mysqli_num_rows($query) == 1) {
         $row = mysqli_fetch_array($query);
         return $row['account_name'];
@@ -104,7 +98,7 @@ function get_account_name($account_id)
 function get_user_name($value)
 {
     if (is_numeric($value)) {
-        $query = mysqli_query($mycon,"select name from users where user_id = '" . $value . "'") or die (mysqli_error($mycon));
+        $query = mysqli_query($mycon, "select name from users where user_id = '" . $value . "'") or die(mysqli_error($mycon));
         if (mysqli_num_rows($query) == 1) {
             $row = mysqli_fetch_assoc($query);
             return $row['name'];
@@ -116,20 +110,18 @@ function get_user_name($value)
 
 function curPageURL($siteurl)
 {
-
-
     $pageURL = 'https';
 
-// echo "-".$_SERVER["HTTPS"];
+    // echo "-".$_SERVER["HTTPS"];
 
     //if ( strpos($siteurl,"https") === 0 ) {$pageURL .= "s";}
     $pageURL .= "://";
     $pageURL .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
 
-//  if ($_SERVER["SERVER_PORT"] != "80") {
-//   $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-//  } else {
-//  }
+    //  if ($_SERVER["SERVER_PORT"] != "80") {
+    //   $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+    //  } else {
+    //  }
     return $pageURL;
 }
 
@@ -145,7 +137,9 @@ function get_string_between($string, $start, $end)
 {
     $string = ' ' . $string;
     $ini = strpos($string, $start);
-    if ($ini == 0) return '';
+    if ($ini == 0) {
+        return '';
+    }
     $ini += strlen($start);
     $len = strpos($string, $end, $ini) - $ini;
     return substr($string, $ini, $len);
@@ -166,11 +160,11 @@ function timezoneList()
         );
     }
 
-// 	// Sort the array by offset,identifier ascending
-// 	usort($tempTimezones, function($a, $b) {
+    // 	// Sort the array by offset,identifier ascending
+    // 	usort($tempTimezones, function($a, $b) {
 
-// 		return ($a['offset'] == $b['offset']) ? strcmp($a['identifier'], $b['identifier']) : $a['offset'] - $b['offset'];
-// 	});
+    // 		return ($a['offset'] == $b['offset']) ? strcmp($a['identifier'], $b['identifier']) : $a['offset'] - $b['offset'];
+    // 	});
 
     $timezoneList = array();
     foreach ($tempTimezones as $tz) {
@@ -240,7 +234,9 @@ function filterin($str, $cleanit = null)
     //*****  The Parms:  "C":Clean it for DB update.   "D":clean it for Display.
     //1.
     $xstr = str_replace("\\", "", $str, $ct);
-    if ($ct > 0) $count = $ct;
+    if ($ct > 0) {
+        $count = $ct;
+    }
     //2.
     $xstr = preg_replace('/\s\s+/', ' ', $xstr); //squish out whitespace blocks to single spaces
     $xstr = trim($xstr);
@@ -248,30 +244,41 @@ function filterin($str, $cleanit = null)
     $xstr = html_entity_decode($xstr);
     //4.
     $xstr = str_ireplace("<script>", "", $xstr, $ct);
-    if ($ct > 0) $count = $ct;
+    if ($ct > 0) {
+        $count = $ct;
+    }
     $xstr = str_ireplace("</script>", "", $xstr, $ct);
-    if ($ct > 0) $count = $ct;
+    if ($ct > 0) {
+        $count = $ct;
+    }
     //5.
-    if ($cleanit == "D")                                         //Clean it for HTML Display and inclusion in arrays... (NOT for use outside of HTML -> use filterout for that)
-        $cleanstr = htmlentities($xstr, ENT_QUOTES);                 //change all specialchars to htmlentities, for Display *Including* both types of Quotes.
-    else                                                         //Clean it for DB Update...
-        $cleanstr = addslashes(htmlentities($xstr, ENT_NOQUOTES));   //leave the Quotes ' " alone addslashes will neuter them.
+    if ($cleanit == "D") {                                         //Clean it for HTML Display and inclusion in arrays... (NOT for use outside of HTML -> use filterout for that)
+        $cleanstr = htmlentities($xstr, ENT_QUOTES);
+    }                 //change all specialchars to htmlentities, for Display *Including* both types of Quotes.
+    else {                                                         //Clean it for DB Update...
+        $cleanstr = addslashes(htmlentities($xstr, ENT_NOQUOTES));
+    }   //leave the Quotes ' " alone addslashes will neuter them.
     //6.
     $cleanstr = str_ireplace("&lt;b&gt;", "<b>", $cleanstr);
     $cleanstr = str_ireplace("&lt;/b&gt;", "</b>", $cleanstr);
     //Error message if we found bad stuff.
-    if ($count > 0) $filtererr = "Invalid digits, please use simple letters and numbers.";
-    if ($cleanit == "C" or $cleanit == "D")
+    if ($count > 0) {
+        $filtererr = "Invalid digits, please use simple letters and numbers.";
+    }
+    if ($cleanit == "C" or $cleanit == "D") {
         return ($cleanstr);
-    else
+    } else {
         return ($str);
+    }
 }
 
 //*get the current Date-Time and adjust for Local Timezone.
 function adjusteddatetime()
 {
     global $timezone_adj;                                     //set in dbconnect.php
-    if ($timezone_adj == "") $timezone_adj = "+0 hours";
+    if ($timezone_adj == "") {
+        $timezone_adj = "+0 hours";
+    }
 
     $adjdate = date("Y-m-d-H-i");
     return $adjdate;
@@ -281,19 +288,24 @@ function adjusteddatetime()
 function adjusteddate()
 {
     global $timezone_adj;                                     //set in dbconnect.php
-    if ($timezone_adj == "") $timezone_adj = "+0 hours";
+    if ($timezone_adj == "") {
+        $timezone_adj = "+0 hours";
+    }
 
     $adjdate = date("Y-m-d");
     return $adjdate;
-
 }
 
 //* TEXTBOX
 function mktb($name, $val, $rows = 0, $cols = 0)
 {
     $r = "<textarea name=$name";
-    if ($rows) $r .= " rows=$rows";
-    if ($cols) $r .= " cols=$cols";
+    if ($rows) {
+        $r .= " rows=$rows";
+    }
+    if ($cols) {
+        $r .= " cols=$cols";
+    }
     $r .= ">$val</textarea>";
     return $r;
 }
@@ -302,15 +314,29 @@ function dateformats($d)
 {
     //* first, determine the format
     $d = str_replace(" ", "-", $d);
-    if (strlen($d) == 10) $fmt = 1;
+    if (strlen($d) == 10) {
+        $fmt = 1;
+    }
     if (strlen($d) == 8) {
         $pos = strpos($d, "-");
-        if ($pos === false) $fmt = 2; else  $fmt = 3;
+        if ($pos === false) {
+            $fmt = 2;
+        } else {
+            $fmt = 3;
+        }
     }
-    if (strlen($d) == 6) $fmt = 4;
-    if (strlen($d) == 5) $fmt = 5;
-    if (strlen($d) == 4) $fmt = 6;
-    if (strlen($d) == 2) $fmt = 7;
+    if (strlen($d) == 6) {
+        $fmt = 4;
+    }
+    if (strlen($d) == 5) {
+        $fmt = 5;
+    }
+    if (strlen($d) == 4) {
+        $fmt = 6;
+    }
+    if (strlen($d) == 2) {
+        $fmt = 7;
+    }
 
     $today = adjusteddate();
     $yyyy = substr($today, 0, 4);
@@ -336,7 +362,9 @@ function dateformats($d)
             $fdate = $yyyy . "-" . substr($d, 0, 2) . "-" . substr($d, 2, 2);
             break;
         case 7:
-            if ($d > $dd) $mm--;
+            if ($d > $dd) {
+                $mm--;
+            }
             if ($mm < 1) {
                 $mm = 1;
                 $yyyy--;
@@ -367,18 +395,32 @@ function timeformats($t)
     $posp = strpos($t, "P");
     //add a zero in front ?
     for ($i = 0; $i < strlen($t) + 1; $i++) {
-        if (is_numeric(substr($t, $i, 1))) $x .= substr($t, $i, 1);
+        if (is_numeric(substr($t, $i, 1))) {
+            $x .= substr($t, $i, 1);
+        }
     }
-    if (strlen($x) == 3) $t = "0" . $t;
-    if ($posa === false and $posp === false)  //24hr fmt
-    {
-        if (strlen($t) == 5) $fmt = 1; else  $fmt = 2;
-    } else                                        //12hr fmt
-    {
-        if (strlen($t) == 6) $fmt = 3; else  $fmt = 4;
+    if (strlen($x) == 3) {
+        $t = "0" . $t;
+    }
+    if ($posa === false and $posp === false) {  //24hr fmt
+        if (strlen($t) == 5) {
+            $fmt = 1;
+        } else {
+            $fmt = 2;
+        }
+    } else {                                        //12hr fmt
+        if (strlen($t) == 6) {
+            $fmt = 3;
+        } else {
+            $fmt = 4;
+        }
         $x = substr($t, 0, 2);
-        if ($posp > 0 and $x < 12) $x = $x + 12;
-        if ($posa > 0 and $x == 12) $x = 0;
+        if ($posp > 0 and $x < 12) {
+            $x = $x + 12;
+        }
+        if ($posa > 0 and $x == 12) {
+            $x = 0;
+        }
         //if ($x < 10)  $x .= "0";
     }
 
@@ -402,17 +444,22 @@ function timeformats($t)
 
 function validate_order()
 {
-
     global $client, $vec_details;
     $error_msg = "";
 
 
     $w = trim($_POST['weight_s']);
-    if ($w == "") $w = 0;
+    if ($w == "") {
+        $w = 0;
+    }
     $p = trim($_POST['pieces_s']);
-    if ($p == "") $p = 0;
+    if ($p == "") {
+        $p = 0;
+    }
     $v = trim($_POST['volume_s']);
-    if ($v == "") $v = 0;
+    if ($v == "") {
+        $v = 0;
+    }
     //if ($quotes_control < 2)  $errormsg = "";  //If it's OFF - drop any error msgs so far
     //*Any errormsg so far is only warnings.... These next are Stoppers !
     if (!is_numeric($w) or !is_numeric($p) or !is_numeric($v)) {
@@ -442,7 +489,9 @@ function validate_order()
 
     if ($w > $vec_details->max_weight) {
         $tracer .= "D ";
-        if ($error_msg != "") $error_msg .= "<br>";
+        if ($error_msg != "") {
+            $error_msg .= "<br>";
+        }
         $error_msg .= "Weight exceeds capacity for this vehicle";
     }
     //}
@@ -450,7 +499,9 @@ function validate_order()
     //if ($volume != "")  {
     if ($v > $vec_details->max_volume) {
         $tracer .= "E ";
-        if ($error_msg != "") $error_msg .= "<br>";
+        if ($error_msg != "") {
+            $error_msg .= "<br>";
+        }
         $error_msg .= "Volume exceeds capacity for this vehicle";
     }
 
@@ -461,16 +512,18 @@ function validate_order()
 
 function get_user($id, $value = "")
 {
-    $q = mysqli_query($mycon,"select * from users where user_id = '$id'") or die(mysqli_error($mycon));
+    $q = mysqli_query($mycon, "select * from users where user_id = '$id'") or die(mysqli_error($mycon));
     $row = mysqli_fetch_array($q);
-//echo $row[$value];
-    if ($value == "") return $row;
-    else return $row[$value];
+    //echo $row[$value];
+    if ($value == "") {
+        return $row;
+    } else {
+        return $row[$value];
+    }
 }
 
 function time_req($id)
 {
-
     $t[1] = "before";
     $t[2] = "after";
     $t[3] = "at";
@@ -481,12 +534,15 @@ function time_req($id)
 //* Prepare a field returned from a form checkbox, to be saved as Y/N in the DB.
 function yesno($val)
 {
-    if (isset($val))
+    if (isset($val)) {
         $v = "Y";
-    else
+    } else {
         $v = "N";
+    }
     // if passed back hidden in a form (not edited) then it will be Y/N *not* unset
-    if ($val == "N") $v = "N";
+    if ($val == "N") {
+        $v = "N";
+    }
     return $v;
 }
 
@@ -500,7 +556,6 @@ function convert_time_utc($date)
 
 function makedatetime($datetime)
 {
-
     $mysql_datetime = date('Y-m-d H:i:s', $datetime);
     echo $mysql_datetime;
 
@@ -511,53 +566,59 @@ function convert_utc_time($date)
 {
 
     //$given = new DateTime();
-// 	$given->setTimezone(new DateTimeZone("UTC"));
+    // 	$given->setTimezone(new DateTimeZone("UTC"));
     //$given->setTimestamp($data);
-// 	$given->setTimezone(new DateTimeZone(date_default_timezone_get()));
+    // 	$given->setTimezone(new DateTimeZone(date_default_timezone_get()));
 
     return date("Y-m-d h:i:s", substr($date, 0, strlen($date) - 3));
-
 }
 
 function check_duplication($table, $coloum, $value, $status)
 {
-    $query = mysqli_query($mycon,"select count(*) as num from $table where $coloum = '$value'  and status = '" . $status . "' ") or die (mysqli_error($mycon));
+    global $mycon;
+    $query = mysqli_query($mycon, "select count(*) as num from $table where $coloum = '$value'  and status = '" . $status . "' ") or die(mysqli_error($mycon));
     $row = mysqli_fetch_assoc($query);
 
-    if ($query) return $row['num'];
-    else return false;
-
+    if ($query) {
+        return $row['num'];
+    } else {
+        return false;
+    }
 }
 
-function remove_elm($arr, $key, $val, $within = FALSE)
+function remove_elm($arr, $key, $val, $within = false)
 {
-    foreach ($arr as $i => $array)
-        if ($within && stripos($array[$key], $val) !== FALSE && (gettype($val) === gettype($array[$key])))
+    foreach ($arr as $i => $array) {
+        if ($within && stripos($array[$key], $val) !== false && (gettype($val) === gettype($array[$key]))) {
             unset($arr[$i]);
-        elseif ($array[$key] === $val)
+        } elseif ($array[$key] === $val) {
             unset($arr[$i]);
+        }
+    }
 
     return array_values($arr);
 }
 
 function check_duplication_users($table, $coloum, $value, $account_id)
 {
-    $query = mysqli_query($mycon,"select count(*) as num from $table where $coloum = '$value' and account_id='$account_id'") or die (mysqli_error($mycon));
+    global $mycon;
+    $query = mysqli_query($mycon, "select count(*) as num from $table where $coloum = '$value' and account_id='$account_id'") or die(mysqli_error($mycon));
     $row = mysqli_fetch_array($query);
 
-    if ($query) return $row['num'];
-    else return false;
-
+    if ($query) {
+        return $row['num'];
+    } else {
+        return false;
+    }
 }
 
 function valid_email($str)
 {
-    return (!preg_match("/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix", $str)) ? FALSE : TRUE;
+    return (!preg_match("/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix", $str)) ? false : true;
 }
 
 function get_opp_color($color)
 {
-
     $org = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F');
 
     $ops = array('F', 'E', 'D', 'C', 'B', 'A', '9', '8', '7', '6', '5', '4', '3', '2', '1', '0');
@@ -565,7 +626,6 @@ function get_opp_color($color)
     $opp_color = str_replace($org, $ops, $color);
 
     return $opp_color;
-
 }
 
 function oppColour($c, $inverse = false)
@@ -585,92 +645,139 @@ function oppColour($c, $inverse = false)
 
 function get_rate($dt)
 {
-
     $dt = date("H:i", strtotime($dt));
     $t = str_replace(":", ".", $dt);
 
 
-    if ($t < 1) $dtodkey = "rate00";
+    if ($t < 1) {
+        $dtodkey = "rate00";
+    }
 
-    if ($t >= 1 and $t < 2) $dtodkey = "rate01";
+    if ($t >= 1 and $t < 2) {
+        $dtodkey = "rate01";
+    }
 
-    if ($t >= 2 and $t < 3) $dtodkey = "rate02";
+    if ($t >= 2 and $t < 3) {
+        $dtodkey = "rate02";
+    }
 
-    if ($t >= 3 and $t < 4) $dtodkey = "rate03";
+    if ($t >= 3 and $t < 4) {
+        $dtodkey = "rate03";
+    }
 
-    if ($t >= 4 and $t < 5) $dtodkey = "rate04";
+    if ($t >= 4 and $t < 5) {
+        $dtodkey = "rate04";
+    }
 
-    if ($t >= 5 and $t < 6) $dtodkey = "rate05";
+    if ($t >= 5 and $t < 6) {
+        $dtodkey = "rate05";
+    }
 
-    if ($t >= 6 and $t < 7) $dtodkey = "rate06";
+    if ($t >= 6 and $t < 7) {
+        $dtodkey = "rate06";
+    }
 
-    if ($t >= 7 and $t < 8) $dtodkey = "rate07";
+    if ($t >= 7 and $t < 8) {
+        $dtodkey = "rate07";
+    }
 
-    if ($t >= 8 and $t < 9) $dtodkey = "rate08";
+    if ($t >= 8 and $t < 9) {
+        $dtodkey = "rate08";
+    }
 
-    if ($t >= 9 and $t < 10) $dtodkey = "rate09";
+    if ($t >= 9 and $t < 10) {
+        $dtodkey = "rate09";
+    }
 
-    if ($t >= 10 and $t < 11) $dtodkey = "rate10";
+    if ($t >= 10 and $t < 11) {
+        $dtodkey = "rate10";
+    }
 
-    if ($t >= 11 and $t < 12) $dtodkey = "rate11";
+    if ($t >= 11 and $t < 12) {
+        $dtodkey = "rate11";
+    }
 
-    if ($t >= 12 and $t < 13) $dtodkey = "rate12";
+    if ($t >= 12 and $t < 13) {
+        $dtodkey = "rate12";
+    }
 
-    if ($t >= 13 and $t < 14) $dtodkey = "rate13";
+    if ($t >= 13 and $t < 14) {
+        $dtodkey = "rate13";
+    }
 
-    if ($t >= 14 and $t < 15) $dtodkey = "rate14";
+    if ($t >= 14 and $t < 15) {
+        $dtodkey = "rate14";
+    }
 
-    if ($t >= 15 and $t < 16) $dtodkey = "rate15";
+    if ($t >= 15 and $t < 16) {
+        $dtodkey = "rate15";
+    }
 
-    if ($t >= 16 and $t < 17) $dtodkey = "rate16";
+    if ($t >= 16 and $t < 17) {
+        $dtodkey = "rate16";
+    }
 
-    if ($t >= 17 and $t < 18) $dtodkey = "rate17";
+    if ($t >= 17 and $t < 18) {
+        $dtodkey = "rate17";
+    }
 
-    if ($t >= 18 and $t < 19) $dtodkey = "rate18";
+    if ($t >= 18 and $t < 19) {
+        $dtodkey = "rate18";
+    }
 
-    if ($t >= 19 and $t < 20) $dtodkey = "rate19";
+    if ($t >= 19 and $t < 20) {
+        $dtodkey = "rate19";
+    }
 
-    if ($t >= 20 and $t < 21) $dtodkey = "rate20";
+    if ($t >= 20 and $t < 21) {
+        $dtodkey = "rate20";
+    }
 
-    if ($t >= 21 and $t < 22) $dtodkey = "rate21";
+    if ($t >= 21 and $t < 22) {
+        $dtodkey = "rate21";
+    }
 
-    if ($t >= 22 and $t < 23) $dtodkey = "rate22";
+    if ($t >= 22 and $t < 23) {
+        $dtodkey = "rate22";
+    }
 
-    if ($t >= 23 and $t < 24) $dtodkey = "rate23";
+    if ($t >= 23 and $t < 24) {
+        $dtodkey = "rate23";
+    }
 
     return $dtodkey;
 }
  
 
-function setup_serviceprices($ord, $add_ser, $row_now,$pack_type,$Pack_options)   
-{   
+function setup_serviceprices($ord, $add_ser, $row_now, $pack_type, $Pack_options)
+{
     global $row, $orders, $price_detail, $c_setting, $componentprices, $order, $piecestype;
     $x= ' '.$row_now['length'].' ,  '.$row_now['width'].' ,  '.$pack_type[$row_now['package_type']].' '.$row_now['glasscolour'].' ,'.$row_now['glassPrint'].', '.$row_now['glassType'].' , '.$row_now['glassPointing'];
 
     //* first deal with individual component overrides
     //* distinguish between zero calc/quote & zero Override.
     //* because we want to show zeros if overridden.
-// print_r($ord);
-// print_r($pack_type);
-// print_r($Pack_options);
-// print_r($row_now);  
-// echo $x;
-$pack_options_val=explode(',', $row_now['pack_options']);
-// print_r($pack_options_val);
+    // print_r($ord);
+    // print_r($pack_type);
+    // print_r($Pack_options);
+    // print_r($row_now);
+    // echo $x;
+    $pack_options_val=explode(',', $row_now['pack_options']);
+    // print_r($pack_options_val);
 
-////removed for new design 
+    ////removed for new design
 
-// if(count($pack_options_val) > 0 ){
-// $pack_options_string=' , الخدمة : [';
+    // if(count($pack_options_val) > 0 ){
+    // $pack_options_string=' , الخدمة : [';
 
-// foreach($pack_options_val as $val){
+    // foreach($pack_options_val as $val){
 //     $pack_options_string=$pack_options_string.' '.$Pack_options[$val].' , ';
-// }
-// $pack_options_string=$pack_options_string.' ]';
-// }
+    // }
+    // $pack_options_string=$pack_options_string.' ]';
+    // }
 
-$x= $x.$pack_options_string;
-// echo $x;
+    $x= $x.$pack_options_string;
+    // echo $x;
     $componentprices = 0;
     $extrasprices = 0;
     $s = array();
@@ -685,8 +792,11 @@ $x= $x.$pack_options_string;
         // echo $s[$sc]["des"];
         if (isset($ord[$i]["1"])) {
             $f="";
-            if ($ord[$i]["1"]["override"] > 0) $f = $ord[$i]["1"]["override"];
-            else $f = $ord[$i]["1"]["price"];
+            if ($ord[$i]["1"]["override"] > 0) {
+                $f = $ord[$i]["1"]["override"];
+            } else {
+                $f = $ord[$i]["1"]["price"];
+            }
             $componentprices += $f;
 
             $s[$sc]["typ"] = "S";
@@ -694,13 +804,15 @@ $x= $x.$pack_options_string;
             $s[$sc]["des"] = " تشغيل ".$ord[$i]["1"]['name']." ".$x;
             $s[$sc]["chg"] = sprintf("%01.2f", round($f, 2));
             $sc++;
-            
         }
 
         if (isset($ord[$i]["2"])) {
             $f="";
-            if ($ord[$i]["2"]["override"] > 0) $f = $ord[$i]["2"]["override"];
-            else $f = $ord[$i]["2"]["price"];
+            if ($ord[$i]["2"]["override"] > 0) {
+                $f = $ord[$i]["2"]["override"];
+            } else {
+                $f = $ord[$i]["2"]["price"];
+            }
             $componentprices += $f;
 
             $s[$sc]["typ"] = "S";
@@ -708,13 +820,15 @@ $x= $x.$pack_options_string;
             $s[$sc]["des"] = "تشغيل ".$ord[$i]["2"]['name']." ".$x;
             $s[$sc]["chg"] = sprintf("%01.2f", round($f, 2));
             $sc++;
-            
         }
 
         if (isset($ord[$i]["3"])) {
             $f="";
-            if ($ord[$i]["3"]["override"] > 0) $f = $ord[$i]["3"]["override"];
-            else $f = $ord[$i]["3"]["price"];
+            if ($ord[$i]["3"]["override"] > 0) {
+                $f = $ord[$i]["3"]["override"];
+            } else {
+                $f = $ord[$i]["3"]["price"];
+            }
             $componentprices += $f;
 
             $s[$sc]["typ"] = "S";
@@ -722,13 +836,15 @@ $x= $x.$pack_options_string;
             $s[$sc]["des"] = "تشغيل ".$ord[$i]["3"]['name']." ".$x;
             $s[$sc]["chg"] = sprintf("%01.2f", round($f, 2));
             $sc++;
-            
         }
 
         if (isset($ord[$i]["4"])) {
             $f="";
-            if ($ord[$i]["4"]["override"] > 0) $f = $ord[$i]["4"]["override"];
-            else $f = $ord[$i]["4"]["price"];
+            if ($ord[$i]["4"]["override"] > 0) {
+                $f = $ord[$i]["4"]["override"];
+            } else {
+                $f = $ord[$i]["4"]["price"];
+            }
             $componentprices += $f;
 
             $s[$sc]["typ"] = "S";
@@ -736,14 +852,15 @@ $x= $x.$pack_options_string;
             $s[$sc]["des"] = "تشغيل ".$ord[$i]["4"]['name']." ".$x;
             $s[$sc]["chg"] = sprintf("%01.2f", round($f, 2));
             $sc++;
-            
         }
 
         if (isset($ord[$i]["9"])) {
-
             $f="";
-            if ($ord[$i]["9"]["override"] > 0) $f = $ord[$i]["9"]["override"];
-            else $f = $ord[$i]["9"]["price"];
+            if ($ord[$i]["9"]["override"] > 0) {
+                $f = $ord[$i]["9"]["override"];
+            } else {
+                $f = $ord[$i]["9"]["price"];
+            }
             $componentprices += $f;
 
             $s[$sc]["typ"] = "S";
@@ -751,29 +868,25 @@ $x= $x.$pack_options_string;
             $s[$sc]["des"] = "تشغيل ".$ord[$i]["9"]['name']." ".$x;
             $s[$sc]["chg"] = sprintf("%01.2f", round($f, 2));
             $sc++;
-            
         }
 
-        for($j=1;$j<10;$j++){
+        for ($j=1;$j<10;$j++) {
+            if (isset($ord[$i]["add_".$j])) {
+                $f="";
+                if ($ord[$i]["add_".$j]["override"] > 0) {
+                    $f = $ord[$i]["add_".$j]["override"];
+                } else {
+                    $f = $ord[$i]["add_".$j]["price"];
+                }
+                $componentprices += $f;
 
-        
-        if (isset($ord[$i]["add_".$j])) {
-            $f="";
-            if ($ord[$i]["add_".$j]["override"] > 0) $f = $ord[$i]["add_".$j]["override"];
-            else $f = $ord[$i]["add_".$j]["price"];
-            $componentprices += $f;
-
-            $s[$sc]["typ"] = "C";
-            $s[$sc]["svc"] =  $ord[$i]["add_".$j]['name'];
-            $s[$sc]["des"] = "خدمة  :  ".$ord[$i]["add_".$j]['name'];
-            $s[$sc]["chg"] = sprintf("%01.2f", round($f, 2));
-            $sc++;    
+                $s[$sc]["typ"] = "C";
+                $s[$sc]["svc"] =  $ord[$i]["add_".$j]['name'];
+                $s[$sc]["des"] = "خدمة  :  ".$ord[$i]["add_".$j]['name'];
+                $s[$sc]["chg"] = sprintf("%01.2f", round($f, 2));
+                $sc++;
+            }
         }
-
-    }
-        
-
-
     }
 
    
@@ -792,37 +905,49 @@ $x= $x.$pack_options_string;
 
 function get_tax($tax_id)
 {
-    $q = mysqli_query($mycon,"select * from tax where tax_id = '$tax_id'") or die (mysqli_error($mycon));
+    global $mycon;
+
+    $q = mysqli_query($mycon, "select * from tax where tax_id = '$tax_id'") or die(mysqli_error($mycon));
     $z = mysqli_fetch_object($q);
 
     return $z->tax_rate;
-
 }
 
 function tax_fs_calc($taxg_id, $fsovrd, $lineamount, $chargetype)
 {
+    global $mycon;
+
 
     global $taxrate, $grptax1;
-//echo $taxg_id."<br>";
+    //echo $taxg_id."<br>";
 
-    $q = mysqli_query($mycon,"select * from tax_group where taxgroup_id = '$taxg_id'") or die (mysqli_error($mycon));
+    $q = mysqli_query($mycon, "select * from tax_group where taxgroup_id = '$taxg_id'") or die(mysqli_error($mycon));
     $taxgroup_details = mysqli_fetch_object($q);
 
     $fsrate = "";
 
-    if ($fsovrd != "") $fsrate = $fsovrd / 100;
-    else $fsrate = $taxgroup_details->taxgroup_fs_rate / 100;
+    if ($fsovrd != "") {
+        $fsrate = $fsovrd / 100;
+    } else {
+        $fsrate = $taxgroup_details->taxgroup_fs_rate / 100;
+    }
 
-//echo $fsrate."<br>";
+    //echo $fsrate."<br>";
 
 
     $tax_on = explode(',', $taxgroup_details->taxgroup_on);
 
-    if ($tax_on[0] == 0 && ($chargetype == "S" || $chargetype == "Distance" || $chargetype == "v" || $chargetype == "w" || $chargetype == "p")) $fsrate = 0;
+    if ($tax_on[0] == 0 && ($chargetype == "S" || $chargetype == "Distance" || $chargetype == "v" || $chargetype == "w" || $chargetype == "p")) {
+        $fsrate = 0;
+    }
 
-    if ($tax_on[1] == 0 && $chargetype == "W") $fsrate = 0;
+    if ($tax_on[1] == 0 && $chargetype == "W") {
+        $fsrate = 0;
+    }
 
-    if ($tax_on[2] == 0 && ($chargetype == "a" || $chargetype == "vs")) $fsrate = 0;
+    if ($tax_on[2] == 0 && ($chargetype == "a" || $chargetype == "vs")) {
+        $fsrate = 0;
+    }
 
     $linefsamount = $lineamount * ($fsrate);
 
@@ -831,74 +956,98 @@ function tax_fs_calc($taxg_id, $fsovrd, $lineamount, $chargetype)
     echo $linefsamount."<br>";*/
 
 
-    if ($taxgroup_details->taxgroup_tax1_on_fs == "1") $fstax1able = $linefsamount; else $fstax1able = 0;
-    if ($taxgroup_details->taxgroup_tax2_on_fs == "1") $fstax2able = $linefsamount; else $fstax2able = 0;
+    if ($taxgroup_details->taxgroup_tax1_on_fs == "1") {
+        $fstax1able = $linefsamount;
+    } else {
+        $fstax1able = 0;
+    }
+    if ($taxgroup_details->taxgroup_tax2_on_fs == "1") {
+        $fstax2able = $linefsamount;
+    } else {
+        $fstax2able = 0;
+    }
 
 
-//*taxtype 1 ie.1=GST, as 1st tax.
+    //*taxtype 1 ie.1=GST, as 1st tax.
     if ($taxgroup_details->taxgroup_tax1 == 1) {
-
         $linetax1 = ($lineamount + $fstax1able) * (get_tax("1") / 100);
         //echo "ahmed".$linetax1;
         $firsttax = $linetax1;
     }
-//*taxtype 2 ie.1=PST, as 1st tax.
+    //*taxtype 2 ie.1=PST, as 1st tax.
     if ($taxgroup_details->taxgroup_tax1 == 2) {
         $linetax2 = ($lineamount + $fstax1able) * (get_tax("2") / 100);
         $firsttax = $linetax2;
     }
-//*taxtype 3 ie.3=TVQ, as 1st tax.
+    //*taxtype 3 ie.3=TVQ, as 1st tax.
     if ($taxgroup_details->taxgroup_tax1 == 3) {
         $linetax3 = ($lineamount + $fstax1able) * (get_tax("3") / 100);
         $firsttax = $linetax3;
     }
-//*taxtype 4 ie.4=HST, as 1st tax.
+    //*taxtype 4 ie.4=HST, as 1st tax.
     if ($taxgroup_details->taxgroup_tax1 == 4) {
         $linetax4 = ($lineamount + $fstax1able) * (get_tax("4") / 100);
         $firsttax = $linetax4;
     }
-//*taxtype 5 ie.5=etc, as 1st tax.
+    //*taxtype 5 ie.5=etc, as 1st tax.
     if ($taxgroup_details->taxgroup_tax1 == 5) {
         $linetax5 = ($lineamount + $fstax1able) * (get_tax("5") / 100);
         $firsttax = $linetax5;
     }
 
-//*taxtype 1 ie.1=GST, as 2nd tax.
+    //*taxtype 1 ie.1=GST, as 2nd tax.
     if ($taxgroup_details->taxgroup_tax2 == 1) {
-        if ($taxgroup_details->taxgroup_tax2_on_tax1 == "1") $ft = $firsttax; else $ft = 0;
+        if ($taxgroup_details->taxgroup_tax2_on_tax1 == "1") {
+            $ft = $firsttax;
+        } else {
+            $ft = 0;
+        }
         $linetax1 = ($lineamount + $ft + $fstax2able) * (get_tax("1") / 100);
     }
-//*taxtype 2 ie.1=PST, as 2nd tax.
+    //*taxtype 2 ie.1=PST, as 2nd tax.
     if ($taxgroup_details->taxgroup_tax2 == 2) {
-        if ($taxgroup_details->taxgroup_tax2_on_tax1 == "1") $ft = $firsttax; else $ft = 0;
+        if ($taxgroup_details->taxgroup_tax2_on_tax1 == "1") {
+            $ft = $firsttax;
+        } else {
+            $ft = 0;
+        }
         $linetax2 = ($lineamount + $ft + $fstax2able) * (get_tax("2") / 100);
     }
-//*taxtype 3 ie.3=TVQ, as 2nd tax.
+    //*taxtype 3 ie.3=TVQ, as 2nd tax.
     if ($taxgroup_details->taxgroup_tax2 == 3) {
-        if ($taxgroup_details->taxgroup_tax2_on_tax1 == "1") $ft = $firsttax; else $ft = 0;
+        if ($taxgroup_details->taxgroup_tax2_on_tax1 == "1") {
+            $ft = $firsttax;
+        } else {
+            $ft = 0;
+        }
         $linetax3 = ($lineamount + $ft + $fstax2able) * (get_tax("3") / 100);
     }
-//*taxtype 4 ie.4=HST, as 2nd tax.
+    //*taxtype 4 ie.4=HST, as 2nd tax.
     if ($taxgroup_details->taxgroup_tax2 == 4) {
-        if ($taxgroup_details->taxgroup_tax2_on_tax1 == "1") $ft = $firsttax; else $ft = 0;
+        if ($taxgroup_details->taxgroup_tax2_on_tax1 == "1") {
+            $ft = $firsttax;
+        } else {
+            $ft = 0;
+        }
         $linetax4 = ($lineamount + $ft + $fstax2able) * (get_tax("4") / 100);
     }
-//*taxtype 5 ie.5=etc, as 2nd tax.
+    //*taxtype 5 ie.5=etc, as 2nd tax.
     if ($taxgroup_details->taxgroup_tax2 == 5) {
-        if ($taxgroup_details->taxgroup_tax2_on_tax1 == "1") $ft = $firsttax; else $ft = 0;
+        if ($taxgroup_details->taxgroup_tax2_on_tax1 == "1") {
+            $ft = $firsttax;
+        } else {
+            $ft = 0;
+        }
         $linetax5 = ($lineamount + $ft + $fstax2able) * (get_tax("5") / 100);
     }
 
 
     if ($taxgroup_details->taxgroup_tax1 != 0) {
-
         if ($taxgroup_details->taxgroup_tax1_on_fs == 1) {
             $tax1 = ($lineamount + $linefsamount) * (get_tax($taxgroup_details->taxgroup_tax1) / 100);
         } else {
             $tax1 = $lineamount * (get_tax($taxgroup_details->taxgroup_tax1) / 100);
         }
-
-
     }
 
 
@@ -911,8 +1060,6 @@ function tax_fs_calc($taxg_id, $fsovrd, $lineamount, $chargetype)
     $calcs[5] = $linetax5;
     $calcs[6] = $fsrate * 100;
     return $calcs;
-
-
 }
 
 
@@ -932,67 +1079,138 @@ function change_index_to_key($array)
 //* Validate date format
 function is_date($date)
 {
-    if ($date == "0000-00-00") return true;  // empty date IS Valid.
+    if ($date == "0000-00-00") {
+        return true;
+    }  // empty date IS Valid.
     $dp = explode("-", $date);
-    if (count($dp) != 3) return false;
-    if ($dp[0] < 2000) return false;
-    if ($dp[0] > 2099) return false;
-    if ($dp[1] > 12) return false;
-    if ($dp[1] < 1) return false;
-    if ($dp[2] > 31) return false;
-    if ($dp[2] < 1) return false;
-    for ($n = 0; $n < 3; $n++)
-        if (!is_numeric($dp[$n])) return false;
+    if (count($dp) != 3) {
+        return false;
+    }
+    if ($dp[0] < 2000) {
+        return false;
+    }
+    if ($dp[0] > 2099) {
+        return false;
+    }
+    if ($dp[1] > 12) {
+        return false;
+    }
+    if ($dp[1] < 1) {
+        return false;
+    }
+    if ($dp[2] > 31) {
+        return false;
+    }
+    if ($dp[2] < 1) {
+        return false;
+    }
+    for ($n = 0; $n < 3; $n++) {
+        if (!is_numeric($dp[$n])) {
+            return false;
+        }
+    }
     return true;
 }
 
 //* Validate time format
 function is_time($t)
 {
-//* expect time formatted string -> "00:00"  ** actually any krap as a separator
+    //* expect time formatted string -> "00:00"  ** actually any krap as a separator
     $hh = substr($t, 0, 2);
     $mm = substr($t, 3, 2);
-    if (strlen($t) != 5) return false;
+    if (strlen($t) != 5) {
+        return false;
+    }
     substr_replace($t, ":", 2);
-    if ($t == "00:00") return true;
-    if (!is_numeric($hh . $mm)) return false;
-    if ($hh < 0) return false;
-    if ($hh > 23) return false;
-    if ($hh == "  ") return false;
-    if ($mm < 0) return false;
-    if ($mm > 59) return false;
-    if ($mm == "  ") return false;
+    if ($t == "00:00") {
+        return true;
+    }
+    if (!is_numeric($hh . $mm)) {
+        return false;
+    }
+    if ($hh < 0) {
+        return false;
+    }
+    if ($hh > 23) {
+        return false;
+    }
+    if ($hh == "  ") {
+        return false;
+    }
+    if ($mm < 0) {
+        return false;
+    }
+    if ($mm > 59) {
+        return false;
+    }
+    if ($mm == "  ") {
+        return false;
+    }
     return true;
 }
 
 //* Validate date-time format
 function is_datetime($d)
 {
-//* expect datetime formatted string -> "0000-00-00 00:00:00"
-//* can't use explode b/c of inconsistent separators.
+    //* expect datetime formatted string -> "0000-00-00 00:00:00"
+    //* can't use explode b/c of inconsistent separators.
     $yyyy = substr($d, 0, 4);
     $mo = substr($d, 5, 2);
     $dd = substr($d, 8, 2);
     $hh = substr($d, 11, 2);
     $mm = substr($d, 14, 2);
     $ss = substr($d, 17, 2);
-    if ($d == "0000-00-00 00:00:00") return true;  // empty date-time IS Valid.
-    if (!is_numeric($yyyy . $mo . $dd . $hh . $mm . $ss)) return false;
-    if ($yyyy < 2000) return false;
-    if ($yyyy > 2099) return false;
-    if ($mo < 1) return false;
-    if ($mo > 12) return false;
-    if ($dd < 1) return false;
-    if ($dd > 31) return false;
-    if ($hh < 0) return false;
-    if ($hh > 23) return false;
-    if (strlen($hh) != 2 or $hh == "  ") return false;
-    if ($mm < 0) return false;
-    if ($mm > 59) return false;
-    if (strlen($mm) != 2 or $mm == "  ") return false;
-    if ($ss < 0) return false;
-    if ($ss > 59) return false;
-    if (strlen($ss) != 2 or $ss == "  ") return false;
+    if ($d == "0000-00-00 00:00:00") {
+        return true;
+    }  // empty date-time IS Valid.
+    if (!is_numeric($yyyy . $mo . $dd . $hh . $mm . $ss)) {
+        return false;
+    }
+    if ($yyyy < 2000) {
+        return false;
+    }
+    if ($yyyy > 2099) {
+        return false;
+    }
+    if ($mo < 1) {
+        return false;
+    }
+    if ($mo > 12) {
+        return false;
+    }
+    if ($dd < 1) {
+        return false;
+    }
+    if ($dd > 31) {
+        return false;
+    }
+    if ($hh < 0) {
+        return false;
+    }
+    if ($hh > 23) {
+        return false;
+    }
+    if (strlen($hh) != 2 or $hh == "  ") {
+        return false;
+    }
+    if ($mm < 0) {
+        return false;
+    }
+    if ($mm > 59) {
+        return false;
+    }
+    if (strlen($mm) != 2 or $mm == "  ") {
+        return false;
+    }
+    if ($ss < 0) {
+        return false;
+    }
+    if ($ss > 59) {
+        return false;
+    }
+    if (strlen($ss) != 2 or $ss == "  ") {
+        return false;
+    }
     return true;
 }
 
@@ -1030,7 +1248,7 @@ function get_driving_information($start, $finish, $fcode, $tocode, $raw = false)
         $xml = new SimpleXMLElement($data);
 
 
-        if (isset($xml->route->leg->duration->value) AND (int)$xml->route->leg->duration->value > 0) {
+        if (isset($xml->route->leg->duration->value) and (int)$xml->route->leg->duration->value > 0) {
             if ($raw) {
                 $distance = (string)$xml->route->leg->distance->text;
                 $time = (string)$xml->route->leg->duration->text;
@@ -1051,7 +1269,6 @@ function get_driving_information($start, $finish, $fcode, $tocode, $raw = false)
 
 function convert_distance($distance, $type)
 {
-
     if ($type == "Km") {
         $distance = $distance / 1000;
     }
@@ -1076,31 +1293,25 @@ function convert_big_distance($distance, $type)
 
 function cal_distance($var, $arr, $lastvalue)
 {
-
     $price = 0;
     $distance = $var;
-//echo $distance.'-a-';
+    //echo $distance.'-a-';
 
     $price = $arr[0]['price'];
     $distance = $distance - $arr[0]['distance'];
 
     if ($distance > 0) {
-
-
         for ($i = 1; $i < count($arr); $i++) {
-//start for loop
-//echo $arr[$i]['rate'];
+            //start for loop
+            //echo $arr[$i]['rate'];
             if ($arr[0]['rate'] == "1") {
                 ///cal distacnce with rates
 
 
                 if ($distance >= $arr[$i]['distance']) {
-
-
                     $price += ($arr[$i]['price'] * $arr[$i]['distance']);
 
                     $distance = $distance - $arr[$i]['distance'];
-
                 } else {
 
                     //	$kprice = $arr[$i]['distance']/$arr[$i]['price'];
@@ -1110,7 +1321,6 @@ function cal_distance($var, $arr, $lastvalue)
 
                     $distance = 0;
                     break;
-
                 }
 
 
@@ -1118,31 +1328,24 @@ function cal_distance($var, $arr, $lastvalue)
 // {
 //   $price +=( ($distance)*$lastvalue);
 // }
-
             } else {
 
                 ///cal distance wwithout rate as bulk value for distace
                 if ($distance >= $arr[$i]['distance']) {
-
                     $price += $arr[$i]['price'];
                     $distance = $distance - $arr[$i]['distance'];
-
                 } else {
-
                     $price += $arr[$i]['price'];
                     break;
                 }
-
             }
-//end for loop
+            //end for loop
         }
-
     }
-//echo "afetr:".$distance."last value".$lastvalue;
+    //echo "afetr:".$distance."last value".$lastvalue;
 
 
     return $price;
-
 }
 
 function showrow($row, $attr = array())
@@ -1159,14 +1362,13 @@ function search($array, $key, $value)
     $results = array();
 
     if (is_array($array)) {
-
-
-        if (isset($array[$key]) && $array[$key] == $value)
+        if (isset($array[$key]) && $array[$key] == $value) {
             $results[] = $array;
+        }
 
-        foreach ($array as $subarray)
+        foreach ($array as $subarray) {
             $results = array_merge($results, search($subarray, $key, $value));
-
+        }
     }
 
     return $results;
@@ -1174,7 +1376,6 @@ function search($array, $key, $value)
 
 function time_elapsed_string($datetime, $full = false)
 {
-
     $time_ago = strtotime($datetime);
     $cur_time = time();
     $time_elapsed = $cur_time - $time_ago;
@@ -1189,35 +1390,35 @@ function time_elapsed_string($datetime, $full = false)
     if ($seconds <= 60) {
         return "just now";
     } //Minutes
-    else if ($minutes <= 60) {
+    elseif ($minutes <= 60) {
         if ($minutes == 1) {
             return "one minute ago";
         } else {
             return "$minutes minutes ago";
         }
     } //Hours
-    else if ($hours <= 24) {
+    elseif ($hours <= 24) {
         if ($hours == 1) {
             return "an hour ago";
         } else {
             return "$hours hrs ago";
         }
     } //Days
-    else if ($days <= 7) {
+    elseif ($days <= 7) {
         if ($days == 1) {
             return "yesterday";
         } else {
             return "$days days ago";
         }
     } //Weeks
-    else if ($weeks <= 4.3) {
+    elseif ($weeks <= 4.3) {
         if ($weeks == 1) {
             return "a week ago";
         } else {
             return "$weeks weeks ago";
         }
     } //Months
-    else if ($months <= 12) {
+    elseif ($months <= 12) {
         if ($months == 1) {
             return "a month ago";
         } else {
@@ -1253,7 +1454,9 @@ function break_pc_into_list($p, $c)
     unset($err);
     $t = array();
     $c = str_replace(" ", "", $c);      //squish out all spaces
-    if ($c == "") $err = "is blank";
+    if ($c == "") {
+        $err = "is blank";
+    }
     $c .= ",";                         //get the last one
     do {
         $c = str_replace(",,", ",", $c); //replace any double commas with singles
@@ -1274,22 +1477,31 @@ function break_pc_into_list($p, $c)
         if ($dash === false) {
             //single postalcode
             $ret[] = $p . $pc;
-            //echo ">$pc< *$dash* false<br><br>";
+        //echo ">$pc< *$dash* false<br><br>";
         } else {
             //postalcode range
             //echo ">$pc< *$dash* true<br><br>";
-            if ($dash == 0) $err = "invalid range  " . $pc;
-            if ($dash == strlen($pc) - 1) $err = "invalid range  " . $pc;
+            if ($dash == 0) {
+                $err = "invalid range  " . $pc;
+            }
+            if ($dash == strlen($pc) - 1) {
+                $err = "invalid range  " . $pc;
+            }
             if (!isset($err)) {
                 $pos = strpos($pc, "-");
                 $l = substr($pc, 0, $pos);
                 $r = substr($pc, $pos + 1);
-                if ($r <= $l) $err = "range from is equal or higher than thru";
+                if ($r <= $l) {
+                    $err = "range from is equal or higher than thru";
+                }
             }
-            if (!isset($err))
+            if (!isset($err)) {
                 $ret[] = $p . $l . "-" . $p . $r;
+            }
         }
-        if (strpos($r, "-")) $err = "invalid range, more than one hyphen";
+        if (strpos($r, "-")) {
+            $err = "invalid range, more than one hyphen";
+        }
     }
 
     if (isset($err)) {
@@ -1332,7 +1544,9 @@ function get_zone_from_postalcode($p, $ranges, $ranges_zone, $singles, $singles_
             $r = $r . "}}}}}}}}";
             $r = substr($r, 0, $longest);
 
-            if ($p >= $l and $p <= $r) $ret = $ranges_zone[$i];
+            if ($p >= $l and $p <= $r) {
+                $ret = $ranges_zone[$i];
+            }
             //$xx = "$i * $l * $r * $pos *<br>";    //++++++++++++++++++++++++++++++++++++++
         }
     }
@@ -1341,7 +1555,9 @@ function get_zone_from_postalcode($p, $ranges, $ranges_zone, $singles, $singles_
         for ($i = 0; $i < $singlecnt; $i++) {
             $len = strlen($singles[$i]);
             $px = substr($p, 0, $len);
-            if ($singles[$i] == $px) $ret = $singles_zone[$i];
+            if ($singles[$i] == $px) {
+                $ret = $singles_zone[$i];
+            }
         }
     }           //$ret = "999* $ranges[0] * $ranges[1] * $rangecnt * $longest * 999 *".$xx; //+++++++++++++++++++++++++++++++++++++++++++++++++++
     return $ret;
@@ -1353,11 +1569,16 @@ function get_zone_from_postalcode($p, $ranges, $ranges_zone, $singles, $singles_
 //******************************************       **EXCEPT** from XPEntry.
 function zonevalidate($zone)
 {
+    global $mycon;
+
     $zone = strtoupper($zone);
-    $rz = mysqli_query($mycon,"select id from pricezones where zone='$zone'");
+    $rz = mysqli_query($mycon, "select id from pricezones where zone='$zone'");
     $zonecount = mysqli_num_rows($rz);
-    if ($zonecount == 0) return "";
-    else                  return $zone;
+    if ($zonecount == 0) {
+        return "";
+    } else {
+        return $zone;
+    }
 }
 
 
@@ -1368,18 +1589,18 @@ function img_resize($saveToDir, $imagePath, $imageName, $max_x, $max_y)
     //echo $ext[2];
 
     switch (strtolower($ext[2])) {
-        case 'jpg' :
+        case 'jpg':
         case 'jpeg':
             $im = imagecreatefromjpeg($imagePath);
             break;
-        case 'gif' :
+        case 'gif':
             $im = imagecreatefromgif($imagePath);
             break;
-        case 'png' :
+        case 'png':
             $im = imagecreatefrompng($imagePath);
 
             break;
-        default    :
+        default:
             $stop = true;
             break;
     }
@@ -1422,13 +1643,19 @@ function sendIphoneCloudMessage($data, $pusk_key, $app_id)
 
     // Open a connection to the APNS server
     $fp = stream_socket_client(
-        'ssl://gateway.push.apple.com:2195', $err,
-        $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
+        'ssl://gateway.push.apple.com:2195',
+        $err,
+        $errstr,
+        60,
+        STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT,
+        $ctx
+    );
 
-    if (!$fp)
+    if (!$fp) {
         exit("Failed to connect: $err $errstr" . PHP_EOL);
+    }
 
-//	echo 'Connected to APNS' . PHP_EOL;
+    //	echo 'Connected to APNS' . PHP_EOL;
 
     if (isset($data['silent']) && $data['silent'] == "1") {
 
@@ -1441,7 +1668,6 @@ function sendIphoneCloudMessage($data, $pusk_key, $app_id)
             'Content-available' => '1'
 
         );
-
     } else {
         // Create the payload body
         $body['aps'] = array(
@@ -1463,16 +1689,16 @@ function sendIphoneCloudMessage($data, $pusk_key, $app_id)
     // Send it to the server
     $result = fwrite($fp, $msg, strlen($msg));
 
-    if (!$result)
+    if (!$result) {
         $m = 'Message not delivered' . PHP_EOL;
-    else
+    } else {
         $m = 'Message successfully delivered' . PHP_EOL;
+    }
 
     //echo $m;
     // Close the connection to the server
     fclose($fp);
     return $m;
-
 }
 
 function sendGoogleCloudMessage($data, $ids, $apiKey)
@@ -1597,11 +1823,16 @@ function getDistance($addressFrom, $addressTo, $unit, $avoidtolls, $avoidhightwa
     $longitudeTo = $outputTo->results[0]->geometry->location->lng;
 
     $avoid = "";
-    if ($avoidtolls == 'tolls') $avoid .= $avoidtolls;
+    if ($avoidtolls == 'tolls') {
+        $avoid .= $avoidtolls;
+    }
 
     if ($avoidhightways == 'highways') {
-        if ($avoid != "") $avoid .= "|" . $avoidhightways;
-        else $avoid .= $avoidhightways;
+        if ($avoid != "") {
+            $avoid .= "|" . $avoidhightways;
+        } else {
+            $avoid .= $avoidhightways;
+        }
     }
     //avoid=highways
 
@@ -1620,8 +1851,6 @@ function getDistance($addressFrom, $addressTo, $unit, $avoidtolls, $avoidhightwa
     $time = $response_a['rows'][0]['elements'][0]['duration']['text'];
 
     return $dist;
-
-
 }
 
 function generateRandomCode($length = 10)
@@ -1666,5 +1895,3 @@ function xlsWriteLabel($Row, $Col, $Value)
     echo $Value;
     return;
 }
-
-?>

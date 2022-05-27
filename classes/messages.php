@@ -14,7 +14,7 @@ class messages
     {
         $array['m_date'] = date('Y-m-d H:i:s');
         $array['thread_id'] = $thread_id;  // added by koko
-        $sql = $this->db->make_insert("messages", $array);
+        $sql = make_insert("messages", $array);
         $query = mysqli_query($this->db, $sql);
 
         if ($query) {

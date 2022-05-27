@@ -39,6 +39,7 @@ include(STYLE."/maintemp.php");
 include(STYLE."/clienttemp.php");
 include(STYLE."/admintemp.php");
 
+include(STYLE."/rowoption.php");
 
 
 $db = new dba(DBUSER, DBPASS, DBNAME, HOSTNAME);	// - and away we go
@@ -58,14 +59,14 @@ mysqli_query($mycon, "SET CHARACTER SET utf8");
 
 
 if (isset($_SESSION['status']) && $_SESSION['status'] == 1) {
-    define("formurl", "http://localhost/ggp/client");
+    define("formurl", "http://localhost/ggpn/client");
     if (!isset($_SESSION['services_table'])) {
         $_SESSION['services_table'] = $db->get_table("services");
     }
 }
 
 if (isset($_SESSION['status']) && $_SESSION['status'] == 2) {
-    define("formurl", "http://localhost/ggp/administrator");
+    define("formurl", "http://localhost/ggpn/administrator");
 
 
 
@@ -85,41 +86,6 @@ $new_invoice="";
 $new_message="";
 $new_client="";
 
-if (isset($_SESSION['status']) && $_SESSION['status'] == 1) {
-    $notification = $notify->get_account_notify($_SESSION['account_id'], $_SESSION['user_type']);
-}
-
-
-
-if (isset($_SESSION['status']) && $_SESSION['status'] == 2) {
-    $notification = $notify->get_admin_notify(0);
-}
-
-for ($i=0;$i<count($notification);$i++) {
-    if ($notification[$i]['types'] == "new_order") {
-        $update_order++;
-    }
-    if ($notification[$i]['types'] == "update_order") {
-        $update_order++;
-    }
-    if ($notification[$i]['types'] == "request_cancel_order") {
-        $update_order++;
-    }
-    if ($notification[$i]['types'] == "cancel_order") {
-        $update_order++;
-    }
-
-
-    if ($notification[$i]['types'] == "new_invoice") {
-        $new_invoice++;
-    }
-    if ($notification[$i]['types'] == "new_message") {
-        $new_message++;
-    }
-    if ($notification[$i]['types'] == "new_user") {
-        $new_client++;
-    }
-}
 
 
 

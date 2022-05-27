@@ -127,7 +127,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
                         $invetory_details['reason'] = "2";
                         $invetory_details['action_time'] = date("Y-m-d H:i:s");
 
-                        $sql = $db->make_insert("inventory_action", $invetory_details);
+                        $sql = make_insert("inventory_action", $invetory_details);
                         // echo $sql;
                         $res = mysqli_query($mycon, $sql) or die(mysqli_error($mycon));
 

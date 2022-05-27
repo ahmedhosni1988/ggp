@@ -1679,6 +1679,10 @@ class upload
      */
     var $lang;
 
+    public function __construct()
+    {
+    }
+    
     /**
      * Init or re-init all the processing variables to their default values
      *

@@ -14,7 +14,7 @@ class orders
     {
         $query = mysqli_query($this->db, "INSERT INTO orders(account_id, user_id, order_status, from_name, from_address, from_pcode, from_phone, to_name, to_address, to_pcode, to_phone, pickup_time,pickup_date, delivery_time,delivery_date, driver_id, service_id, order_comment,order_des, refrence, price, has_package,confirmation_mail,transport_id,order_date,from_zone,to_zone,from_contact,to_att,declared_value,orderedby,COD,collect,paymentterm,packagetype,weight,volume,pieces,ret,pickup_by,deliver_by) 
 VALUES 
-(" . check_mysql_string($this->db,$account_id) . "," . check_mysql_string($this->db,$user_id) . "," . check_mysql_string($this->db,$order_status) . "," . check_mysql_string($this->db,$from_name) . "," . check_mysql_string($this->db,$from_address) . "," . check_mysql_string($this->db,$from_pcode) . "," . check_mysql_string($this->db,$from_phone) . "," . check_mysql_string($this->db,$to_name) . "," . check_mysql_string($this->db,$to_address) . "," . check_mysql_string($this->db,$to_pcode) . "," . check_mysql_string($this->db,$to_phone) . "," . check_mysql_string($this->db,$pickup_time) . "," . check_mysql_string($this->db,$pickup_date) . "," . check_mysql_string($this->db,$delivery_time) . "," . check_mysql_string($this->db,$delivery_date) . "," . check_mysql_string($this->db,$driver_id) . "," . check_mysql_string($this->db,$service_id) . "," . check_mysql_string($this->db,$order_comment) . "," . check_mysql_string($this->db,$order_des) . "," . check_mysql_string($this->db,$refrence) . "," . check_mysql_string($this->db,$price) . "," . check_mysql_string($this->db,$has_package) . "," . check_mysql_string($this->db,$confirmation_mail) . "," . check_mysql_string($this->db,$transport_id) . "," . check_mysql_string($this->db,$order_date) . "," . check_mysql_string($this->db,$from_zone) . "," . check_mysql_string($this->db,$to_zone) . "," . check_mysql_string($this->db,$contact) . "," . check_mysql_string($this->db,$att) . "," . check_mysql_string($this->db,$declared_value) . "," . check_mysql_string($this->db,$orderedby) . "," . check_mysql_string($this->db,$COD) . "," . check_mysql_string($this->db,$collect) . "," . check_mysql_string($this->db,$paymentterm) . "," . check_mysql_string($this->db,$packagetype) . "," . check_mysql_string($this->db,$weight) . "," . check_mysql_string($this->db,$volume) . ", " . check_mysql_string($this->db,$pieces) . " ," . check_mysql_string($this->db,$return) . " ," . check_mysql_string($this->db,$pickup_by) . "," . check_mysql_string($this->db,$deliver_by) . " );") or die(mysqli_error($this->db));
+(" . check_mysql_string($this->db, $account_id) . "," . check_mysql_string($this->db, $user_id) . "," . check_mysql_string($this->db, $order_status) . "," . check_mysql_string($this->db, $from_name) . "," . check_mysql_string($this->db, $from_address) . "," . check_mysql_string($this->db, $from_pcode) . "," . check_mysql_string($this->db, $from_phone) . "," . check_mysql_string($this->db, $to_name) . "," . check_mysql_string($this->db, $to_address) . "," . check_mysql_string($this->db, $to_pcode) . "," . check_mysql_string($this->db, $to_phone) . "," . check_mysql_string($this->db, $pickup_time) . "," . check_mysql_string($this->db, $pickup_date) . "," . check_mysql_string($this->db, $delivery_time) . "," . check_mysql_string($this->db, $delivery_date) . "," . check_mysql_string($this->db, $driver_id) . "," . check_mysql_string($this->db, $service_id) . "," . check_mysql_string($this->db, $order_comment) . "," . check_mysql_string($this->db, $order_des) . "," . check_mysql_string($this->db, $refrence) . "," . check_mysql_string($this->db, $price) . "," . check_mysql_string($this->db, $has_package) . "," . check_mysql_string($this->db, $confirmation_mail) . "," . check_mysql_string($this->db, $transport_id) . "," . check_mysql_string($this->db, $order_date) . "," . check_mysql_string($this->db, $from_zone) . "," . check_mysql_string($this->db, $to_zone) . "," . check_mysql_string($this->db, $contact) . "," . check_mysql_string($this->db, $att) . "," . check_mysql_string($this->db, $declared_value) . "," . check_mysql_string($this->db, $orderedby) . "," . check_mysql_string($this->db, $COD) . "," . check_mysql_string($this->db, $collect) . "," . check_mysql_string($this->db, $paymentterm) . "," . check_mysql_string($this->db, $packagetype) . "," . check_mysql_string($this->db, $weight) . "," . check_mysql_string($this->db, $volume) . ", " . check_mysql_string($this->db, $pieces) . " ," . check_mysql_string($this->db, $return) . " ," . check_mysql_string($this->db, $pickup_by) . "," . check_mysql_string($this->db, $deliver_by) . " );") or die(mysqli_error($this->db));
 
         if ($query) {
             return mysqli_insert_id($this->db);
@@ -44,46 +44,46 @@ VALUES
     {
         $sql = "update orders set 
 
-from_name = " . check_mysql_string($this->db,$from_name) . ", 
-from_address = " . check_mysql_string($this->db,$from_address) . ", 
-from_pcode = " . check_mysql_string($this->db,$from_pcode) . ", 
-from_phone = " . check_mysql_string($this->db,$from_phone) . ", 
-to_name = " . check_mysql_string($this->db,$to_name) . ", 
-to_address = " . check_mysql_string($this->db,$to_address) . ", 
-to_pcode = " . check_mysql_string($this->db,$to_pcode) . ", 
-to_phone = " . check_mysql_string($this->db,$to_phone) . ", 
-pickup_time = " . check_mysql_string($this->db,$pickup_time) . ",
-pickup_date = " . check_mysql_string($this->db,$pickup_date) . ", 
-delivery_time = " . check_mysql_string($this->db,$delivery_time) . ",
-delivery_date = " . check_mysql_string($this->db,$delivery_date) . ", 
-driver_id = " . check_mysql_string($this->db,$driver_id) . ", 
-service_id = " . check_mysql_string($this->db,$service_id) . ", 
-order_comment = " . check_mysql_string($this->db,$order_comment) . ",
-order_des = " . check_mysql_string($this->db,$order_des) . ", 
-chargecode = " . check_mysql_string($this->db,$refrence) . ", 
-price = " . check_mysql_string($this->db,$price) . ", 
-has_package = " . check_mysql_string($this->db,$has_package) . ",
-confirmation_mail = " . check_mysql_string($this->db,$confirmation_mail) . ",
-transport_id = " . check_mysql_string($this->db,$transport_id) . ",
-from_zone = " . check_mysql_string($this->db,$from_zone) . ",
-to_zone = " . check_mysql_string($this->db,$to_zone) . ",
-from_contact = " . check_mysql_string($this->db,$contact) . ",
-to_att = " . check_mysql_string($this->db,$att) . " ,
-declared_value = " . check_mysql_string($this->db,$declared_value) . ",
-orderedby= " . check_mysql_string($this->db,$orderedby) . ",
-COD = " . check_mysql_string($this->db,$COD) . ",
-collect = " . check_mysql_string($this->db,$collect) . ",
-paymentterm = " . check_mysql_string($this->db,$paymentterm) . ",
-packagetype = " . check_mysql_string($this->db,$packagetype) . " ,
-weight = " . check_mysql_string($this->db,$weight) . ",
-volume = " . check_mysql_string($this->db,$volume) . ",
-pieces =" . check_mysql_string($this->db,$pieces) . " ,
-ret = " . check_mysql_string($this->db,$return) . ",
-override_distance = " . check_mysql_string($this->db,$overide_distance) . ",
-order_status = " . check_mysql_string($this->db,$order_status) . ",
-pickup_by = " . check_mysql_string($this->db,$pickup_by) . ",
-deliver_by = " . check_mysql_string($this->db,$deliver_by) . "
-where order_id = " . check_mysql_string($this->db,$order_id) . " ";
+from_name = " . check_mysql_string($this->db, $from_name) . ", 
+from_address = " . check_mysql_string($this->db, $from_address) . ", 
+from_pcode = " . check_mysql_string($this->db, $from_pcode) . ", 
+from_phone = " . check_mysql_string($this->db, $from_phone) . ", 
+to_name = " . check_mysql_string($this->db, $to_name) . ", 
+to_address = " . check_mysql_string($this->db, $to_address) . ", 
+to_pcode = " . check_mysql_string($this->db, $to_pcode) . ", 
+to_phone = " . check_mysql_string($this->db, $to_phone) . ", 
+pickup_time = " . check_mysql_string($this->db, $pickup_time) . ",
+pickup_date = " . check_mysql_string($this->db, $pickup_date) . ", 
+delivery_time = " . check_mysql_string($this->db, $delivery_time) . ",
+delivery_date = " . check_mysql_string($this->db, $delivery_date) . ", 
+driver_id = " . check_mysql_string($this->db, $driver_id) . ", 
+service_id = " . check_mysql_string($this->db, $service_id) . ", 
+order_comment = " . check_mysql_string($this->db, $order_comment) . ",
+order_des = " . check_mysql_string($this->db, $order_des) . ", 
+chargecode = " . check_mysql_string($this->db, $refrence) . ", 
+price = " . check_mysql_string($this->db, $price) . ", 
+has_package = " . check_mysql_string($this->db, $has_package) . ",
+confirmation_mail = " . check_mysql_string($this->db, $confirmation_mail) . ",
+transport_id = " . check_mysql_string($this->db, $transport_id) . ",
+from_zone = " . check_mysql_string($this->db, $from_zone) . ",
+to_zone = " . check_mysql_string($this->db, $to_zone) . ",
+from_contact = " . check_mysql_string($this->db, $contact) . ",
+to_att = " . check_mysql_string($this->db, $att) . " ,
+declared_value = " . check_mysql_string($this->db, $declared_value) . ",
+orderedby= " . check_mysql_string($this->db, $orderedby) . ",
+COD = " . check_mysql_string($this->db, $COD) . ",
+collect = " . check_mysql_string($this->db, $collect) . ",
+paymentterm = " . check_mysql_string($this->db, $paymentterm) . ",
+packagetype = " . check_mysql_string($this->db, $packagetype) . " ,
+weight = " . check_mysql_string($this->db, $weight) . ",
+volume = " . check_mysql_string($this->db, $volume) . ",
+pieces =" . check_mysql_string($this->db, $pieces) . " ,
+ret = " . check_mysql_string($this->db, $return) . ",
+override_distance = " . check_mysql_string($this->db, $overide_distance) . ",
+order_status = " . check_mysql_string($this->db, $order_status) . ",
+pickup_by = " . check_mysql_string($this->db, $pickup_by) . ",
+deliver_by = " . check_mysql_string($this->db, $deliver_by) . "
+where order_id = " . check_mysql_string($this->db, $order_id) . " ";
 
         //	echo $sql;
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
@@ -124,7 +124,7 @@ where order_id = " . check_mysql_string($this->db,$order_id) . " ";
 	inner join services as s on (o.service_id = s.service_id) 
 	inner join users as u on (u.user_id = o.user_id) 
 	left join drivers as ds on (o.driver_id = ds.id)
-   where o.id = " . check_mysql_string($this->db,$id) . " ";
+   where o.id = " . check_mysql_string($this->db, $id) . " ";
 
         //echo $sql;
 
@@ -138,7 +138,7 @@ where order_id = " . check_mysql_string($this->db,$order_id) . " ";
 
     public function update_order_group($array, $key)
     {
-        $sql = $this->db->make_update("orders_group", $array, "id", $key);
+        $sql = make_update("orders_group", $array, "id", $key);
         mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
     }
 
@@ -172,7 +172,7 @@ from orders as o
 left join account as a on (o.account_id=a.account_id) 
 left join services as s on (o.service_id = s.service_id) 
 left join users as u on (u.user_id = o.user_id) 
- where o.order_id = " . check_mysql_string($this->db,$order_id) . " ";
+ where o.order_id = " . check_mysql_string($this->db, $order_id) . " ";
 
         //echo $sql;
 
@@ -213,10 +213,10 @@ where order_id = '$order_id'";
 
     public function order_add_skid($order_id, $weight, $length, $width, $height, $quantiy, $total)
     {
-        mysqli_query($this->db, "delete from order_skid where order_id = " . check_mysql_string($this->db,$order_id) . " ") or die(mysqli_error($this->db));
+        mysqli_query($this->db, "delete from order_skid where order_id = " . check_mysql_string($this->db, $order_id) . " ") or die(mysqli_error($this->db));
         for ($i = 0; $i < count($length); $i++) {
             if ($total[$i] != '' && $total[$i] != '0') {
-                $query = mysqli_query($this->db, "insert into order_skid (order_id,weight,width,length,height,quantity,total) values (" . check_mysql_string($this->db,$order_id) . "," . check_mysql_string($this->db,$weight[$i]) . "," . check_mysql_string($this->db,$width[$i]) . "," . check_mysql_string($this->db,$length[$i]) . "," . check_mysql_string($this->db,$height[$i]) . "," . check_mysql_string($this->db,$quantiy[$i]) . "," . check_mysql_string($this->db,$total[$i]) . ");") or die(mysqli_error($this->db));
+                $query = mysqli_query($this->db, "insert into order_skid (order_id,weight,width,length,height,quantity,total) values (" . check_mysql_string($this->db, $order_id) . "," . check_mysql_string($this->db, $weight[$i]) . "," . check_mysql_string($this->db, $width[$i]) . "," . check_mysql_string($this->db, $length[$i]) . "," . check_mysql_string($this->db, $height[$i]) . "," . check_mysql_string($this->db, $quantiy[$i]) . "," . check_mysql_string($this->db, $total[$i]) . ");") or die(mysqli_error($this->db));
             }
         }
     }
@@ -224,7 +224,7 @@ where order_id = '$order_id'";
 
     public function get_order_skid($order_id)
     {
-        $query = mysqli_query($this->db, "select * from order_skid where order_id = " . check_mysql_string($this->db,$order_id) . " ") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select * from order_skid where order_id = " . check_mysql_string($this->db, $order_id) . " ") or die(mysqli_error($this->db));
 
 
         $order_details = array();
@@ -242,7 +242,7 @@ where order_id = '$order_id'";
 
     public function update_orders($array, $order_id)
     {
-        $sql = $this->db->make_update("orders", $array, "order_id", $order_id);
+        $sql = make_update("orders", $array, "order_id", $order_id);
         //echo $sql;
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
@@ -257,7 +257,7 @@ where order_id = '$order_id'";
 
     public function add_new_orders($array)
     {
-        $sql = $this->db->make_insert("orders", $array);
+        $sql = make_insert("orders", $array);
 
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
@@ -454,7 +454,7 @@ where ";
 
     public function update_order_distance($order_id, $from, $to, $distance)
     {
-        $query = mysqli_query($this->db, "update orders set quoted_distance = " . check_mysql_string($this->db,$distance) . " , from_address = " . check_mysql_string($this->db,$from) . " , to_address = " . check_mysql_string($this->db,$to) . " , from_pcode = '' , to_pcode = '' where order_id = " . check_mysql_string($this->db,$order_id) . "") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "update orders set quoted_distance = " . check_mysql_string($this->db, $distance) . " , from_address = " . check_mysql_string($this->db, $from) . " , to_address = " . check_mysql_string($this->db, $to) . " , from_pcode = '' , to_pcode = '' where order_id = " . check_mysql_string($this->db, $order_id) . "") or die(mysqli_error($this->db));
     }
 
     public function update_order_driver($order_id, $driver_id, $driver_id2 = null)
@@ -504,7 +504,7 @@ where ";
 
     public function update_order_status($id, $status)
     {
-        $query = mysqli_query($this->db, "update orders set order_status=" . check_mysql_string($this->db,$status) . " where order_id = '" . $id . "'") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "update orders set order_status=" . check_mysql_string($this->db, $status) . " where order_id = '" . $id . "'") or die(mysqli_error($this->db));
         if ($query) {
             return true;
         } else {
@@ -553,15 +553,15 @@ inner join services on (orders.service_id = services.service_id)  where order_id
     {
         if ($ser_id == null) {
             if ($override == null) {
-                $query = mysqli_query($this->db, "insert into orders_price(order_id,name,ratio,price,type) values (" . check_mysql_string($this->db,$orderid) . "," . check_mysql_string($this->db,$name) . "," . check_mysql_string($this->db,$ratio) . "," . check_mysql_string($this->db,$price) . "," . check_mysql_string($this->db,$type) . ");") or die(mysqli_error($this->db));
+                $query = mysqli_query($this->db, "insert into orders_price(order_id,name,ratio,price,type) values (" . check_mysql_string($this->db, $orderid) . "," . check_mysql_string($this->db, $name) . "," . check_mysql_string($this->db, $ratio) . "," . check_mysql_string($this->db, $price) . "," . check_mysql_string($this->db, $type) . ");") or die(mysqli_error($this->db));
             } else {
-                $query = mysqli_query($this->db, "insert into orders_price(order_id,name,ratio,price,type,override) values (" . check_mysql_string($this->db,$orderid) . "," . check_mysql_string($this->db,$name) . "," . check_mysql_string($this->db,$ratio) . "," . check_mysql_string($this->db,$price) . "," . check_mysql_string($this->db,$type) . "," . check_mysql_string($this->db,$override) . ");") or die(mysqli_error($this->db));
+                $query = mysqli_query($this->db, "insert into orders_price(order_id,name,ratio,price,type,override) values (" . check_mysql_string($this->db, $orderid) . "," . check_mysql_string($this->db, $name) . "," . check_mysql_string($this->db, $ratio) . "," . check_mysql_string($this->db, $price) . "," . check_mysql_string($this->db, $type) . "," . check_mysql_string($this->db, $override) . ");") or die(mysqli_error($this->db));
             }
         } else {
             if ($override == null) {
-                $query = mysqli_query($this->db, "insert into orders_price(order_id,ser_id,name,ratio,price,type) values (" . check_mysql_string($this->db,$orderid) . "," . check_mysql_string($this->db,$ser_id) . "," . check_mysql_string($this->db,$name) . "," . check_mysql_string($this->db,$ratio) . "," . check_mysql_string($this->db,$price) . "," . check_mysql_string($this->db,$type) . ");") or die(mysqli_error($this->db));
+                $query = mysqli_query($this->db, "insert into orders_price(order_id,ser_id,name,ratio,price,type) values (" . check_mysql_string($this->db, $orderid) . "," . check_mysql_string($this->db, $ser_id) . "," . check_mysql_string($this->db, $name) . "," . check_mysql_string($this->db, $ratio) . "," . check_mysql_string($this->db, $price) . "," . check_mysql_string($this->db, $type) . ");") or die(mysqli_error($this->db));
             } else {
-                $query = mysqli_query($this->db, "insert into orders_price(order_id,ser_id,name,ratio,price,type,override) values (" . check_mysql_string($this->db,$orderid) . "," . check_mysql_string($this->db,$ser_id) . "," . check_mysql_string($this->db,$name) . "," . check_mysql_string($this->db,$ratio) . "," . check_mysql_string($this->db,$price) . "," . check_mysql_string($this->db,$type) . "," . check_mysql_string($this->db,$override) . ");") or die(mysqli_error($this->db));
+                $query = mysqli_query($this->db, "insert into orders_price(order_id,ser_id,name,ratio,price,type,override) values (" . check_mysql_string($this->db, $orderid) . "," . check_mysql_string($this->db, $ser_id) . "," . check_mysql_string($this->db, $name) . "," . check_mysql_string($this->db, $ratio) . "," . check_mysql_string($this->db, $price) . "," . check_mysql_string($this->db, $type) . "," . check_mysql_string($this->db, $override) . ");") or die(mysqli_error($this->db));
             }
         }
 
@@ -574,7 +574,7 @@ inner join services on (orders.service_id = services.service_id)  where order_id
 
     public function update_order_price($orderid, $name, $type, $ser_id, $override)
     {
-        $query = mysqli_query($this->db, "update orders_price set override = " . check_mysql_string($this->db,$override) . " where order_id = " . check_mysql_string($this->db,$orderid) . " and ser_id = " . check_mysql_string($this->db,$ser_id) . " and type = " . check_mysql_string($this->db,$type) . " and name = " . check_mysql_string($this->db,$name) . " ") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "update orders_price set override = " . check_mysql_string($this->db, $override) . " where order_id = " . check_mysql_string($this->db, $orderid) . " and ser_id = " . check_mysql_string($this->db, $ser_id) . " and type = " . check_mysql_string($this->db, $type) . " and name = " . check_mysql_string($this->db, $name) . " ") or die(mysqli_error($this->db));
     }
 
     public function del_order_price($order_id)
@@ -583,7 +583,7 @@ inner join services on (orders.service_id = services.service_id)  where order_id
         //$r = mysqli_fetch_array($q);
 
         //if($r['invoiceno'] == "0"){
-        $query = mysqli_query($this->db, "delete from orders_price where order_id = " . check_mysql_string($this->db,$order_id) . "") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "delete from orders_price where order_id = " . check_mysql_string($this->db, $order_id) . "") or die(mysqli_error($this->db));
 
         //	}else{
         //	return false;
@@ -613,7 +613,7 @@ inner join services on (orders.service_id = services.service_id)  where order_id
 
     public function get_order_package($order_id)
     {
-        $query = mysqli_query($this->db, "select * from   orders_package where order_id = " . check_mysql_string($this->db,$order_id) . " order by part_order ASC ") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select * from   orders_package where order_id = " . check_mysql_string($this->db, $order_id) . " order by part_order ASC ") or die(mysqli_error($this->db));
 
         $order_package = array();
         $i = 0;
@@ -630,7 +630,7 @@ inner join services on (orders.service_id = services.service_id)  where order_id
 
     public function get_order_package_group($order_id)
     {
-        $query = mysqli_query($this->db, "select orders_package.* ,  (select count(*) from orders_package as op where op.parent_id = orders_package.id) as parts   from   orders_package where order_id = " . check_mysql_string($this->db,$order_id) . "  and parent_id = 0 order by part_order") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select orders_package.* ,  (select count(*) from orders_package as op where op.parent_id = orders_package.id) as parts   from   orders_package where order_id = " . check_mysql_string($this->db, $order_id) . "  and parent_id = 0 order by part_order") or die(mysqli_error($this->db));
 
         $order_package = array();
         $i = 0;
@@ -657,7 +657,7 @@ inner join services on (orders.service_id = services.service_id)  where order_id
             $sql = "id,part_order,length,width,package_type,glasscolour,glassPrint,glassType,glassScarch,glassPointing,glassFixedPointing,noofprinting,colorofprinting";
         }
 
-        $query = mysqli_query($this->db, "select $sql  from orders_package $innerJoin where orders_package.order_id = " . check_mysql_string($this->db,$order_id) . " order by part_order ASC ") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select $sql  from orders_package $innerJoin where orders_package.order_id = " . check_mysql_string($this->db, $order_id) . " order by part_order ASC ") or die(mysqli_error($this->db));
 
         $order_package = array();
         $i = 0;
@@ -736,7 +736,7 @@ inner join services on (orders.service_id = services.service_id)  where order_id
 
     public function get_addtional_services($order_id)
     {
-        $query = mysqli_query($this->db, "select * from orders_price where order_id = " . check_mysql_string($this->db,$order_id) . " and type='addtional_services'") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select * from orders_price where order_id = " . check_mysql_string($this->db, $order_id) . " and type='addtional_services'") or die(mysqli_error($this->db));
 
         $order_package = array();
         $i = 0;

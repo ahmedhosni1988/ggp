@@ -397,7 +397,7 @@ class account
         $query = mysqli_query($this->db, "select * from account_override where account_id= " . check_mysql_string($this->db,$account_id) . " and type='" . $type . "'") or die(mysqli_error($this->db));
 
 
-        return $this->db->build_array($query);
+        return build_array($query);
     }
 
     public function get_account_vechileservices($account_id)

@@ -60,10 +60,10 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
                         $oldCash= $db->get_table($sql);
                             
                         if ($oldCash[0]['pymt_amount'] > $_POST['pymt_amount']) {
-                            mysqli_query($mycon,'UPDATE `account` SET `credit_hold` = credit_hold-'.($oldCash[0]['pymt_amount']-$_POST['pymt_amount']).' WHERE `account_id` ='.$_POST['clid']);
+                            mysqli_query($mycon, 'UPDATE `account` SET `credit_hold` = credit_hold-'.($oldCash[0]['pymt_amount']-$_POST['pymt_amount']).' WHERE `account_id` ='.$_POST['clid']);
                         // echo 'الجديد اصغر';
                         } elseif ($oldCash[0]['pymt_amount'] < $_POST['pymt_amount']) {
-                            mysqli_query($mycon,'UPDATE `account` SET `credit_hold` = credit_hold+'.($_POST['pymt_amount']-$oldCash[0]['pymt_amount']).' WHERE `account_id` ='.$_POST['clid']);
+                            mysqli_query($mycon, 'UPDATE `account` SET `credit_hold` = credit_hold+'.($_POST['pymt_amount']-$oldCash[0]['pymt_amount']).' WHERE `account_id` ='.$_POST['clid']);
                             // echo 'الجديد اكبر';
                         }
                         unset($data['cash_id']);
@@ -72,7 +72,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
                         // var_dump($data);
                         $s=$db->make_update("cashreceipts", $data, 'id', $_POST['cash_id']);
                         //  echo$s;
-                        mysqli_query($mycon,$s);
+                        mysqli_query($mycon, $s);
                         echo 'تمت التعديل بنجاح';
                     } else {
                         $newtemp->load_template('cash', 5);
@@ -88,7 +88,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
             case 'cashreceipts_print':
             
                 if (isset($_POST['id'])) {
-                    $re = mysqli_query($mycon,'select cashreceipts.*,account.account_company,payment_type.payment_name from `cashreceipts`  
+                    $re = mysqli_query($mycon, 'select cashreceipts.*,account.account_company,payment_type.payment_name from `cashreceipts`  
                     inner join account on (cashreceipts.clid = account.account_id)
                     inner join payment_type on (payment_type.payment_id = cashreceipts.paymethod)
                     WHERE  cashreceipts.id ='.$_POST['id'].' ORDER BY id DESC LIMIT 1 ')  or die(mysqli_error($mycon));
@@ -116,12 +116,12 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
                         //$_POST['serialno'] =
             
                         $_POST['date'] = date('Y-m-d H:i:s');
-                        $sql = $db->make_insert("cashreceipts", $_POST);
+                        $sql = make_insert("cashreceipts", $_POST);
                         // echo $sql;
-                        mysqli_query($mycon,$sql);
-                        mysqli_query($mycon,'UPDATE `account` SET `credit_hold` = credit_hold+'.$_POST['pymt_amount'].' WHERE `account_id` ='.$_POST['clid'].' ');
+                        mysqli_query($mycon, $sql);
+                        mysqli_query($mycon, 'UPDATE `account` SET `credit_hold` = credit_hold+'.$_POST['pymt_amount'].' WHERE `account_id` ='.$_POST['clid'].' ');
                 
-                        $re = mysqli_query($mycon,'select cashreceipts.*,account.account_company,payment_type.payment_name from `cashreceipts`  
+                        $re = mysqli_query($mycon, 'select cashreceipts.*,account.account_company,payment_type.payment_name from `cashreceipts`  
                     inner join account on (cashreceipts.clid = account.account_id)
                     inner join payment_type on (payment_type.payment_id = cashreceipts.paymethod)
                     WHERE account.account_id = '.$_POST['clid'].' and cashreceipts.`clid` ='.$_POST['clid'].' ORDER BY id DESC LIMIT 1 ')  or die(mysqli_error($mycon));

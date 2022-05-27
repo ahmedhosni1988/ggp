@@ -124,7 +124,7 @@ return $category;
 	function get_table_by_id($query,$key,$val){
 		
 		$result = array();
-		$query = mysqli_query($this->connection,"select * from ".$query) or die (mysqli_error($this->db));
+		$query = mysqli_query($this->connection,"select * from ".$query) or die (mysqli_error($this->connection));
 		while($row=mysqli_fetch_array($query)){
 			$result[$row[$key]] = $row[$val];
 		}
@@ -132,6 +132,18 @@ return $category;
 		return $result;
 	}
 	
+	function get_table_by_id_all($query, $key)
+    {
+
+        $result = array();
+        $query = mysqli_query($this->connection,"select * from " . $query) or die (mysqli_error($this->connection));
+        while ($row = mysqli_fetch_assoc($query)) {
+            $result[$row[$key]] = $row;
+        }
+
+        return $result;
+    }
+
 	
 	function get_table($table_name){
 		//echo "select * from ".$table_name."<br>";
@@ -305,7 +317,7 @@ return $category;
 
 	
 	function make_query($query){
-	$q = mysqli_query($this->connection,$query) or die (mysqli_error($this->db));
+	$q = mysqli_query($this->connection,$query) or die (mysqli_error($this->connection));
 	if($q) return true;
 	else return false;
 	

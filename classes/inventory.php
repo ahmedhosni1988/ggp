@@ -19,7 +19,7 @@ class inventory
         }
 
 
-        return $this->db->build_array($query);
+        return build_array($query);
     }
 
 
@@ -31,7 +31,7 @@ class inventory
             ");
 
 
-        return $this->db->build_array($query);
+        return build_array($query);
     }
 
 
@@ -45,7 +45,7 @@ class inventory
             inner join package_type on (package_type.package_id = inventory_items.item_thickness ) order by package_type.package_order  ");
 
 
-        return $this->db->build_array($query);
+        return build_array($query);
     }
 
 
@@ -101,5 +101,22 @@ class inventory
         }
 
         return $result;
+    }
+
+
+    public function get_purchising_invoice($id)
+    {
+        $query = mysqli_query($this->db, "select 
+        inventory_bill.*,
+        inventory_action.*,
+        CONCAT(suppliers.account_name, ' | ',suppliers.account_company) as account
+        from inventory_bill
+        inner join suppliers on (suppliers.account_id = inventory_bill.account_id )
+        inner join inventory_action on (inventory_action.bill_id = inventory_bill.id)
+
+        ");
+
+
+        return build_array($query);
     }
 }

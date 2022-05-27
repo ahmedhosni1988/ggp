@@ -20,7 +20,7 @@ $package = new package($db);
 $payment = new payment($db);
 $order = new orders($db);
 $company = new company($db);
-$console = new console($db);
+$console = new console(5, $db);
 
 $newtemp = new template();
 
@@ -105,7 +105,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
                 unset($_POST['minuit']);
 
                 $_POST['service_color'] = str_replace("#", "", $_POST['service_color']);
-                $sql = $db->make_insert("services", $_POST);
+                $sql = make_insert("services", $_POST);
                 //echo $sql;
                 $res = mysqli_query($mycon, $sql) or die(mysqli_error($mycon));
                 // $res =  $company->add_services($service_name,$service_des,$service_short,$service_color,$service_cuttime,$service_order);

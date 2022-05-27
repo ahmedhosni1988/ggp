@@ -84,12 +84,12 @@ class company
     public function update_company_details($array)
     {
         foreach ($array as $key => $value) {
-            $query = mysqli_query($this->db, "select * from options where option_name = " . check_mysql_string($this->db,$key) . " ") or die(mysqli_error($this->db));
+            $query = mysqli_query($this->db, "select * from options where option_name = " . check_mysql_string($this->db, $key) . " ") or die(mysqli_error($this->db));
 
             if (mysqli_num_rows($query) > 0) {
-                $q = mysqli_query($this->db, "update options set option_value=" . check_mysql_string($this->db,$value) . " where option_name = " . check_mysql_string($this->db,$key) . "") or die(mysqli_error($this->db));
+                $q = mysqli_query($this->db, "update options set option_value=" . check_mysql_string($this->db, $value) . " where option_name = " . check_mysql_string($this->db, $key) . "") or die(mysqli_error($this->db));
             } else {
-                $q = mysqli_query($this->db, "insert into  options (option_value,option_name) values (" . check_mysql_string($this->db,$value) . "," . check_mysql_string($this->db,$key) . "); ") or die(mysqli_error($this->db));
+                $q = mysqli_query($this->db, "insert into  options (option_value,option_name) values (" . check_mysql_string($this->db, $value) . "," . check_mysql_string($this->db, $key) . "); ") or die(mysqli_error($this->db));
             }
         }
 
@@ -124,7 +124,7 @@ class company
 
     public function update_billing_frequency($option_id, $option_value)
     {
-        $q = mysqli_query($this->db, "update options set option_value = " . check_mysql_string($this->db,$option_value) . " where option_id = " . check_mysql_string($this->db,$option_id) . "") or die(mysqli_error($this->db));
+        $q = mysqli_query($this->db, "update options set option_value = " . check_mysql_string($this->db, $option_value) . " where option_id = " . check_mysql_string($this->db, $option_id) . "") or die(mysqli_error($this->db));
 
 
         if ($q) {
@@ -136,7 +136,7 @@ class company
 
     public function insert_billing_frequency($option_name, $option_value)
     {
-        $q = mysqli_query($this->db, "insert into options (option_name,option_value) values (" . check_mysql_string($this->db,$option_name) . "," . check_mysql_string($this->db,$option_value) . ") ") or die(mysqli_error($this->db));
+        $q = mysqli_query($this->db, "insert into options (option_name,option_value) values (" . check_mysql_string($this->db, $option_name) . "," . check_mysql_string($this->db, $option_value) . ") ") or die(mysqli_error($this->db));
 
 
         if ($q) {
@@ -223,7 +223,7 @@ class company
 
     public function update_services($ser_id, $ser_name, $ser_des, $ser_short, $ser_color, $ser_timecut, $ser_order)
     {
-        $sql = "update services set service_name = " . check_mysql_string($this->db,$ser_name) . ",	service_order  = " . check_mysql_string($this->db,$ser_order) . ",	sevices_description  = " . check_mysql_string($this->db,$ser_des) . ",	service_color  = " . check_mysql_string($this->db,$ser_color) . ",	service_short  = " . check_mysql_string($this->db,$ser_short) . ",	service_cutoff  = " . check_mysql_string($this->db,$ser_timecut) . " where service_id = " . check_mysql_string($this->db,$ser_id) . "";
+        $sql = "update services set service_name = " . check_mysql_string($this->db, $ser_name) . ",	service_order  = " . check_mysql_string($this->db, $ser_order) . ",	sevices_description  = " . check_mysql_string($this->db, $ser_des) . ",	service_color  = " . check_mysql_string($this->db, $ser_color) . ",	service_short  = " . check_mysql_string($this->db, $ser_short) . ",	service_cutoff  = " . check_mysql_string($this->db, $ser_timecut) . " where service_id = " . check_mysql_string($this->db, $ser_id) . "";
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
@@ -236,7 +236,7 @@ class company
 
     public function add_services($ser_name, $ser_des, $ser_short, $ser_color, $ser_timecut, $ser_order)
     {
-        $sql = "insert into services ( service_name ,	service_order ,	sevices_description ,	service_color ,	service_short ,	service_cutoff ) values(" . check_mysql_string($this->db,$ser_name) . "," . check_mysql_string($this->db,$ser_order) . "," . check_mysql_string($this->db,$ser_des) . "," . check_mysql_string($this->db,$ser_color) . "," . check_mysql_string($this->db,$ser_short) . "," . check_mysql_string($this->db,$ser_timecut) . ") ";
+        $sql = "insert into services ( service_name ,	service_order ,	sevices_description ,	service_color ,	service_short ,	service_cutoff ) values(" . check_mysql_string($this->db, $ser_name) . "," . check_mysql_string($this->db, $ser_order) . "," . check_mysql_string($this->db, $ser_des) . "," . check_mysql_string($this->db, $ser_color) . "," . check_mysql_string($this->db, $ser_short) . "," . check_mysql_string($this->db, $ser_timecut) . ") ";
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
@@ -300,7 +300,7 @@ class company
 
     public function update_tax($tax_id, $tax_name, $tax_ratio)
     {
-        $sql = "update tax set tax_name = " . check_mysql_string($this->db,$tax_name) . ",	tax_rate  = " . check_mysql_string($this->db,$tax_ratio) . "  where tax_id = " . check_mysql_string($this->db,$tax_id) . "";
+        $sql = "update tax set tax_name = " . check_mysql_string($this->db, $tax_name) . ",	tax_rate  = " . check_mysql_string($this->db, $tax_ratio) . "  where tax_id = " . check_mysql_string($this->db, $tax_id) . "";
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
@@ -313,7 +313,7 @@ class company
 
     public function add_tax($tax_name, $tax_ratio)
     {
-        $sql = "insert into tax (tax_name,tax_rate) values(" . check_mysql_string($this->db,$tax_name) . "," . check_mysql_string($this->db,$tax_ratio) . ") ";
+        $sql = "insert into tax (tax_name,tax_rate) values(" . check_mysql_string($this->db, $tax_name) . "," . check_mysql_string($this->db, $tax_ratio) . ") ";
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
@@ -363,7 +363,7 @@ class company
 
     public function update_taxgroup($group_id, $group_name, $tax1, $tax2, $tax2_on_tax1, $fs, $fs_rate_1, $fs_rate_2, $taxgroup_on)
     {
-        $sql = "update tax_group set taxgroup_name = " . check_mysql_string($this->db,$group_name) . ",	taxgroup_tax1= " . check_mysql_string($this->db,$tax1) . ",	taxgroup_tax2 = " . check_mysql_string($this->db,$tax2) . ",	taxgroup_tax2_on_tax1= " . check_mysql_string($this->db,$tax2_on_tax1) . ",	taxgroup_fs_rate= " . check_mysql_string($this->db,$fs) . ",	taxgroup_tax1_on_fs	= " . check_mysql_string($this->db,$fs_rate_1) . ",taxgroup_tax2_on_fs = " . check_mysql_string($this->db,$fs_rate_2) . " , taxgroup_on = " . check_mysql_string($this->db,$taxgroup_on) . " where taxgroup_id = " . check_mysql_string($this->db,$group_id) . "";
+        $sql = "update tax_group set taxgroup_name = " . check_mysql_string($this->db, $group_name) . ",	taxgroup_tax1= " . check_mysql_string($this->db, $tax1) . ",	taxgroup_tax2 = " . check_mysql_string($this->db, $tax2) . ",	taxgroup_tax2_on_tax1= " . check_mysql_string($this->db, $tax2_on_tax1) . ",	taxgroup_fs_rate= " . check_mysql_string($this->db, $fs) . ",	taxgroup_tax1_on_fs	= " . check_mysql_string($this->db, $fs_rate_1) . ",taxgroup_tax2_on_fs = " . check_mysql_string($this->db, $fs_rate_2) . " , taxgroup_on = " . check_mysql_string($this->db, $taxgroup_on) . " where taxgroup_id = " . check_mysql_string($this->db, $group_id) . "";
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
@@ -376,7 +376,7 @@ class company
 
     public function insert_taxgroup($group_name, $tax1, $tax2, $tax2_on_tax1, $fs, $fs_rate_1, $fs_rate_2, $taxgroup_on)
     {
-        $sql = "insert into tax_group  (taxgroup_name ,taxgroup_tax1,taxgroup_tax2 ,taxgroup_tax2_on_tax1,taxgroup_fs_rate,taxgroup_tax1_on_fs,taxgroup_tax2_on_fs , taxgroup_on) values(" . check_mysql_string($this->db,$group_name) . "," . check_mysql_string($this->db,$tax1) . "," . check_mysql_string($this->db,$tax2) . "," . check_mysql_string($this->db,$tax2_on_tax1) . "," . check_mysql_string($this->db,$fs) . "," . check_mysql_string($this->db,$fs_rate_1) . "," . check_mysql_string($this->db,$fs_rate_2) . ", " . check_mysql_string($this->db,$taxgroup_on) . ") ";
+        $sql = "insert into tax_group  (taxgroup_name ,taxgroup_tax1,taxgroup_tax2 ,taxgroup_tax2_on_tax1,taxgroup_fs_rate,taxgroup_tax1_on_fs,taxgroup_tax2_on_fs , taxgroup_on) values(" . check_mysql_string($this->db, $group_name) . "," . check_mysql_string($this->db, $tax1) . "," . check_mysql_string($this->db, $tax2) . "," . check_mysql_string($this->db, $tax2_on_tax1) . "," . check_mysql_string($this->db, $fs) . "," . check_mysql_string($this->db, $fs_rate_1) . "," . check_mysql_string($this->db, $fs_rate_2) . ", " . check_mysql_string($this->db, $taxgroup_on) . ") ";
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
@@ -412,7 +412,7 @@ class company
 
     public function get_term_details($term_id)
     {
-        $query = mysqli_query($this->db, "select * from payment_terms where pt_id = " . check_mysql_string($this->db,$term_id) . "") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select * from payment_terms where pt_id = " . check_mysql_string($this->db, $term_id) . "") or die(mysqli_error($this->db));
         if (mysqli_num_rows($query) == 0) {
             $query = mysqli_query($this->db, "select * from payment_terms where pt_default = '1' ") or die(mysqli_error($this->db));
         }
@@ -422,14 +422,14 @@ class company
 
     public function get_page($page_id)
     {
-        $query = mysqli_query($this->db, "select * from pages where page_id = " . check_mysql_string($this->db,$page_id) . "  ") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select * from pages where page_id = " . check_mysql_string($this->db, $page_id) . "  ") or die(mysqli_error($this->db));
 
         return mysqli_fetch_object($query);
     }
 
     public function get_page_status($page_id)
     {
-        $query = mysqli_query($this->db, "select * from pages where page_type = " . check_mysql_string($this->db,$page_id) . "  ") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select * from pages where page_type = " . check_mysql_string($this->db, $page_id) . "  ") or die(mysqli_error($this->db));
 
         return mysqli_fetch_object($query);
     }
@@ -438,13 +438,13 @@ class company
     public function get_all_page()
     {
         $query = mysqli_query($this->db, "select * from pages  ") or die(mysqli_error($this->db));
-        $data = $this->db->build_array($query);
+        $data = build_array($query);
         return $data;
     }
 
     public function edit_page($array)
     {
-        $sql = $this->db->make_update("pages", $array, "page_id", $array['page_id']);
+        $sql = make_update("pages", $array, "page_id", $array['page_id']);
 
         $q = mysqli_query($this->db, "update pages set page_name= '" . mysqli_real_escape_string($this->db, $array['page_name']) . "' , page_body = '" . (str_replace(" ", " ", $array['page_body'])) . "' where page_id = '" . $array['page_id'] . "'   ") or die(mysqli_error($this->db));
 
@@ -491,7 +491,7 @@ class company
         }
 
 
-        $bc = $this->db->build_array(mysqli_query($this->db, "select * from billing_code"));
+        $bc = build_array(mysqli_query($this->db, "select * from billing_code"));
         if (count($bc) > 0 && $cu_bc > 0) {
             for ($i = 0; $i < count($bc); $i++) {
                 if (isset($control['co_loginmessage_body_bc' . $bc[$i]['id']])) {

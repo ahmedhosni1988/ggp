@@ -675,7 +675,7 @@ $invoices->update_invoice($invoiceno, $invhdr);
 			$detailrec["tax5amount"]    = $txcalcs[5];
 			//* SQL - Save the Invoice Detail Record.
 			
-			$s = $db->make_insert("invoicedtl", $detailrec);
+			$s = make_insert("invoicedtl", $detailrec);
 			mysqli_query($mycon,$s);
 			//update("invoicedtl",$detailrec);
 			$lineno = $lineno + 1;
@@ -897,7 +897,7 @@ else if(isset($_POST['clid']) && $_POST['clid'] !==''){
 	$_POST['system_date']=date("Y-m-d");
 	$_POST['user_id']=$_SESSION['user_id'];
 	$_POST['ppd']='Y';
-	$sql = $db->make_insert("cashreceipts", $_POST); 
+	$sql = make_insert("cashreceipts", $_POST); 
 	// echo $sql;
 	mysqli_query($mycon,$sql);
 	mysqli_query($mycon,'UPDATE `account` SET `credit_hold` = credit_hold+'.$_POST['pymt_amount'].' WHERE `account_id` ='.$_POST['clid'].' ');

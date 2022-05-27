@@ -18,7 +18,7 @@ class contract
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
-        return $this->db->build_array($query);
+        return build_array($query);
     }
 
     public function get_contract_id($id)

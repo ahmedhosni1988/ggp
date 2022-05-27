@@ -205,13 +205,7 @@ function check_numeric(val, elename) {
 $(document).ready(function () {
 
     $('.datepick').each(function () {
-        $(this).datepicker({
-
-
-            dateFormat: 'yy-mm-dd'
-
-
-        });
+        $(this).datepicker();
     });
 });
 

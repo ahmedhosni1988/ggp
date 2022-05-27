@@ -18,7 +18,6 @@ function template_account_manage()
 <div id="tabs" >
 
 <ul>
-  <li><a href="accounts.php?action=search" >' . $lang[947] . '</a></li>
    <li><a href="accounts.php?action=active" >' . $lang[713] . '</a></li>
    <li><a href="accounts.php?action=unactive" >' . $lang[714] . '</a></li>
    <li><a href="accounts.php?action=delaccount" >' . $lang[715] . '</a></li>
@@ -174,8 +173,9 @@ load: function( event, ui ) {
         } else {
             echo '
             <li><a href="accounts.php?action=account_details&account_id=' . $account_id . '" >' . $lang[497] . '</a></li>
-            <li><a href="accounts.php?action=price_details&account_id=' . $account_id . '" > ' . $lang[1019] . '</a></li>
+          <!--  <li><a href="accounts.php?action=price_details&account_id=' . $account_id . '" > ' . $lang[1019] . '</a></li>
             <li><a href="pricing.php?action=account_serves&account_id=' . $account_id . '" > ' . $lang[44] . '</a></li>
+           -->
            ';
         }
     } else {
@@ -222,8 +222,9 @@ function template_account_details()
     //<label class="col-sm-3 control-label">' . $lang[17] . '</label>
     //<div class="col-sm-9"><input type="text" name="account_name" value="' . (isset($account_details->account_name) ? $account_details->account_name : '') . '" ' . ($account_id != '' ? 'disabled' : '') . '  /></div>
     //</div>
-    global $lang, $locations, $usertype, $account_details, $account_id, $zone,$billing_code;
+    global $lang, $locations, $usertype, $account_details, $account_id, $zone,$billing_code,$tax_group;
     echo '
+    <script type="text/javascript" src="' . SITEURL . '/' . STYLE . '/jscript/account.js"></script>
 
 
 <form name="add_account_' . $account_id . '" id="add_account_details_' . $account_id . '" method="post" action="accounts.php?action=account_details&account_id=' . $account_id . '" class="form-horizontal">
@@ -260,7 +261,31 @@ function template_account_details()
 <div class="col-sm-9"><input type="text" name="phone" value="' . (isset($account_details->phone) ? $account_details->phone : '') . '" /></div>
 </div>
 
+<div class="form-group">
+<label class="col-sm-3 control-label">الرقم القومى</label>
+<div class="col-sm-9"><input type="text" name="ssn" value="' . (isset($account_details->ssn) ? $account_details->ssn : '') . '" /></div>
+</div>
 
+<div class="form-group">
+<label class="col-sm-3 control-label">رقم البطاقة الضريبيه</label>
+<div class="col-sm-9"><input type="text" name="vatno" value="' . (isset($account_details->vatno) ? $account_details->vatno : '') . '" /></div>
+</div>
+
+<div class="form-group">
+<label class="col-sm-3 control-label">المجموعة</label>
+<div class="col-sm-9">
+<select name="account_taxgroup">
+<option value="">اختار المجموعه الضريبيه</option>
+';
+    for ($i=0;$i<count($tax_group);$i++) {
+        echo '<option value="'.$tax_group[$i]['taxgroup_id'].'" '.(isset($account_details->account_taxgroup) && $account_details->account_taxgroup == $tax_group[$i]['taxgroup_id'] ?  'selected' : '').'>'.$tax_group[$i]['taxgroup_name'].'</option>';
+    }
+    echo '</select>
+
+
+
+</div>
+</div>
 
 <div class="form-group">
 <label class="col-sm-3 control-label">' . $lang[440] . '</label>

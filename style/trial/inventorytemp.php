@@ -19,7 +19,6 @@ function template_invenotry_main()
     
     <ul>
       <li><a href="inventory.php?action=inventory" >' . $lang[983] . '</a></li>
-      <li><a href="inventory.php?action=purchase" >' . $lang[984] . '</a></li>
       <li><a href="inventory.php?action=items" >' . $lang[985] . '</a></li>
       
    </ul>
@@ -37,7 +36,6 @@ function template_invenotry_main()
 
     
     ';
-
 }
 
 
@@ -74,7 +72,6 @@ function template_invenotry_data()
 </table>
 </div>
 ';
-
 }
 
 
@@ -116,7 +113,6 @@ function template_item_data()
     </table>
     </div>
     ';
-
 }
 
 
@@ -143,7 +139,6 @@ function template_item_main()
           <li><a href="inventory.php?action=price_pac&what=mange" >' . $lang[990] . '</a></li>
           <li><a href="inventory.php?action=company" >' . $lang[991] . '</a></li>
           <li><a href="inventory.php?action=size" >' . $lang[992] . '</a></li>
-          <li><a href="inventory.php?action=suppmain" >' . $lang[993] . '</a></li>
        </ul>
         
         <div id="item-0"  >
@@ -231,7 +226,6 @@ function template_add_item()
 
 function template_invenotry_item_color()
 {
-
     global $lang, $c_setting, $colData;
     echo ' <script type="text/javascript">
     
@@ -304,14 +298,11 @@ function template_invenotry_item_color()
       
         
         </div>';
-
-
 }
 
 
 function template_invenotry_item_company()
 {
-
     global $lang, $c_setting, $colData;
     echo ' <script type="text/javascript">
         
@@ -384,14 +375,11 @@ function template_invenotry_item_company()
           
             
             </div>';
-
-
 }
 
 
 function template_inventory_items_size()
 {
-
     global $lang, $c_setting, $colData;
     echo ' <script type="text/javascript">
             
@@ -470,8 +458,6 @@ function template_inventory_items_size()
               
                 
                 </div>';
-
-
 }
 
 ///////////pacjage managment////////
@@ -612,11 +598,13 @@ function template_price_pac()
 }
 
 
-function template_account_manage()
+function template_supplier_manage()
 {
     global $lang;
     echo '
     <script type="text/javascript" src="' . SITEURL . '/' . STYLE . '/jscript/admin.js"></script>
+    <script type="text/javascript" src="' . SITEURL . '/' . STYLE . '/jscript/account.js"></script>
+
       <script>
       $(document).ready(function() {
         $("#suppliers").tabs();
@@ -631,9 +619,8 @@ function template_account_manage()
     <div id="suppliers" >
     
     <ul>
-      <li><a href="inventory.php?action=search" >' . $lang[1001] . '</a></li>
-       <li><a href="inventory.php?action=Suppliers" >' . $lang[1002] . '</a></li>
-       <li><a href="inventory.php?action=mange_add_account" >' . $lang[1003] . '</a></li>
+       <li><a href="suppliers.php?action=active" >' . $lang[1002] . '</a></li>
+       <li><a href="suppliers.php?action=mange_add_account" >' . $lang[1003] . '</a></li>
     
     </ul>
     
@@ -657,90 +644,70 @@ function template_account_manage()
     ';
 }
 
-function template_active_suppliers()
-{
-    global $accounts, $lang;
+// function template_active_suppliers()
+// {
+//     global $accounts, $lang;
 
-    if (is_array($accounts)) {
-        //print_r($data);
-        echo '
-        <script type="text/javascript" src="' . SITEURL . '/' . STYLE . '/jscript/admin.js"></script>
+//     if (is_array($accounts)) {
+//         //print_r($data);
+//         echo '
+//         <script type="text/javascript" src="' . SITEURL . '/' . STYLE . '/jscript/admin.js"></script>
         
-        <div style="overflow-x: auto">
-        <table style="width:auto" border="1" class="table table-striped table-bordered table-hover">
+//         <div style="overflow-x: auto">
+//         <table style="width:auto" border="1" class="table table-striped table-bordered table-hover">
         
-        <thead>
-        <th>' . $lang[257] . '</th>
-        <th>' . $lang[717] . '</th>
-        <th>' . $lang[36] . '</th>
-        <th>' . $lang[431] . '</th>
-        <th>' . $lang[718] . '</th>
-        <th>' . $lang[719] . '</th>
-        <th>' . $lang[11] . '</th>
-        <th>' . $lang[12] . '</th>
-        <th>' . $lang[133] . '</th>
-        <th>' . $lang[312] . '</th>
-        </thead>
+//         <thead>
+//         <th>' . $lang[257] . '</th>
+//         <th>' . $lang[717] . '</th>
+//         <th>' . $lang[36] . '</th>
+//         <th>' . $lang[431] . '</th>
+//         <th>' . $lang[718] . '</th>
+//         <th>' . $lang[719] . '</th>
+//         <th>' . $lang[11] . '</th>
+//         <th>' . $lang[12] . '</th>
+//         <th>' . $lang[133] . '</th>
+//         <th>' . $lang[312] . '</th>
+//         </thead>
         
         
-        ';
-        if (is_array($accounts) && count($accounts) > 0) {
-            for ($i = 0; $i < count($accounts); $i++) {
-                echo '<tr>';
-                $x = $accounts[$i];
+//         ';
+//         if (is_array($accounts) && count($accounts) > 0) {
+//             for ($i = 0; $i < count($accounts); $i++) {
+//                 echo '<tr>';
+//                 $x = $accounts[$i];
 
-                foreach ($x as $val) {
+//                 foreach ($x as $val) {
 
-                    //  $tex = $val[key($val)];
+//                     //  $tex = $val[key($val)];
 
-                    // $tex = str_replace(",","<br>",$tex);
+//                     // $tex = str_replace(",","<br>",$tex);
 
-                    echo '<td>' . $val . '</td>';
-                }
+//                     echo '<td>' . $val . '</td>';
+//                 }
 
 
-                echo '<td><a onclick="show_edit_suppliers(\'' . $accounts[$i]['account_id'] . '\',\'' . $accounts[$i]['account_name'] . '\');" href="#" >' . $lang[312] . '</a>
+//                 echo '<td><a onclick="show_edit_suppliers(\'' . $accounts[$i]['account_id'] . '\',\'' . $accounts[$i]['account_name'] . '\');" href="#" >' . $lang[312] . '</a>
                 
             
-            </td>';
+//             </td>';
 
-                echo '</tr>';
-            }
-        } else {
-            echo '<tr><td colspan="100%">' . $lang[472] . '</td></tr>';
-        }
-        echo '</table>
-        </div>
+//                 echo '</tr>';
+//             }
+//         } else {
+//             echo '<tr><td colspan="100%">' . $lang[472] . '</td></tr>';
+//         }
+//         echo '</table>
+//         </div>
         
-        ';
-    }
-
-}
-
-
-function template_search_account()
-{
-    global $lang;
-
-    echo '
-                    <script type="text/javascript" src="' . SITEURL . '/' . STYLE . '/jscript/account.js"></script>
-                    
-                    <form id="search_account" method="post"   class="form-horizontal" autocomplete="off" style="width:60%; margin:auto;">
-                    
-                    <input type="text" name="search_account_value"  id="search_account_value" value=""  class="form-control" placeholder="اكتب رقم الحساب او اسم الشركة" />
-                    
-                    
-                 </form>
-                    
-                    <div id="search_result">
-                    
-                    </div>
-                    
-                    ';
-}
+//         ';
+//     }
+// }
 
 
-function template_manage_add_account()
+
+
+
+function template_manage_add_supplier()
 {
     global $lang, $account_id;
 
@@ -758,14 +725,12 @@ function template_manage_add_account()
     <ul>';
 
     if (isset($account_id) && $account_id != "") {
-
         echo '
-       <li><a href="inventory.php?action=account_details&account_id=' . $account_id . '" >' . $lang[497] . '</a></li>
+       <li><a href="suppliers.php?action=account_details&account_id=' . $account_id . '" >' . $lang[497] . '</a></li>
       ';
-
     } else {
         echo '	
-       <li><a href="inventory.php?action=account_details" >' . $lang[497] . '</a></li>
+       <li><a href="suppliers.php?action=account_details" >' . $lang[497] . '</a></li>
       ';
     }
 
@@ -804,13 +769,13 @@ function template_manage_add_account()
 }
 
 
-function template_account_details()
+function template_supplier_details()
 {
     global $lang, $locations, $usertype, $account_details, $account_id, $zone;
     echo '
     
     
-    <form name="add_account" id="add_account_details_' . $account_id . '" method="post" action="inventory.php?action=account_details&account_id=' . $account_id . '" class="form-horizontal">
+    <form name="add_account" id="add_account_details_' . $account_id . '" method="post" action="suppliers.php?action=account_details&account_id=' . $account_id . '" class="form-horizontal">
     
     <div class="col-sm-6 col-xs-12"  >
     
@@ -1026,16 +991,20 @@ function template_purchase_data()
     </table>
     </div>
     ';
-
 }
 
 function template_add_purchase()
 {
-    global $lang, $c_setting, $accountsData, $itemData;
+    global $lang, $c_setting, $accountsData, $itemData,$bill_id;
 
     echo '    
- <form id="addbill_form"  method="post"  action="inventory.php?action=add_purchase" >
+ <form id="addbill_form_'.$bill_id.'"  method="post"  action="inventory.php?action=add_purchase"  class="form-horizontal" >
     
+
+ <div class="row">
+
+ <div class="col-xs-4">
+
             <div class="form-group">
             <label class="col-sm-3 control-label">رقم الفاتورة</label>
             <div class="col-sm-9"><input type="text" name="bill_no" value=""></div>
@@ -1043,7 +1012,7 @@ function template_add_purchase()
 
             <div class="form-group">
             <label class="col-sm-3 control-label">تاريخ الفاتورة</label>
-            <div class="col-sm-9">  <input id="bill_date" type="text" class="timepicker hasDatepicker bill_date" name="bill_date" value>
+            <div class="col-sm-9">  <input id="bill_date" type="text" class=" datepick" name="bill_date" value>
             </div>
             </div>
 
@@ -1059,67 +1028,113 @@ function template_add_purchase()
             </select></div>
             </div>
 
+            </div>
+            <div class="col-xs-4">
+
+           
             <div class="form-group">
-            <label class="col-sm-3 control-label">اجمالى السعر</label>
-            <div class="col-sm-9"><input type="text" name="total_price" value="">
+            <label class="col-sm-3 control-label">المجموع</label>
+            <div class="col-sm-9" >
+            
+            <input type="text" readonly name="inv_total_price" class="inv_total_price" value="">
             </div>
             </div>
-            <div style="clear:both;"></div>
 
-            <hr/>
-
-            <table class="table table-striped table-bordered table-hover">
-            <tr>
-            <td>المنتج</td>
-            <td>الكمية</td>
-            <td>سعر الوحدة</td>
-            </tr>';
-
-    for ($j = 0; $j < 10; $j++) {
-        echo '<tr>
-            <td>
             <div class="form-group">
-            <select class="form-control" name="item_id[]" >
-            <option value="">اختار المنتج</option>';
-        for ($i = 0; $i < count($itemData); $i++) {
-
-            echo '<option value="' . $itemData[$i]['id'] . '">' . $itemData[$i]['item_name'] . '</option>';
-        }
-        echo '</select></div></td>
-          <td>
-            <div class="form-group">
-                <input class="form-control" type="text" name="quantity[]" value="" size="10"/>
-            </div> 
-            </td>
-        <td>
-            <div class="form-group">
-                <input class="form-control" type="text" name="price[]" value="" size="10" />
+            <label class="col-sm-3 control-label">الخصم</label>
+            <div class="col-sm-9" >
+            <input type="text" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');"  name="bill_discount"  value="">
             </div>
-        </td>
-          </tr>';
-    }
-    echo '  </table>
+            </div>
 
-      
-    
-<script type="text/javascript">
-$(document).ready(function(){
-    $(\'.bill_date\').datepicker();
-});
-</script>
-    <hr>
+            
+            <div class="form-group">
+            <label class="col-sm-3 control-label">الضريبة</label>
+            <div class="col-sm-9" >
+            <input type="text" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');"  name="bill_tax_amount"  value="">
+            </div>
+            </div>
+
+            </div>
+
+            <div class="col-xs-4">
+
+            <div class="form-group">
+            <label class="col-sm-3 control-label">الاجمالى</label>
+            <div class="col-sm-9" >
+            <input type="text"  name="bill_total_amount"  readonly value="">
+            </div>
+            </div>
+
             <div class="wizard-actions">
             <!-- #section:plugins/fuelux.wizard.buttons -->
           
     
-            <button type="button" class="btn btn-success btn-next" onclick="add_form_php(\'addbill_form\',\'1\')">' . $lang[260] . '</button>
+            <button type="button" style="text-align:center;" class="btn btn-success btn-next" onclick="add_form_php(\'addbill_form_'.$bill_id.'\',\'1\')">' . $lang[260] . '</button>
     
             <!-- /section:plugins/fuelux.wizard.buttons -->
         </div>
+
+            </div>
+
+            <div style="clear:both;"></div>
+
+</div>
+            <hr/>
+            <div class="row">
+
+            <div class="col-xs-8" style="margin:auto; float:none;">
+
+            <table class="table table-striped table-bordered table-hover myitems"  >
+            <tr>
+            <td>المنتج</td>
+            <td>الكمية</td>
+            <td>سعر الوحدة</td>
+            <td>الاجمالى</td>
+
+            </tr>';
+
+    for ($j = 0; $j < 5; $j++) {
+        echo '<tr>
+            <td>
+            <select class="form-control" name="item_id[]" >
+            <option value="">اختار المنتج</option>';
+        for ($i = 0; $i < count($itemData); $i++) {
+            echo '<option value="' . $itemData[$i]['id'] . '">' . $itemData[$i]['item_name'] . '</option>';
+        }
+        echo '</select>
+        </td>
+          <td>
+                <input class="form-control" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');" type="number" name="quantity[]" value="" size="10"/>
+            </td>
+        <td>
+                <input class="form-control" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');" type="text" name="price[]" value="" size="10" />
+        </td>
+
+        <td>
+            <input class="form-control" readonly type="text" name="total_price[]" value="" size="10" />
+    </td>
+
+          </tr>';
+    }
+    echo '  </table>
+
+      </div>
+      </div>
+    
+<script type="text/javascript">
+$(document).ready(function(){
+    $(\'.datepick\').datepicker({
+        dateFormat: \'yy-mm-dd\'	
+
+    });
+});
+</script>
+
+
     
             </form>
     ';
-
 }
 
 
@@ -1144,7 +1159,6 @@ function template_out_inventory()
   <select name="item_id[]" >
   <option value="">اختار المنتج</option>';
         for ($i = 0; $i < count($itemData); $i++) {
-
             echo '<option value="' . $itemData[$i]['id'] . '">' . $itemData[$i]['item_name'] . '</option>';
         }
         echo '</select></td>
@@ -1171,7 +1185,6 @@ function template_out_inventory()
   ';
 
     if (is_array($inv) and count($inv) > 0) {
-
         echo '
     <table class="table table-striped table-bordered table-hover">
     <tr>
@@ -1182,7 +1195,6 @@ function template_out_inventory()
     </tr>';
 
         for ($i = 0; $i < count($inv); $i++) {
-
             echo '
       <tr>
       <td>' . ($i + 1) . '</td>
@@ -1196,7 +1208,6 @@ function template_out_inventory()
 
         echo '</table>';
     }
-
 }
 
 ?>

@@ -439,14 +439,14 @@ function delete_users(id, name) {
 
 function show_edit_account(account_id, name) { 
     var url = "accounts.php?action=mange_add_account&account_id=" + account_id;
-    var name1 = "تعديل عميل_"+ name;
+    var name1 = "تعديل عميل "+ name;
     open_new_tab(url, name1, 'tabs');
 
 }
 
 
 function show_edit_suppliers(account_id, name) {
-    var url = "inventory.php?action=mange_add_account&account_id=" + account_id;
+    var url = "suppliers.php?action=mange_add_account&account_id=" + account_id;
     var name1 = "تعديل المورد  : " + name;
     open_new_tab(url, name1, 'suppliers');
 
@@ -2222,3 +2222,37 @@ function price_checkbox_account(account_id) {
 }
 
 
+
+function recalac_invoice(formname){
+
+    var subtotal = 0;
+    var discount = 0;
+    var taxamount = 0;
+    var total = 0
+
+    $('#'+formname+' table.myitems tbody tr').each(function () {
+        //loop through input logic here
+        var qua = $(this).find('input[name="quantity[]"]').val();
+        var pri = $(this).find('input[name="price[]"]').val();
+        //end input loop
+  
+        if(qua > 0  && pri > 0){
+            console.log(qua*pri);
+            $(this).find('input[name="total_price[]"]').val(qua*pri);
+            subtotal = subtotal + (qua*pri);
+
+        } 
+    });
+
+
+    discount = $('#'+formname+' input[name="bill_discount"]').val() || 0;
+    taxamount = $('#'+formname+' input[name="bill_tax_amount"]').val() || 0;
+    
+
+
+    $('#'+formname+' input[name="inv_total_price"]').val(subtotal);
+    total =  parseFloat(subtotal) - parseFloat(discount) + parseFloat(taxamount);
+    $('#'+formname+' input[name="bill_total_amount"]').val(total);
+
+    return;
+}

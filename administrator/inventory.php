@@ -44,7 +44,7 @@ switch ($action) {
             $bill['account_id'] = $_POST['account_id'];
             $bill['total_price'] = $_POST['total_price'];
 
-            $sql = $db->make_insert("inventory_bill", $bill);
+            $sql = make_insert("inventory_bill", $bill);
             
             // echo $sql;
             $res = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));
@@ -64,7 +64,7 @@ switch ($action) {
                     $invetory_details['reason'] = "1";
                     $invetory_details['action_time'] = date("Y-m-d H:i:s");
 
-                    $sql = $db->make_insert("inventory_action", $invetory_details);
+                    $sql = make_insert("inventory_action", $invetory_details);
                     // echo $sql;
                     $res = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));
 
@@ -100,7 +100,7 @@ switch ($action) {
         if (isset($_POST['item_name'])) {
 
 
-            $sql = $db->make_insert("inventory_items", $_POST);
+            $sql = make_insert("inventory_items", $_POST);
             // echo $sql;
             $res = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));
 
@@ -137,7 +137,7 @@ switch ($action) {
             if (isset($_POST['id'])) {
 
             } else {
-                $sql = $db->make_insert("inventory_items_color", $_POST);
+                $sql = make_insert("inventory_items_color", $_POST);
                 //echo $sql;
                 $res = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));
                 // $res =  $company->add_services($service_name,$service_des,$service_short,$service_color,$service_cuttime,$service_order);
@@ -172,7 +172,7 @@ switch ($action) {
             if (isset($_POST['id'])) {
 
             } else {
-                $sql = $db->make_insert("inventory_items_company", $_POST);
+                $sql = make_insert("inventory_items_company", $_POST);
                 //echo $sql;
                 $res = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));
                 // $res =  $company->add_services($service_name,$service_des,$service_short,$service_color,$service_cuttime,$service_order);
@@ -203,7 +203,7 @@ switch ($action) {
             if (isset($_POST['id'])) {
 
             } else {
-                $sql = $db->make_insert("inventory_items_size", $_POST);
+                $sql = make_insert("inventory_items_size", $_POST);
                 //echo $sql;
                 $res = mysqli_query($mycon,$sql) or die (mysqli_error($mycon));
                 // $res =  $company->add_services($service_name,$service_des,$service_short,$service_color,$service_cuttime,$service_order);

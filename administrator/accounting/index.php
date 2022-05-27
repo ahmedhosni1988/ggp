@@ -63,7 +63,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
             }
             $console->set_page($pageno, PERPAGE);
             
-           // $coloums_array = array(array('headername' => '+', 'function' => 'show_row_option', 'pos' => 'last', 'width' => '100px', 'class' => 'nosort'));
+           // $coloums_array = array(array('headername' => '+', 'function' => 'show_account_row_option', 'pos' => 'last', 'width' => '100px', 'class' => 'nosort'));
 
             $coloums = $console->get_coloums_header($coloums_array, $dir, $field_name);
 
@@ -151,7 +151,7 @@ left join users on (users.user_id = orders.user_id)
             }
             $console->set_page($pageno, PERPAGE);
             
-           // $coloums_array = array(array('headername' => '+', 'function' => 'show_row_option', 'pos' => 'last', 'width' => '100px', 'class' => 'nosort'));
+            $coloums_array = array(array('headername' => '+', 'function' => 'show_account_row_option', 'pos' => 'last', 'width' => '100px', 'class' => 'nosort'));
 
             $coloums = $console->get_coloums_header($coloums_array, $dir, $field_name);
 
@@ -190,13 +190,13 @@ inner join billing_code on (billing_code.id = account.billing_code)
 
             $html_grid = $console->build_grid($coloums, $coloum_attribute, $data, $row_attribute, 'all_table');
 
-            $breadarray[0]['url'] = "manger.php?action=orders";
-            $breadarray[0]['name'] = $lang[24];
+            $breadarray[0]['url'] = "index.php?action=accounts";
+            $breadarray[0]['name'] = "العملاء";
 
-            $breadarray[1]['url'] = "";
-            $breadarray[1]['name'] = "كل الطلبيات";
+            // $breadarray[1]['url'] = "";
+            // $breadarray[1]['name'] = "كل الطلبيات";
 
-            $page_title = "الحسابات";
+            $page_title = "العملاء";
 
             if ($_GET['ajax']) {
                 echo $html_grid;
@@ -207,6 +207,15 @@ inner join billing_code on (billing_code.id = account.billing_code)
 
         break;
 
+
+
+        case 'edit_invoice':
+
+            if (isset($_POST)) {
+            } else {
+                $newtempAll->load_template('edit_invoice', 1, 'accounting_menu');
+            }
+        break;
             
         default:
 
