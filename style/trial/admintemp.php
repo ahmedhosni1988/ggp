@@ -1877,27 +1877,22 @@ function template_waybill()
 </style>
 <div id="print">
 
+
+<!--
         <link type="text/css" rel="stylesheet" href="' . SITEURL . '/' . STYLE . '/assets/css/bootstrap.min.css" />
 		<link type="text/css" rel="stylesheet" href="' . SITEURL . '/' . STYLE . '/assets/css/bootstrap-timepicker.css" />
 		<link type="text/css" rel="stylesheet" href="' . SITEURL . '/' . STYLE . '/assets/css/font-awesome.min.css" />
-		<!-- page specific plugin styles -->
 		
 	    <link rel="stylesheet" href="' . SITEURL . '/' . STYLE . '/assets/css/jquery-ui.min.css" />
 				
         		
-		<!-- page specific plugin styles -->
 
-		
-
-		<!-- ace styles -->
 		<link type="text/css" rel="stylesheet" href="' . SITEURL . '/' . STYLE . '/assets/css/ace.min.css" id="main-ace-style" />
 		
 	
 		<link type="text/css" rel="stylesheet" href="' . SITEURL . '/' . STYLE . '/assets/css/ace-skins.min.css" />
 		<link type="text/css" rel="stylesheet" href="' . SITEURL . '/' . STYLE . '/assets/css/ace-rtl.min.css" />
-
-
-
+-->
 
 <table border="3" cellspacing="0" width="100%" dir="rtl" >
 

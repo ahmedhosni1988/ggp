@@ -43,7 +43,7 @@ switch ($action) {
         }
         $console->set_page($pageno, PERPAGE);
         
-        $coloums_array = array(array('headername' => '+', 'function' => 'show_supplier_row_option', 'pos' => 'last', 'width' => '100px', 'class' => 'nosort'));
+        $coloums_array = array(array('headername' => '+', 'function' => 'show_supplier_inv_row_option', 'pos' => 'last', 'width' => '100px', 'class' => 'nosort'));
 
         $coloums = $console->get_coloums_header($coloums_array, $dir, $field_name);
 
@@ -100,36 +100,43 @@ switch ($action) {
         break;
 
     case 'add_purchase':
-        if ($_POST['bill_no']) {
+        if ($_POST['bill_no'] ) {
             $bill = array();
 
             $bill['bill_no'] = $_POST['bill_no'];
             $bill['bill_date'] = date("Y-m-d", strtotime($_POST['bill_date']));
             $bill['action_date'] = date("Y-m-d H:i:s");
             $bill['account_id'] = $_POST['account_id'];
-            $bill['added_by'] = $_SESSION['user_id'];
-            $bill['added_by_name'] = $_SESSION['name'];
-            $bill['added_date'] = date("Y-m-d H:i:s");
 
             $bill['tax_amount'] = $_POST['bill_tax_amount'];
             $bill['subtotal'] = $_POST['inv_total_price'];
             $bill['discount'] = $_POST['bill_discount'];
             $bill['total_price'] = $_POST['bill_total_amount'];
 
-            $sql = make_insert("inventory_bill", $bill);
+            if($_POST['id'] > '0' ){
+
+                $sql = make_update("inventory_bill", $bill,'id',$_POST['id']);
+                $res = mysqli_query($mycon, $sql) or die(mysqli_error($mycon));
+                $bill_id = $_POST['id'];
+                $logger->compareAndLogV2((int)$bill_id, "purchase", $_SESSION['user_id'], $_SESSION['name'], "update bill", array(), $bill);
+
+            }else{
+                $sql = make_insert("inventory_bill", $bill);
+                $res = mysqli_query($mycon, $sql) or die(mysqli_error($mycon));
+                $bill_id = mysqli_insert_id($mycon);
+                $logger->compareAndLogV2((int)$bill_id, "purchase", $_SESSION['user_id'], $_SESSION['name'], "Add bill  ", array(), $bill);
+            }
             
             // echo $sql;
-            $res = mysqli_query($mycon, $sql) or die(mysqli_error($mycon));
-
-            $bill_id = mysqli_insert_id($mycon);
-            $logger->compareAndLogV2((int)$bill_id, "purchase", $_SESSION['user_id'], $_SESSION['name'], "Add bill  ", array(), $bill);
-
+            
+            mysqli_query($mycon,"delete from inventory_action where bill_id = '".$bill_id."'  ");
             for ($j = 0; $j < count($_POST['item_id']); $j++) {
                 if ($_POST['item_id'][$j] != '') {
+                    $invetory_details = array();
+
                     $invetory_details['item_id'] = $_POST['item_id'][$j];
                     $invetory_details['quantity'] = $_POST['quantity'][$j];
                     $invetory_details['price'] = $_POST['price'][$j];
-
                     $invetory_details['account_id'] = $_POST['account_id'];
                     $invetory_details['bill_id'] = $bill_id;
                     $invetory_details['reason'] = "1";
@@ -138,15 +145,28 @@ switch ($action) {
                     $sql = make_insert("inventory_action", $invetory_details);
                     // echo $sql;
                     $res = mysqli_query($mycon, $sql) or die(mysqli_error($mycon));
+                    // if($_POST['inventory_action_id'] > 0 ){
+
+                    //     $sql = make_update("inventory_action", $invetory_details,'id',$_POST['inventory_action_id']);
+                    //     // echo $sql;
+                    //     $res = mysqli_query($mycon, $sql) or die(mysqli_error($mycon));
+
+                    // }else{
+              
+                    // }
+
 
            
-                    echo 'تمت اضافة الفاتورة بنجاح';
                     //  $invClass->update_inventory($_POST['item_id'][$j], $_POST['quantity'][$j], "1");
 
-                    $logger->compareAndLogV2((int)$_POST['item_id'][$j], "purchase", $_SESSION['user_id'], $_SESSION['name'], "Add bill items ", array(), $invetory_details);
+                    $logger->compareAndLogV2((int)$_POST['item_id'][$j], "purchase", $_SESSION['user_id'], $_SESSION['name'], "edit bill items ", array(), $invetory_details);
                 }
             }
+            echo 'تمت اضافة الفاتورة بنجاح';
+
+
         } else {
+            $billDetails = array();
             $accountsData = $account->get_suppliers();
             $itemData = $invClass->get_all_items();
             $newtemp->load_template('add_purchase', 5);
@@ -155,54 +175,64 @@ switch ($action) {
 
 
 
+        case 'delete_invoice':
+            if( isset($_POST['bill_id']) ){
+
+              $q =  $invClass->delete_purchasing_invoice($_POST['bill_id']);
+
+              if($q) echo 'تم حذف الفاتورة بنجاح';
+
+            }else{
+                echo 'خطا فى البيانات';
+            }
+        break;
+
+
+        case 'add_invoice_stock':
+            if( isset($_POST['bill_id']) ){
+
+                $bill_id = $_POST['bill_id'];
+                $billDetails = $invClass->get_purchising_invoice($bill_id);
+
+                for ($j = 0; $j < count($billDetails); $j++) {
+                    if ($billDetails[$j]['item_id'] != '0') {
+                      $invClass->update_inventory($billDetails[$j]['item_id'], $billDetails[$j]['quantity'], "1");
+
+                    }
+                }
+
+                mysqli_query($mycon,"update inventory_bill set bill_status = '1'  where id = '".$bill_id."' ");
+      
+                echo 'تمت الاضافة الى المحزون';
+
+  
+              }else{
+                  echo 'خطا فى البيانات';
+              }
+            break;
         
+
+            case 'inv_print':
+
+                if (isset($_POST['bill_id'])) {
+                    $bill_id = $_POST['bill_id'];
+
+                    $billDetails = $invClass->get_purchising_invoice($bill_id);
+                    $accountsData = $account->get_suppliers();
+                    $itemData = $invClass->get_all_items();
+                    
+            
+                    $temp = template_pur_inv_print();
+                    echo $temp;
+                //echo json_encode($res);
+                } else {
+                    echo 'Error';
+                }
+            break;
+
     case 'edit_purchase':
         if ($_POST['bill_no']) {
-            $bill = array();
-
-            $bill['bill_no'] = $_POST['bill_no'];
-            $bill['bill_date'] = date("Y-m-d", strtotime($_POST['bill_date']));
-            $bill['action_date'] = date("Y-m-d H:i:s");
-            $bill['account_id'] = $_POST['account_id'];
-            $bill['added_by'] = $_SESSION['user_id'];
-            $bill['added_by_name'] = $_SESSION['name'];
-            $bill['added_date'] = date("Y-m-d H:i:s");
-
-            $bill['tax_amount'] = $_POST['bill_tax_amount'];
-            $bill['subtotal'] = $_POST['inv_total_price'];
-            $bill['discount'] = $_POST['bill_discount'];
-            $bill['total_price'] = $_POST['bill_total_amount'];
-
-            $sql = make_insert("inventory_bill", $bill);
-            
-            // echo $sql;
-            $res = mysqli_query($mycon, $sql) or die(mysqli_error($mycon));
-
-            $bill_id = mysqli_insert_id($mycon);
-            $logger->compareAndLogV2((int)$bill_id, "purchase", $_SESSION['user_id'], $_SESSION['name'], "Add bill  ", array(), $bill);
-
-            for ($j = 0; $j < count($_POST['item_id']); $j++) {
-                if ($_POST['item_id'][$j] != '') {
-                    $invetory_details['item_id'] = $_POST['item_id'][$j];
-                    $invetory_details['quantity'] = $_POST['quantity'][$j];
-                    $invetory_details['price'] = $_POST['price'][$j];
-
-                    $invetory_details['account_id'] = $_POST['account_id'];
-                    $invetory_details['bill_id'] = $bill_id;
-                    $invetory_details['reason'] = "1";
-                    $invetory_details['action_time'] = date("Y-m-d H:i:s");
-
-                    $sql = make_insert("inventory_action", $invetory_details);
-                    // echo $sql;
-                    $res = mysqli_query($mycon, $sql) or die(mysqli_error($mycon));
-
            
-                    echo 'تمت اضافة الفاتورة بنجاح';
-                    //  $invClass->update_inventory($_POST['item_id'][$j], $_POST['quantity'][$j], "1");
-
-                    $logger->compareAndLogV2((int)$_POST['item_id'][$j], "purchase", $_SESSION['user_id'], $_SESSION['name'], "Add bill items ", array(), $invetory_details);
-                }
-            }
         } else {
             $bill_id = $_GET['bill_id'];
             $billDetails = $invClass->get_purchising_invoice($bill_id);

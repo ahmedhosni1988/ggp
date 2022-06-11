@@ -108,15 +108,27 @@ class inventory
     {
         $query = mysqli_query($this->db, "select 
         inventory_bill.*,
+        inventory_bill.id as inventory_bill_id,
+        inventory_action.id as inventory_action_id,
         inventory_action.*,
         CONCAT(suppliers.account_name, ' | ',suppliers.account_company) as account
-        from inventory_bill
+        from inventory_bill 
         inner join suppliers on (suppliers.account_id = inventory_bill.account_id )
-        inner join inventory_action on (inventory_action.bill_id = inventory_bill.id)
-
-        ");
+        inner join inventory_action on (inventory_action.bill_id = inventory_bill.id) 
+        where inventory_bill.id = '$id' ") or die (mysqli_error($this->db));
 
 
         return build_array($query);
+    }
+
+    function delete_purchasing_invoice($id){
+
+        //thsi funcction need to check if stock need modfication or not 
+        $query = mysqli_query($this->db,"delete from inventory_action where bill_id = '$id' ");
+        $query = mysqli_query($this->db,"delete from inventory_bill where id = '$id' ");
+
+        return true;
+
+    
     }
 }

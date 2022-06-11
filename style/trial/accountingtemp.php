@@ -377,15 +377,15 @@ $(document).ready(function (){
 <tr id="'.$proce[$i]['id'].'">
 <td> ';
 
-            if ($_SESSION['user_type'] == 'accounting') {
-                echo '
-<button class="removeprint btn btn-primary btn-xs" style="width:30px; height:30; margin:2px;" onclick="change_price_version(\''. $proce[$i]['clid'] .'\',\''.$proce[$i]['order_id'].'\',\''.($proce[$i]['price_version_account_id']?$proce[$i]['price_version_account_id']:'').'\')">
-		<i class="fa fa-external-link bigger-125 icon-only"></i>
-</button>
-<button class=" removeprint btn btn-success btn-xs" style="width:30px; height:30; margin:2px;" onclick="change_price_version(\''. 0 .'\',\''.$proce[$i]['order_id'].'\',\''.($proce[$i]['price_version_system_id']?$proce[$i]['price_version_system_id']:'').'\')">
-		<i class="fa fa-external-link bigger-125 icon-only"></i>
-</button>';
-            }
+//             if ($_SESSION['user_type'] == 'accounting') {
+//                 echo '
+// <button class="removeprint btn btn-primary btn-xs" style="width:30px; height:30; margin:2px;" onclick="change_price_version(\''. $proce[$i]['clid'] .'\',\''.$proce[$i]['order_id'].'\',\''.($proce[$i]['price_version_account_id']?$proce[$i]['price_version_account_id']:'').'\')">
+// 		<i class="fa fa-external-link bigger-125 icon-only"></i>
+// </button>
+// <button class=" removeprint btn btn-success btn-xs" style="width:30px; height:30; margin:2px;" onclick="change_price_version(\''. 0 .'\',\''.$proce[$i]['order_id'].'\',\''.($proce[$i]['price_version_system_id']?$proce[$i]['price_version_system_id']:'').'\')">
+// 		<i class="fa fa-external-link bigger-125 icon-only"></i>
+// </button>';
+//             }
 
             echo '
 <button class=" removeprint btn btn-success btn-xs" style="width:30px; height:30; margin:2px;" 
@@ -1404,7 +1404,21 @@ function template_cash()
     $allacc = $acc;
     // var_dump($data);
     echo'
-	
+	<script>
+    $(\'.chosen-select\').chosen({allow_single_deselect:true}); 
+    
+          
+    $(window)
+    .off(\'resize.chosen\')
+    .on(\'resize.chosen\', function() {
+          $(\'.chosen-select\').each(function() {
+                 var $this = $(this);
+                 $this.next().css({\'width\': $this.parent().width()});
+          })
+    }).trigger(\'resize.chosen\');
+    
+    
+    </script>
 	<form  method="post" ';
     if ($data) {
         echo 'id="edit"';
@@ -1428,7 +1442,7 @@ function template_cash()
 	<div class="form-group">
 	<label class="col-sm-3 control-label no-padding-right"> ' . $lang[879] . '</label>
 	<div class="col-sm-3">
-	<select  name="clid"  >
+	<select  name="clid"  class="chosen-select">
 	<option value="">' . $lang[204] . ' </option>
 	';
     for ($i = 0; $i < count($allacc); $i++) {
@@ -2293,4 +2307,229 @@ function template_cash_recepits_history()
 {
     global $lang, $result;
     template_cash_receipts_view();
+}
+
+
+
+function template_sales_edit_invoice(){
+	global $lang,$invDetails,$invoiceID,$invLines,$addService,$grpnames ;
+
+	
+
+    echo '    
+ <form id="salesinvoice_form_'.$invoiceID.'"  method="post"  action="accounting.php?action=edit_invoice"  class="form-horizontal" >
+    
+ <input type="hidden" name="id" value="'.$invoiceID.'">
+
+ <div class="row">
+
+ <div class="col-xs-4">
+
+            <div class="form-group">
+            <label class="col-sm-3 control-label">رقم الفاتورة</label>
+            <div class="col-sm-9">'.$invDetails['id'].'
+			</div></div>
+
+            <div class="form-group">
+            <label class="col-sm-3 control-label">تاريخ الفاتورة</label>
+            <div class="col-sm-9">  '.$invDetails['date'].'
+            </div>
+            </div>
+
+            <div class="form-group">
+            <label class="col-sm-3 control-label">العميل</label>
+            <div class="col-sm-9">
+			'.$invDetails['acctno'].'
+			</div>
+            </div>
+
+            </div>
+            <div class="col-xs-4">
+
+           
+            <div class="form-group">
+            <label class="col-sm-3 control-label">المجموع</label>
+            <div class="col-sm-9" >
+            
+            <input type="text" readonly name="inv_total_price" class="inv_total_price" value="'.$invDetails['subtotal'].'">
+            </div>
+            </div>
+
+			<div class="form-group">
+            <label class="col-sm-3 control-label">الضريبة</label>
+            <div class="col-sm-9" >
+           <select name="taxgroup">
+		   <option value="0"></option>';
+
+		   for($i=0;$i<count($grpnames);$i++){
+			   echo '<option value="'.$grpnames[$i]['taxgroup_id'].'" '.($grpnames[$i]['taxgroup_id'] == $invDetails['account_taxgroup'] ? 'selected' : '').'>'.$grpnames[$i]['taxgroup_name'].'</option>';
+
+		   }
+	echo '	</select>
+
+            </div>
+            </div>
+
+            <div class="form-group">
+            <label class="col-sm-3 control-label">الخصم</label>
+            <div class="col-sm-9" >
+            <input type="text" onblur="recalac_sales_invoice(\'salesinvoice_form_'.$invoiceID.'\');"  name="bill_discount"  value="'.$invDetails['discount_value'].'">
+            </div>
+            </div>
+
+            
+    
+
+            </div>
+
+            <div class="col-xs-2">
+
+            <div class="form-group">
+            <label class="col-sm-3 control-label">الاجمالى</label>
+            <div class="col-sm-9" >
+            <input type="text"  name="bill_total_amount"  readonly value="'.$invDetails['bill_total_amount'].'">
+            </div>
+            </div>
+
+            <div class="wizard-actions">
+            <!-- #section:plugins/fuelux.wizard.buttons -->
+          
+    
+            <button type="button"  style="text-align:center;" class="btn btn-success btn-block" onclick="save_sales_invoice(\'salesinvoice_form_'.$invoiceID.'\',\'0\')">' . ($invoiceID > 0 ? 'حفظ' :  $lang[260]) . '</button>
+			<button type="button"  style="text-align:center;" class="btn btn-danger btn-block" onclick="approver_sales_invoice(\''.$invoiceID.'\')">' . ($invDetails['reviewed'] == 1 ? 'الغاء الاعتماد' :  'اعتماد' ) . '</button>
+			<button type="button"  style="text-align:center;" class="btn btn-warning btn-block" onclick="add_form_php(\'salesinvoice_form_'.$invoiceID.'\',\'1\')">' . ($invoiceID > 0 ? 'ارسال فاتورة الكترونية' :  $lang[260]) . '</button>
+
+            <!-- /section:plugins/fuelux.wizard.buttons -->
+        </div>
+
+            </div>
+
+            <div style="clear:both;"></div>
+
+</div>
+            <hr/>
+            <div class="row">
+
+            <div class="col-xs-8" style="margin:auto; float:none;">
+
+            <table class="table table-striped table-bordered table-hover myitems"  >
+            <tr>
+            <td>المنتج</td>
+			<td>طول</td>
+            <td>عرض</td>
+            <td>سمك</td>
+            <td>لون</td>
+            <td>مسطح</td>
+            <td>تخليع</td>
+			<td>تفاصيل</td>
+            <td>سعر </td>
+			<td></td>
+            </tr>';
+
+        $rowNum = 5;
+        if(count($invLines) > 5) $rowNum = count($invLines);
+
+    for ($j = 0; $j < $rowNum; $j++) {
+		
+		if($invLines[$j]['chgtype'] == 'A'){
+
+			echo '
+			<tr id="row_'.$invLines[$j]['invoicedtlid'].'" >
+			<input type="hidden" name="itemid[]" value="'.$invLines[$j]['invoicedtlid'].'" />
+	
+			<td>
+			'.$invLines[$j]['item'].'
+			</td>
+	
+			<td colspan="7">
+			'.$invLines[$j]['descn'].'
+			</td>
+	
+
+	
+			<td>
+			<input type="text" name="itemprice[]" readonly  onblur="recalac_sales_invoice(\'salesinvoice_form_'.$invoiceID.'\');" value="'.$invLines[$j]['amount'].'" />
+			</td>
+		   
+			<td>';
+            if ($invDetails['reviewed'] != '1') {
+                echo '			<a onclick="delete_row_details(\''.$invLines[$j]['invoicedtlid'].'\');" style="cursor:pointer;"><span class="ui-icon ace-icon  fa fa-trash-o center bigger-110 blue"></span></a>';
+            }
+echo '			</td>
+	
+	
+	
+			  </tr>';
+
+		}else{
+            echo '
+        <tr id="row_'.$invLines[$j]['invoicedtlid'].'" >
+        <input type="hidden" name="itemid[]" value="'.$invLines[$j]['invoicedtlid'].'" />
+
+        <td>
+		'.$invLines[$j]['item'].'
+        </td>
+
+		<td>
+		'.$invLines[$j]['length'].'
+        </td>
+
+		<td>
+		'.$invLines[$j]['width'].'
+        </td>
+
+		<td>
+		'.$invLines[$j]['glassType'].'
+        </td>
+
+		<td>
+		'.$invLines[$j]['glasscolour'].'
+        </td>
+
+		<td>
+		'.$invLines[$j]['glassType'].'
+        </td>
+
+		<td>
+		'.$invLines[$j]['glassPointing'].'
+        </td>
+
+		<td>
+		'.$invLines[$j]['details'].'-'.$invLines[$j]['details_2'].'
+        </td>
+
+		<td>
+		<input type="text" name="itemprice[]" readonly value="'.$invLines[$j]['amount'].'" />
+        </td>
+       
+		<td>';
+		if($invDetails['reviewed'] != '1'){
+			echo '	<a onclick="add_row_details(\'row_'.$invLines[$j]['invoicedtlid'].'\',\''.$invLines[$j]['item'].'\',\''.$invLines[$j]['invoicedtlid'].'\','.htmlspecialchars(json_encode($addService)).',\''.$invoiceID.'\');" style="cursor:pointer;"><span class="ui-icon ace-icon fa fa-plus center bigger-110 blue"></span></a>';
+
+		}
+echo '	</td>
+
+
+
+          </tr>';
+        }
+    }
+    echo '  </table>
+
+      </div>
+      </div>
+    
+<script type="text/javascript">
+$(document).ready(function(){
+    $(\'.datepick_'.$bill_id.'\').datepicker({
+        dateFormat: \'yy-mm-dd\'	
+
+    });
+});
+</script>
+
+
+    
+            </form>
+    ';
 }

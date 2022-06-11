@@ -104,7 +104,7 @@ function template_overall_header()
             <script type="text/javascript">
             var siteurl = \'' . SITEURL . '\';
                     
-            var formurl = \'' . formurl . '\';
+            var FORMURL = \'' . formurl . '\';
         
             var userstatus = \'' . $_SESSION['user_type'] . '\' ;
             var image_only = \'' . $_SESSION['user_action'] . '\'
@@ -2482,20 +2482,18 @@ function accounting_menu()
                             </a>
         
                             <b class="arrow"></b>
-                        </li>
+                        </li>';
 
 
 
-
-                    <li class="hsub ">
+    if ($_SESSION['user_type'] == 'accounting') {
+        $x .= '                    <li class="hsub ">
                     <a href="#" class="dropdown-toggle">
                         <i class="menu-icon fa fa-shopping-cart  blue"></i>
                         <span class="menu-text"> المشتريات </span>
                         <b class="arrow fa fa-angle-down"></b>
                     </a>
-            
                     <b class="arrow"></b>
-            
                     <ul class="submenu" >
                     <li class="">
                     <a href="suppliers.php">
@@ -2517,11 +2515,20 @@ function accounting_menu()
                    </li>
             
                     </ul>
-                    </li>
-
-
-
-                    <li class="hsub ">
+                    </li>';
+    }
+    if ($_SESSION['user_type'] == 'accounting') {
+        $x .=  '                  <li class="">
+                    <a href="inventory.php">
+                        <i class="menu-icon fa fa-dropbox blue"></i>
+                        <span class="menu-text"> المحزن </span>
+                    </a>
+            
+                    <b class="arrow"></b>
+                   </li>';
+    }
+    if ($_SESSION['user_type'] == 'accounting') {
+        $x .=  '              <li class="hsub ">
                     <a href="#" class="dropdown-toggle">
                         <i class="menu-icon fa fa-bar-chart-o blue"></i>
                         <span class="menu-text"> المبيعات </span>
@@ -2540,6 +2547,14 @@ function accounting_menu()
                         <b class="arrow"></b>
                     </li>
 
+                    <li class="">
+                    <a href="accounting.php">
+                        <i class="menu-icon glyphicon  glyphicon-home blue"></i>
+                        <span class="menu-text"> الفواتير </span>
+                    </a>
+        
+                    <b class="arrow"></b>
+                </li>
 
                     <li class="">
                     <a href="index.php?action=orders">
@@ -2572,42 +2587,33 @@ function accounting_menu()
             
             
                     </ul>
-                    </li>
-
-     
-   
-
-
-                        <li class="">
-                        <a href="inventory.php">
-                            <i class="menu-icon fa fa-dropbox blue"></i>
-                            <span class="menu-text"> المحزن </span>
-                        </a>
-                
-                        <b class="arrow"></b>
-                       </li>
-
-
- 
-
-
-
-                    <li class="">
-                    <a href="' . $murl . '">
+                    </li>';
+    }
+    if ($_SESSION['user_type'] == 'accounting') {
+        $x .=  ' 
+                    <li class=" hsub">
+                    <a href="#" class="dropdown-toggle">
                         <i class="menu-icon fa fa fa-money blue"></i>
                         <span class="menu-text"> الحسابات </span>
+                        <b class="arrow fa fa-angle-down"></b>
+
                     </a>
 
                     <b class="arrow"></b>
-                </li>
-
-                
-
-
- 
+            
+                    <ul class="submenu" >
+                    
+                    <li class="">
+                    <a href="accounting.php?action=revise_account">
+                        <i class="menu-icon glyphicon  glyphicon-home blue"></i>
+                        <span class="menu-text"> حساب العميل </span>
+                    </a>
+      
+                    <b class="arrow"></b>
+                   </li>
 
               <li class="">
-              <a href="' . $murl . '">
+              <a href="credit_note.php?action=manage">
                   <i class="menu-icon glyphicon  glyphicon-home blue"></i>
                   <span class="menu-text"> اشعار الخصم والاضافة </span>
               </a>
@@ -2615,14 +2621,11 @@ function accounting_menu()
               <b class="arrow"></b>
              </li>
 
-       
-
-
-            
-
-
-
-
+                    </ul>
+                </li>';
+    }
+    if ($_SESSION['user_type'] == 'accounting') {
+        $x .=  ' 
         <li class="hsub ">
         <a href="#" class="dropdown-toggle">
             <i class="menu-icon fa fa-usd blue"></i>
@@ -2653,9 +2656,10 @@ function accounting_menu()
 
         </ul>
         </li>
-
-
-        <li class="hsub ">
+';
+    }
+    if ($_SESSION['user_type'] == 'accounting') {
+        $x .= '<li class="hsub ">
         <a href="#" class="dropdown-toggle">
             <i class="menu-icon fa fa-search blue"></i>
             <span class="menu-text"> بحث </span>
@@ -2666,14 +2670,14 @@ function accounting_menu()
 
         <ul class="submenu" >
         <li class="">
-            <a href="" >
+            <a href="accounting.php?action=history_invoice" >
                 <i class="menu-icon fa fa-caret-right"></i>
                فواتير
             </a>
             <b class="arrow"></b>
         </li>
         <li class="">
-            <a href="" >
+            <a href="search.php?action=mangesearch" >
                 <i class="menu-icon fa fa-caret-right"></i>
                 الطلبيات
             </a>
@@ -2732,7 +2736,8 @@ function accounting_menu()
 
 
                        ';
-
+    }
+                
     $x .= '</ul><!-- /.nav-list -->
             
                        <!-- #section:basics/sidebar.layout.minimize -->

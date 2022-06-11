@@ -43,7 +43,7 @@ function template_invoice_header()
     <table border="2" width="100%" cellpadding="5" class="table_details">
     <tr>
     <td class="maintd">رفم الفاتورة</td><td>'.$invhdr['id'].'</td>
-    <td class="maintd">حاله</td><td>'.($invhdr['id'] == '0' ? 'لم تتم المراجعه' : 'تمت مراجعة هذه الطلبية').'</td>
+    <td class="maintd">حاله</td><td>'.($invhdr['reviewed'] == '0' ? 'لم تتم المراجعه' : 'تمت مراجعة هذه الطلبية').'</td>
     </tr>
     <tr>
     <td class="maintd">التاريخ</td><td>' . date("d - m- Y", strtotime($invhdr['date'])) . '</td>
@@ -98,9 +98,7 @@ function template_invoice_main()
         <td class="tableheader">عرض</td>
         <td class="tableheader">سمك</td>
         <td class="tableheader">لون</td>
-        <td class="tableheader">طباعة</td>
         <td class="tableheader">مسطح</td>
-        <td class="tableheader">سنفرة</td>
         <td class="tableheader">تخليع</td>
         <td class="tableheader">التفاصيل</td>
         <td class="tableheader">التسعير</td>
@@ -123,9 +121,7 @@ function template_invoice_main()
             <td class="tabletd">'.$pac['width'].'</td>
             <td class="tabletd">'.$pac['package_name'].'</td>
             <td class="tabletd">'.$pac['glasscolour'].'</td>
-            <td class="tabletd">'.$pac['glassPrint'].'</td>
             <td class="tabletd">'.$pac['glassType'].'</td>
-            <td class="tabletd">'.$pac['glassScarch'].'</td>
             <td class="tabletd">'.$pac['glassPointing'].'</td>
             <td class="tabletd">'.$pac['details'].'</td>
             <td class="tabletd">'.$pac['amount'].'</td>
@@ -133,7 +129,7 @@ function template_invoice_main()
         } else {
             echo '
             <td class="tabletd">'.$pac['item'].'</td>
-            <td colspan="9"  class="tabletd">'.$pac['descn'].'</td>
+            <td colspan="7"  class="tabletd">'.$pac['descn'].'</td>
             <td  class="tabletd">'.$pac['amount'].'</td>
             ';
         }
@@ -154,7 +150,7 @@ function template_invoice_main()
 
 function template_invoice_footer()
 {
-    global $mytotal,$package_division;
+    global $mytotal,$package_division,$invhdr;
     echo '<table  border="1" cellspacing="0" width="100%" dir="rtl" >
     <tr>
     <td colspan="100%" class="tableheader">'.SITENAME.'</td>
@@ -183,7 +179,27 @@ function template_invoice_footer()
     
     <td class="tabletd" style="width:50%; font-size:20px;">
     <div style="text-align:left; margin:20px;">
-    المجموع : '.$mytotal.'
+    <table>
+    <tr>
+    <td class="tableheader">المجموع:</td>
+    <td class="tabletd">'.$mytotal.'</td>
+    </tr>
+    ';
+    if($invhdr['discount_value'] > '0'){
+        echo '<tr>
+        <td class="tableheader">الخصم:</td>
+        <td class="tabletd">'.$invhdr['discount_value'].'</td>
+        </tr>';
+     
+        echo '<tr>
+        <td class="tableheader">الاجمالى:</td>
+        <td class="tabletd">'.($mytotal - $invhdr['discount_value']).'</td>
+        </tr>';
+
+    }
+    echo '
+
+    </table>
     </div>
     </td>
     </tr>

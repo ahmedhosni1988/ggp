@@ -33,7 +33,7 @@ define("DBPASS", "1234");
 define("DBNAME", "pyramids_server_db");
 //define("DBNAME","newsystem_locallogestic");
 define("STYLE", "style/trial");
-define("PERPAGE", "30");
+define("PERPAGE", "50");
 define("system_id", "1");
 include(STYLE."/maintemp.php");
 include(STYLE."/clienttemp.php");

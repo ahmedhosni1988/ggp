@@ -452,6 +452,128 @@ function show_edit_suppliers(account_id, name) {
 
 }
 
+function show_edit_inv_suppliers(bill_id, billno) {
+    var url = "inventory.php?action=edit_purchase&bill_id=" + bill_id;
+    var name1 = "تعديل فاتورة رقم  : " + billno;
+    open_new_tab(url, name1, 'purchase');
+
+}
+
+function delete_inv_purchasing(id,billno) {
+
+    var x = confirm('هل انت متاكد من حذف الفاتورة رقم : '+billno+'؟');
+
+    if (x) {
+        var req = $.ajax({
+            type: "POST",
+            url: 'inventory.php?action=delete_invoice',
+            data : {bill_id : id} 
+        });
+
+        req.done(function (msg) {
+            alert(msg);
+
+            location.reload();
+
+
+        });
+        req.fail(function (jqXHR, textStatus) {
+            alert("Request failed: " + textStatus);
+        });
+
+
+    } else {
+
+    }
+
+
+}
+
+function import_to_inventory(id,billno) {
+
+    var x = confirm('هل انت متاكد من اضافة مخزون الفاتورة رقم '+billno+'؟');
+
+    if (x) {
+        var req = $.ajax({
+            type: "POST",
+            url: 'inventory.php?action=add_invoice_stock',
+            data : {bill_id : id} 
+        });
+
+        req.done(function (msg) {
+            alert(msg);
+
+            location.reload();
+
+
+        });
+        req.fail(function (jqXHR, textStatus) {
+            alert("Request failed: " + textStatus);
+        });
+
+
+    } else {
+
+    }
+
+
+}
+
+function print_inv(bill_id,billno){
+   
+    
+    var req = $.ajax({
+        type: "POST",
+        url: 'inventory.php?action=inv_print',
+        data: {bill_id}
+    });
+
+
+    req.done(function(msg) {
+
+
+        $("#result_dialoge").html(msg);
+        title = "<div class='widget-header' ><h4 class='smaller'>طباعة فاتورة مورد : "+billno+"</h4></div>";
+        btns = [{
+            text: "طباعة",
+            click: function(params) {
+                var divToPrint = document.getElementById('result_dialoge');
+                var newWin = window.open('', 'Print-Window');
+                newWin.document.open();
+                newWin.document.write('<div">' + divToPrint.innerHTML + '</div>');
+                newWin.document.close();
+                newWin.print()
+                setTimeout(function() { newWin.close(); }, 10);
+                // $("#print_cash").print();
+            }
+        }, {
+            text: "اغلاق",
+            click: function() {
+                $(this).dialog("close");
+              //  location.reload(true)
+                    //window.location = window.location.href;
+            }
+        }];
+
+
+    
+
+    $("#result_dialoge").dialog({
+        modal: true,
+        title: title,
+        //title: "<div class='widget-header' ><h4 class='smaller'><i class='ace-icon fa  fa-envelope red'></i> وصل رقم :  " + obj['invoiceno'] + " ,  تابع االعميل :" + obj['account_company'] + "</h4></div>",
+        title_html: true,
+        width: '700',
+        buttons: btns
+
+    });
+
+
+});
+
+}
+
+
 function show_mange_users(account_id, name) {
     var url = "accounts.php?action=manage_account&id=" + account_id;
     var name1 = "Mange Account : " + name;
@@ -926,7 +1048,7 @@ function credit_note_invoice(ele,id){
 
 
 
-function add_form_php(form_id, aftersuccess) {
+function add_form_php(form_id, aftersuccess, tabs = 'tabs') {
 
 //alert($('#'+form_id).attr('action'));
     if (validate_forms(form_id)) {
@@ -955,7 +1077,9 @@ function add_form_php(form_id, aftersuccess) {
                     buttons: {
                         Ok: function () {
                             $(this).dialog("close");
-                            location.reload(); 
+                            $("#"+tabs).tabs("option","load" , 0  );
+                            $("#"+tabs).tabs('option', 'active', 0);
+
                         },
                         Cancel: function () {
                             $(this).dialog("close");
@@ -2256,3 +2380,216 @@ function recalac_invoice(formname){
 
     return;
 }
+
+
+
+
+function recalac_sales_invoice(formname){
+
+    var subtotal = 0;
+    var discount = 0;
+    var taxamount = 0;
+    var total = 0
+
+    $('#'+formname+' table.myitems tbody tr').each(function () {
+        //loop through input logic here
+        var itemprice = $(this).find('input[name="itemprice[]"]').val() || 0;
+        var service_price = $(this).find('.service_price').val() || 0;
+        //end input loop
+  debugger;
+      //  if(itemprice > 0  ){
+          //  console.log(qua*pri);
+           // $(this).find('input[name="total_price[]"]').val(qua*pri);
+            subtotal = subtotal + parseFloat(itemprice) ;
+
+     //   } 
+    //    if( service_price > 0){
+            //  console.log(qua*pri);
+             // $(this).find('input[name="total_price[]"]').val(qua*pri);
+              subtotal = subtotal + parseFloat(service_price);
+  
+      //    } 
+
+    });
+
+
+    discount = $('#'+formname+' input[name="bill_discount"]').val() || 0;
+   // taxamount = $('#'+formname+' input[name="bill_tax_amount"]').val() || 0;
+    
+
+
+    $('#'+formname+' input[name="inv_total_price"]').val(subtotal.toFixed(2));
+    total =  parseFloat(subtotal) - parseFloat(discount) ;
+    $('#'+formname+' input[name="bill_total_amount"]').val(total.toFixed(2));
+
+    return;
+}
+
+
+function add_row_details(row_id,item,id,addService,invoiceID){
+
+    var row = $("#"+row_id).closest("tr");
+
+    //var myselect = JSON.stringify(select);
+    console.log(addService);
+    let select = "<select name='service_type["+id+"][]'><option value='0'>اختار الاضافة</option>";
+    for(var i=0;i<addService.length;i++){
+        select += "<option value='"+addService[i].id+"'>"+addService[i].name+"</option>";
+
+    }
+    select += "</select>";
+
+    $("<tr id='nrow_"+id+"'><td>"+item+"</td><td colspan=\"7\">"+select+"</td><td><input type=\"text\" size=\"4\" class=\"service_price\" name=\"service_price["+id+"][]\" value=\"\"/></td><td><a style=\"cursor:pointer;\" class=\"removerow\" ><span class=\"ui-icon ace-icon fa fa-minus center bigger-110 blue\"></span></a></td></tr>").insertAfter(row);
+
+
+    $(".removerow").on('click',function(){
+        $(this).parent().parent().remove();
+    });
+
+    $(".service_price").on('blur',function(){
+        recalac_sales_invoice('salesinvoice_form_'+invoiceID);
+    });
+
+
+
+}
+
+function decodeHtml(str)
+{
+    var map =
+    {
+        '&amp;': '&',
+        '&lt;': '<',
+        '&gt;': '>',
+        '&quot;': '"',
+        '&#039;': "'"
+    };
+    return str.replace(/&amp;|&lt;|&gt;|&quot;|&#039;/g, function(m) {return map[m];});
+}
+
+function save_sales_invoice(form_id, aftersuccess, tabs = 'tabs') {
+
+    //alert($('#'+form_id).attr('action'));
+        if (validate_forms(form_id)) {
+    
+            var data = $('#' + form_id).serialize();
+            //alert(data);
+            var req = $.ajax({
+                type: "POST",
+                url: $('#' + form_id).attr('action'),
+                data: data
+            });
+    
+            req.done(function (msg) {
+    
+    
+                if (aftersuccess == '0') {
+                    location.reload();
+                } else if (aftersuccess == '1') {
+    
+                    $("#result_dialoge").html(msg);
+                    $("#result_dialoge").dialog({
+                        resizable: false,
+                        modal: true,
+                        title: "<div class='widget-header'><h4 class='smaller'><i class='ace-icon fa  fa-envelope red'></i> Message</h4></div>",
+                        title_html: true,
+                        buttons: {
+                            Ok: function () {
+                                $(this).dialog("close");
+                                $("#"+tabs).tabs("option","load" , 0  );
+                                $("#"+tabs).tabs('option', 'active', 0);
+    
+                            },
+                            Cancel: function () {
+                                $(this).dialog("close");
+                                location.reload(); 
+                            }
+                        }
+                    });
+                     }
+    
+    
+            });
+            req.fail(function (jqXHR, textStatus) {
+                alert("Request failed: " + textStatus);
+            });
+    
+    
+        } else {
+    
+            $("#result_dialoge").html("Error in Validation");
+    
+            $("#result_dialoge").dialog({
+                modal: true,
+                title: "<div class='widget-header'><h4 class='smaller'><i class='ace-icon fa  fa-envelope red'></i> Message</h4></div>",
+                title_html: true,
+                buttons: {
+                    Ok: function () {
+                        $(this).dialog("close");
+                    },
+                    Cancel: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        }
+    
+    
+    }
+
+
+    function delete_row_details(id, aftersuccess, tabs = 'tabs') {
+
+        //alert($('#'+form_id).attr('action'));
+        
+                //alert(data);
+                var req = $.ajax({
+                    type: "POST",
+                    url: 'accounting.php?action=delete_invoice_item',
+                    data: {id  }
+                });
+        
+                req.done(function (msg) {
+        
+                    location.reload();
+
+
+        
+                });
+                req.fail(function (jqXHR, textStatus) {
+                    alert("Request failed: " + textStatus);
+                });
+
+        
+        
+        }
+
+        function approver_sales_invoice(id) {
+
+            //alert($('#'+form_id).attr('action'));
+            
+                
+                    //alert(data);
+                    var req = $.ajax({
+                        type: "POST",
+                        url: 'accounting.php?action=approver_invoice',
+                        data: {id}
+                    });
+            
+                    req.done(function (msg) {
+            
+            
+                            location.reload();
+
+            
+            
+                    });
+                    req.fail(function (jqXHR, textStatus) {
+                        alert("Request failed: " + textStatus);
+                    });
+            
+            
+
+            
+            
+            }

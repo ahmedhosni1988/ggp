@@ -576,19 +576,19 @@ class console
 <tbody>
 <tr>
 <td id="first_grid-pager" class="ui-pg-button ui-corner-all '.($this->get_page() > 1 ? '' : 'ui-state-disabled').'" onclick="previos_page(2,\''.$actual_link.'\')" style="cursor: default;">
-<span class="ui-icon ace-icon fa fa-angle-double-left bigger-140"></span>
+<span class="ui-icon ace-icon fa fa-angle-double-right bigger-140"></span>
 </td>
 <td id="prev_grid-pager" class="ui-pg-button ui-corner-all '.($this->get_page() > 1 ? '' : 'ui-state-disabled').'" onclick="previos_page('.$this->get_page().',\''.$actual_link.'\')" style="cursor: default;">
-<span class="ui-icon ace-icon fa fa-angle-left bigger-140"></span>
+<span class="ui-icon ace-icon fa fa-angle-right bigger-140"></span>
 </td>
 <td class="ui-pg-button ui-state-disabled" style="width: 4px; cursor: default;">
 <span class="ui-separator"></span></td><td dir="ltr">Page '.$this->get_page().' of <span id="sp_1_grid-pager">'.($this->get_pageNo()).'</span>
 </td>
 <td class="ui-pg-button ui-state-disabled" style="width: 4px; cursor: default;" >
 <span class="ui-separator"></span></td>
-<td id="next_grid-pager" class="ui-pg-button ui-corner-all '.($this->get_page() == $this->get_pageNo()  ? 'ui-state-disabled' : '').'" onclick="next_page('.$this->get_page().',\''.$actual_link.'\')" style="cursor: pointer;"><span class="ui-icon ace-icon fa fa-angle-right bigger-140"></span></td>
+<td id="next_grid-pager" class="ui-pg-button ui-corner-all '.($this->get_page() == $this->get_pageNo()  ? 'ui-state-disabled' : '').'" onclick="next_page('.$this->get_page().',\''.$actual_link.'\')" style="cursor: pointer;"><span class="ui-icon ace-icon fa fa-angle-left bigger-140"></span></td>
 <td id="last_grid-pager" class="ui-pg-button ui-corner-all '.($this->get_page() == $this->get_pageNo()  ? 'ui-state-disabled' : '').'" onclick="next_page('.($this->get_pageNo() - 1).',\''.$actual_link.'\')" >
-<span class="ui-icon ace-icon fa fa-angle-double-right bigger-140"></span>
+<span class="ui-icon ace-icon fa fa-angle-double-left bigger-140"></span>
 </td>
 
 <td>

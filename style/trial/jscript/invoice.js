@@ -483,23 +483,23 @@ function show_invoice(id, reviewed) {
         }
     ];
 
-    if (reviewed == 0) {
-        button.push({
-            text: "تم المراجعه ",
-            click: function() {
-                var req = $.ajax({
-                    type: "POST",
-                    url: '../invoice/invoice.php',
-                    data: { order_id: id }
-                });
-                req.done(function(msg) {
-                    $('#' + id).remove();
-                    show_invoice(id)
+    // if (reviewed == 0) {
+    //     button.push({
+    //         text: "تم المراجعه ",
+    //         click: function() {
+    //             var req = $.ajax({
+    //                 type: "POST",
+    //                 url: '../invoice/invoice.php',
+    //                 data: { order_id: id }
+    //             });
+    //             req.done(function(msg) {
+    //                 $('#' + id).remove();
+    //                 show_invoice(id)
 
-                });
-            },
-        });
-    }
+    //             });
+    //         },
+    //     });
+    // }
     var req = $.ajax({
         type: "GET",
         url: 'accounting.php?action=show_invoice',
@@ -511,8 +511,8 @@ function show_invoice(id, reviewed) {
         $("#page").html(msg);
         $("#page").dialog({
             modal: true,
-            width: '850px',
-            height: '600',
+            width: '1024px',
+            height: '840',
             title: "<div class='widget-header'><h4 class='smaller'><i class='ace-icon fa  fa-envelope red'></i> فاتورة رقم " + id + "</h4></div>",
             title_html: true,
             buttons: button

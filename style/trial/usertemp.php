@@ -117,10 +117,15 @@ function template_user_edit()
             <option value="7" ' . ($user_data->user_type == '7' ? 'selected' : '') . '>تشطيب </option>
             <option value="2" ' . ($user_data->user_type == '2' ? 'selected' : '') . '>تقطيع</option>
             <option value="manger" ' . ($user_data->user_type == 'manger' ? 'selected' : '') . '>متابعة</option>
-            <option value="accounting" ' . ($user_data->user_type == 'accounting' ? 'selected' : '') . '>محاسب</option>
             <option value="addmanger" ' . ($user_data->user_type == 'addmanger' ? 'selected' : '') . '>اضافة انتاج</option>
             <option value="manmanger" ' . ($user_data->user_type == 'manmanger' ? 'selected' : '') . '>مدير انتاج</option>
             <option value="administrator" ' . ($user_data->user_type == 'administrator' ? 'selected' : '') . '>مدير نظام</option>
+
+            <option value="accounting" ' . ($user_data->user_type == 'accounting' ? 'selected' : '') . '>محاسب عام</option>
+            <option value="accounting_sales" ' . ($user_data->user_type == 'accounting' ? 'selected' : '') . '>محاسب مبيعات</option>
+            <option value="accounting_purchase" ' . ($user_data->user_type == 'accounting' ? 'selected' : '') . '>محاسب مشتريات</option>
+            <option value="accounting_cash" ' . ($user_data->user_type == 'accounting' ? 'selected' : '') . '>محاسب خزنة</option>
+
             <option value="smallaccounting" ' . ($user_data->user_type == 'smallaccounting' ? 'selected' : '') . ' >محاسب فرع</option>
 
             </select>
@@ -224,9 +229,23 @@ function template_user_edit()
             <label class="col-sm-3 control-label">انترنت</label>
             <div class="col-sm-9">
             <input type="hidden" name="allow_internet" value="0"/>
-            <input type="checkbox" name="allow_internet" value="1" '.("1"== $user_data->allow_internet ? 'checked' : '').' /></div>
+            <input type="checkbox" name="allow_internet" value="1" '.("1"== $user_data->allow_internet ? 'checked' : '').' />
             </div>
+            </div>
+        
             
+            <div class="form-group">
+            <label class="col-sm-3 control-label">الحالة</label>
+            <div class="col-sm-9">
+
+            <select name="status">
+            <option value="2" '.($user_data->status == '2' ? 'selected' : '').'>نشط</option>
+            <option value="3" '.($user_data->status == '3' ? 'selected' : '').'>ملغى</option>
+            </select>
+            </div>
+            </div>
+
+
             </div>
             
             
@@ -278,10 +297,16 @@ function template_add_admin_user()
         <option value="7">تشطيب </option>
         <option value="2">تقطيع</option>
         <option value="manger">متابعة</option>
-        <option value="accounting" >محاسب</option>
+
         <option value="addmanger" >اضافة انتاج</option>
         <option value="manmanger" >مدير انتاج</option>
         <option value="administrator">مدير نظام</option>
+
+        <option value="accounting" >محاسب عام</option>
+        <option value="accounting_sales" >محاسب مبيعات</option>
+        <option value="accounting_purchase" >محاسب مشتريات</option>
+        <option value="accounting_cash" >محاسب خزنة</option>
+
         <option value="smallaccounting">محاسب فرع</option>
         </select>
         

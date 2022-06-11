@@ -1,6 +1,32 @@
 <?php
 
 
+function show_sales_invoice_option($ro){
+    for ($i=0;$i<count($ro);$i++) {
+        foreach ($ro[$i] as $key => $value) {
+            $rou[$key] = $value;
+        }
+    }
+    $x .= '
+    <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-success btn-xs"  onclick="window.open(\''.SITEURL.'/administrator/accounting/accounting.php?action=edit_invoice&id='.$rou['id'].'\', \'_blank\'); " >
+    <i class="fa fa-external-link " ></i>
+    </button>
+
+
+    <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-warning btn-xs"  onclick="window.open(\''.SITEURL.'/administrator/invoicing/index.php?id='.$rou['order_id'].'\', \'_blank\'); " >
+    <i class="fa fa-print  " ></i>
+    </button>
+
+    
+    <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-default  btn-xs"  onclick="refreshwaybill('.$rou['order_id'].');" >
+    <i class=" fa fa-print  " ></i>
+    </button>
+
+';
+
+    return $x;
+
+}
 function show_account_row_option($ro)
 {
     for ($i=0;$i<count($ro);$i++) {
@@ -36,6 +62,22 @@ function show_supplier_row_option($ro)
 }
 
 
+function show_accounting_order_option($ro){
+
+    for ($i=0;$i<count($ro);$i++) {
+        foreach ($ro[$i] as $key => $value) {
+            $rou[$key] = $value;
+        }
+    }
+
+    $x .= '  <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-default btn-xs"  onclick="refreshwaybill('.$rou['order_id'].');" >
+    <i class="fa fa-print  " ></i>
+    </button>
+';
+
+return $x;
+
+}
 
 function show_supplier_inv_row_option($ro)
 {
@@ -45,32 +87,37 @@ function show_supplier_inv_row_option($ro)
         }
     }
 
-    $x .= '  <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-success btn-xs"  onclick="show_edit_suppliers('.$rou['account_id'].',\''.$rou['account_company'].'\');" >
-    <i class="fa fa-external-link " ></i>
+
+    //فاتورة جدية يمكن اضافتها للمحزن
+    if ($rou['bill_status'] == '0') {
+        
+    $x .= '  <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-warning  btn-xs"  onclick="show_edit_inv_suppliers('.$rou['id'].',\''.$rou['bill_no'].'\');" >
+    <i class="fa fa-wrench   " ></i>
     </button>
 ';
 
-    //فاتورة جدية يمكن اضافتها للمحزن
-    if ($ro['status'] == '0') {
-        $x .= '  <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-success btn-xs"  onclick="show_edit_suppliers('.$rou['account_id'].',\''.$rou['account_company'].'\');" >
-        <i class="fa fa-external-link " ></i>
+        $x .= '  <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-success btn-xs"  onclick="import_to_inventory('.$rou['id'].',\''.$rou['bill_no'].'\');" >
+        <i class="fa fa-exchange " ></i>
         </button>
     ';
+
+        $x .= '  <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-danger btn-xs"  onclick="delete_inv_purchasing('.$rou['id'].',\''.$rou['bill_no'].'\');" >
+    <i class="fa fa-trash-o " ></i>
+    </button>
+';
+
     }
 
     //فانورة تمت اضافتها للمخزن
-    if ($ro['status'] == '1') {
-        $x .= '  <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-success btn-xs"  onclick="show_edit_suppliers('.$rou['account_id'].',\''.$rou['account_company'].'\');" >
-        <i class="fa fa-external-link " ></i>
+    if ($rou['bill_status'] == '1') {
+        $x .= '  <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-default btn-xs"  onclick="print_inv('.$rou['id'].',\''.$rou['bill_no'].'\');" >
+        <i class="fa fa-print  " ></i>
         </button>
     ';
     }
 
 
-    $x .= '  <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-success btn-xs"  onclick="show_edit_suppliers('.$rou['account_id'].',\''.$rou['account_company'].'\');" >
-    <i class="fa fa-external-link " ></i>
-    </button>
-';
+
 
     return $x;
 }
@@ -98,7 +145,7 @@ function template_accounting_console()
 							</h4>			
     </div>
     <div class="col-xs-6" style="padding:10px;">
-    <input type="text" id="search_grid" url="'.$url.'&ajax=1"  class=" input-sm" style="float:left; margin-left:20px;"  value=""  placeholder="بحث" >
+    <input type="text" id="search_grid" url="'.$url.(strpos($url,'?') ? '' : '?' ).'&ajax=1"  class=" input-sm" style="float:left; margin-left:20px;"  value=""  placeholder="بحث" >
     </div>
     </div>
 

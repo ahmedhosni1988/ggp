@@ -7,15 +7,7 @@ function template_main_accounting()
 
 
 
-function template_edit_invoice()
-{
-    global $lang,$c_setting,$invDetails;
 
-    echo '
-    
-    
-    ';
-}
 
 
 

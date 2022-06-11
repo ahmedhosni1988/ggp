@@ -983,10 +983,10 @@ class invoices
 
     public function get_invoice_header($invoice_id)
     {
-        $query = mysqli_query($this->db, "select * from invoicehdr where id=" . check_mysql_string($this->db,$invoice_id) . "") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select invoicehdr.*,account.account_taxgroup from invoicehdr inner join account on (account.account_id = invoicehdr.clid) where invoicehdr.id=" . check_mysql_string($this->db,$invoice_id) . "") or die(mysqli_error($this->db));
 
         if (mysqli_num_rows($query)) {
-            $row = mysqli_fetch_object($query);
+            $row = mysqli_fetch_assoc($query);
             return $row;
         } else {
             return false;
@@ -996,7 +996,10 @@ class invoices
 
     public function get_invoice_lines($invoice_id)
     {
-        $query = mysqli_query($this->db, "select * from invoicedtl LEFT  outer join orders on (orders.order_id = invoicedtl.item ) where invoicedtl.invoiceno=" . check_mysql_string($this->db,$invoice_id) . " order by lineno") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select invoicedtl.*,orders_package.*,invoicedtl.id as invoicedtlid   from invoicedtl 
+        left join orders_package on (orders_package.id = invoicedtl.waybill )
+
+        where invoicedtl.invoiceno=" . check_mysql_string($this->db,$invoice_id) . " order by lineno") or die(mysqli_error($this->db));
 
 
         $company_details = array();

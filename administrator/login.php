@@ -22,60 +22,48 @@ switch ($action) {
 
 
         if (isset($_POST)) {
-
             empty($_SESSION);
             $login = $user->Check_admin_login(trim($_POST['user_name']), $_POST['user_pass']);
 
             if ($login['login'] == true) {
-
                 $cookiehash = md5(sha1($login['user_name'] . $login['user_id'])) . '_admin';
 
 
                 setcookie("username", $cookiehash, time() + 3600 * 24 * 365, '/', SITEURL);
 
-                mysqli_query($mycon,"update users set cookies = '" . $cookiehash . "' where user_id = '" . $login['user_id'] . "'  ");
-                if (isset($_POST['language']) && $_POST['language'] != "") $_SESSION['language'] = $_POST['language'];
+                mysqli_query($mycon, "update users set cookies = '" . $cookiehash . "' where user_id = '" . $login['user_id'] . "'  ");
+                if (isset($_POST['language']) && $_POST['language'] != "") {
+                    $_SESSION['language'] = $_POST['language'];
+                }
 
                 $user->set_login_sessions($login);
                 $_SESSION['logged_in'] = true;
 
-//header("Location: ".SITEURL.'/administrator/montior.php?action=all');
+                //header("Location: ".SITEURL.'/administrator/montior.php?action=all');
 
-$logger->compareAndLogV2($_SESSION['user_id'],"User_action", $_SESSION['user_id'],  $_SESSION['name'], "Login ",array(), $_SESSION);
+                $logger->compareAndLogV2($_SESSION['user_id'], "User_action", $_SESSION['user_id'], $_SESSION['name'], "Login ", array(), $_SESSION);
 
 
 
                 if ($login['user_type'] == 'administrator' || $login['user_type'] == 'addmanger' || $login['user_type'] == 'manmanger') {
-
                     header("Location: " . SITEURL . "/administrator/index.php");
-
                 } elseif ($login['user_type'] == 'manger') {
                     header("Location: " . SITEURL . "/administrator/manger.php");
-
-                } elseif ($login['user_type'] == 'accounting') {
+                } elseif ($login['user_type'] == 'accounting' || $login['user_type'] == 'accounting_sales' ||$login['user_type'] == 'accounting_purchase' ||$login['user_type'] == 'accounting_cash') {
+                    header("Location: " . SITEURL . "/administrator/accounting/index.php");
+                } elseif ($login['user_type'] == 'smallaccounting') {
                     header("Location: " . SITEURL . "/administrator/accounting.php");
-
-                }elseif ($login['user_type'] == 'smallaccounting') {
-                    header("Location: " . SITEURL . "/administrator/accounting.php");
-
-                }else if ($login['user_type'] == '7'){
+                } elseif ($login['user_type'] == '7') {
                     header("Location: " . SITEURL . "/administrator/work.php?action=pointing");
-
                 } else {
                     header("Location: " . SITEURL . "/administrator/work.php");
-
                 }
-
-
             } else {
                 header("Location: " . SITEURL . '/administrator/login.php?e=1');
-//$newtemp->redirect_page(SITEURL.'/administrator/index.php?e=1',$lang[77]);
+                //$newtemp->redirect_page(SITEURL.'/administrator/index.php?e=1',$lang[77]);
             }
-
-
         } else {
             $newtemp->redirect_page(SITEURL . '/administrator', $lang[77]);
-
         }
 
         break;
@@ -84,13 +72,11 @@ $logger->compareAndLogV2($_SESSION['user_id'],"User_action", $_SESSION['user_id'
     case 'forget_password':
 
         if (isset($_POST['email'])) {
-
             if (!valid_email($_POST['email'])) {
                 $res['type'] = "error";
                 $res['message'] = "Email is not valid";
                 echo json_encode($res);
                 return;
-
             }
 
             if (isset($_POST['g-recaptcha-response'])) {
@@ -112,7 +98,6 @@ $logger->compareAndLogV2($_SESSION['user_id'],"User_action", $_SESSION['user_id'
 
                     return;
                 }
-
             }
 
 
@@ -124,13 +109,10 @@ $logger->compareAndLogV2($_SESSION['user_id'],"User_action", $_SESSION['user_id'
                 $res['type'] = "error";
                 $res['message'] = 'Error in email,Please contact administrator at ' . $c_setting['co_mail_replayto'];
                 echo json_encode($res);
-
-            } else if ($userData == 1) {
-
+            } elseif ($userData == 1) {
                 $res['type'] = "error";
                 $res['message'] = 'Email not found in our database';
                 echo json_encode($res);
-
             } else {
 
                 /////
@@ -156,14 +138,10 @@ $logger->compareAndLogV2($_SESSION['user_id'],"User_action", $_SESSION['user_id'
                 $res['type'] = "true";
                 $res['message'] = "Email sent, please follow instructions";
                 echo json_encode($res);
-
             }
-
-
         } else {
             $page_title = "Forget Password";
             $newtemp->load_template('forget_password', 5);
-
         }
 
         break;
@@ -171,7 +149,6 @@ $logger->compareAndLogV2($_SESSION['user_id'],"User_action", $_SESSION['user_id'
 
     case 'resetpassword':
         if (isset($_POST['code'])) {
-
             if (isset($_POST['g-recaptcha-response'])) {
                 $captcha = $_POST['g-recaptcha-response'];
 
@@ -191,26 +168,20 @@ $logger->compareAndLogV2($_SESSION['user_id'],"User_action", $_SESSION['user_id'
 
                     return;
                 }
-
             }
 
             if ($_POST['password'] != $_POST['confirm_passord']) {
-
                 $res['type'] = "error";
                 $res['message'] = 'Password not matched';
                 echo json_encode($res);
                 return;
-
-
             }
 
             if (strlen($_POST['password']) < 4) {
-
                 $res['type'] = "error";
                 $res['message'] = 'Password is too short';
                 echo json_encode($res);
                 return;
-
             }
 
 
@@ -221,40 +192,27 @@ $logger->compareAndLogV2($_SESSION['user_id'],"User_action", $_SESSION['user_id'
             $res['message'] = 'Password Changed';
             echo json_encode($res);
 
-            //header("Location: ".SITEURL.'/administrator/login.php?e=11');
-
-
+        //header("Location: ".SITEURL.'/administrator/login.php?e=11');
         } else {
-
             if (isset($_GET['code']) && $_GET['code'] != "") {
-
                 $res = $user->check_code($_GET['code']);
 
                 if ($res == false) {
-
                     header("Location: " . SITEURL . '/administrator/login.php?e=9');
-
                 } else {
-
                     $page_title = "New Password";
                     $newtemp->load_template('new_password', 5);
-
                 }
             } else {
                 header("Location: " . SITEURL . '/administrator/login.php?e=9');
-
-
             }
         }
         break;
 
-    default :
+    default:
 
 
         $page_title = $lang[20];
         $newtemp->load_template('login_admin', 5);
         break;
 }
-
-
-?>

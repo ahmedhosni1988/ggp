@@ -74,7 +74,7 @@ function next_page(page_no,url){
          
                  url = url + '&search=1&search_txt='+input.value;
              }
-         
+         debugger;;
              var req2 = $.ajax({
                  type: "GET",
                  url: url,

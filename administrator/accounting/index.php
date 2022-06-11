@@ -3,12 +3,14 @@ session_start();
 include("../../setting.php");
 include("../../classes/console.php");
 include("../../classes/work.php");
+include("../../classes/orders.php");
 
 include("naccountingtemp.php");
 
 
 $workClass = new work($db);
 
+$orderClass = new work($db);
 
 
 if (!empty($_GET["action"])) {
@@ -63,7 +65,7 @@ if (!empty($_SESSION['logged_in']) && !empty($_SESSION['user_type']) && $_SESSIO
             }
             $console->set_page($pageno, PERPAGE);
             
-           // $coloums_array = array(array('headername' => '+', 'function' => 'show_account_row_option', 'pos' => 'last', 'width' => '100px', 'class' => 'nosort'));
+           $coloums_array = array(array('headername' => '+', 'function' => 'show_accounting_order_option', 'pos' => 'last', 'width' => '100px', 'class' => 'nosort'));
 
             $coloums = $console->get_coloums_header($coloums_array, $dir, $field_name);
 
@@ -82,7 +84,7 @@ inner join services on (orders.service_id = services.service_id)
 inner join account on (orders.account_id = account.account_id) 
 left join users on (users.user_id = orders.user_id) 
    ");
-            $query = $grid_sql . " where  ".(isset($_GET['search']) ? $console->build_grid_search($coloums, $_GET['search_txt']) : '')."  orders.order_status in (0,1,2) $inputbillingsql  ".(isset($_POST['dir']) ? "order by  ".$table_name.".".$field_name." ".$dir."" : "order by orders.order_id desc ");
+            $query = $grid_sql . " where  ".(isset($_GET['search']) ? $console->build_grid_search($coloums, $_GET['search_txt']) : '')."  1=1   ".(isset($_POST['dir']) ? "order by  ".$table_name.".".$field_name." ".$dir."" : "order by orders.order_id desc ");
 
 
 //	echo $query."<br>";
@@ -217,6 +219,26 @@ inner join billing_code on (billing_code.id = account.billing_code)
             }
         break;
             
+
+        case 'get_waybill':
+            if (!empty($_GET['order_id'])) {
+                $order_id = $_GET['order_id'];
+                $order = new orders($db);
+                $order_details = $order->get_order_waybill($order_id);
+                $order_package_details = $order->get_order_package_details($order_id);
+                $o=object_to_array($order_details);
+
+                $orderLog = $logger->get_order_log($order_id);
+               
+                //  echo'<pre>';
+                //    var_dump($order_package_details);
+                //    echo'</pre>';
+                // $logger->compareAndLogV2($o['order_id'],"Order", $_SESSION['user_id'],  $_SESSION['name'], "Print",array(),$o);
+
+                $newtempAll->load_template('waybill', 5);
+            }
+            break;
+
         default:
 
 

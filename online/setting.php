@@ -13,7 +13,7 @@ if (isset($_SESSION['language'])) {
 }
 
 include("classes/template.php");
-include("classes/connection.php");
+include("classes/newconn.php");
 include("classes/notifiy.php");
 include("classes/users.php");
 include("includes/error.php");
@@ -39,9 +39,11 @@ include(STYLE."/maintemp.php");
 include(STYLE."/clienttemp.php");
 include(STYLE."/admintemp.php");
 
+include(STYLE."/rowoption.php");
 
 
 $db = new dba(DBUSER, DBPASS, DBNAME, HOSTNAME);	// - and away we go
+$mycon = $db->get_conn();
 
 
 $notify = new notify($db);
@@ -49,8 +51,8 @@ $logger = new logger($db);
 
 $c_setting = c_setting();
 
-mysqli_query($mycon,"SET NAMES utf8");
-mysqli_query($mycon,"SET CHARACTER SET utf8");
+mysqli_query($mycon, "SET NAMES utf8");
+mysqli_query($mycon, "SET CHARACTER SET utf8");
 
 //////////////////////////////
 ///Site attibutes/////////////
@@ -84,48 +86,14 @@ $new_invoice="";
 $new_message="";
 $new_client="";
 
-if (isset($_SESSION['status']) && $_SESSION['status'] == 1) {
-    $notification = $notify->get_account_notify($_SESSION['account_id'], $_SESSION['user_type']);
-}
-
-
-
-if (isset($_SESSION['status']) && $_SESSION['status'] == 2) {
-    $notification = $notify->get_admin_notify(0);
-}
-
-for ($i=0;$i<count($notification);$i++) {
-    if ($notification[$i]['types'] == "new_order") {
-        $update_order++;
-    }
-    if ($notification[$i]['types'] == "update_order") {
-        $update_order++;
-    }
-    if ($notification[$i]['types'] == "request_cancel_order") {
-        $update_order++;
-    }
-    if ($notification[$i]['types'] == "cancel_order") {
-        $update_order++;
-    }
-
-
-    if ($notification[$i]['types'] == "new_invoice") {
-        $new_invoice++;
-    }
-    if ($notification[$i]['types'] == "new_message") {
-        $new_message++;
-    }
-    if ($notification[$i]['types'] == "new_user") {
-        $new_client++;
-    }
-}
 
 
 
 
 function c_setting()
 {
-    $query = mysqli_query($mycon,"select * from options  ") or die(mysqli_error($mycon));
+    global $mycon;
+    $query = mysqli_query($mycon, "select * from options  ") or die(mysqli_error($mycon));
 
 
     $company_details = array();

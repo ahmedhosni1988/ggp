@@ -286,7 +286,7 @@ function template_invenotry_item_color()
         <!-- #section:plugins/fuelux.wizard.buttons -->
       
 
-        <button type="button" class="btn btn-success btn-next" onclick="add_form_php(\'color_form\',\'1\')">' . $lang[260] . '</button>
+        <button type="button" class="btn btn-success btn-next" onclick="add_form_php(\'color_form\',\'1\',\'item_color\')">' . $lang[260] . '</button>
 
         <!-- /section:plugins/fuelux.wizard.buttons -->
         </div>
@@ -995,11 +995,12 @@ function template_purchase_data()
 
 function template_add_purchase()
 {
-    global $lang, $c_setting, $accountsData, $itemData,$bill_id;
+    global $lang, $c_setting, $accountsData, $itemData,$bill_id,$billDetails;
 
     echo '    
  <form id="addbill_form_'.$bill_id.'"  method="post"  action="inventory.php?action=add_purchase"  class="form-horizontal" >
     
+ <input type="hidden" name="id" value="'.$billDetails[0]['inventory_bill_id'].'">
 
  <div class="row">
 
@@ -1007,12 +1008,12 @@ function template_add_purchase()
 
             <div class="form-group">
             <label class="col-sm-3 control-label">رقم الفاتورة</label>
-            <div class="col-sm-9"><input type="text" name="bill_no" value=""></div>
+            <div class="col-sm-9"><input type="text" name="bill_no" value="'.$billDetails[0]['bill_no'].'"></div>
             </div>
 
             <div class="form-group">
             <label class="col-sm-3 control-label">تاريخ الفاتورة</label>
-            <div class="col-sm-9">  <input id="bill_date" type="text" class=" datepick" name="bill_date" value>
+            <div class="col-sm-9">  <input id="bill_date" type="text" class="datepick_'.$bill_id.'" name="bill_date" value="'.$billDetails[0]['bill_date'].'">
             </div>
             </div>
 
@@ -1020,9 +1021,10 @@ function template_add_purchase()
             <label class="col-sm-3 control-label">المورد</label>
             <div class="col-sm-9">
             <select name="account_id">
+            <option value="0">اختار المورد</option>
             ';
     for ($i = 0; $i < count($accountsData); $i++) {
-        echo '<option value="' . $accountsData[$i]['account_id'] . '" >' . $accountsData[$i]['account_name'] . ' | ' . $accountsData[$i]['account_company'] . '</option>';
+        echo '<option value="' . $accountsData[$i]['account_id'] . '" '.($billDetails[0]['account_id'] == $accountsData[$i]['account_id'] ? 'selected' : '' ).'  >' . $accountsData[$i]['account_name'] . ' | ' . $accountsData[$i]['account_company'] . '</option>';
     }
     echo '
             </select></div>
@@ -1036,14 +1038,14 @@ function template_add_purchase()
             <label class="col-sm-3 control-label">المجموع</label>
             <div class="col-sm-9" >
             
-            <input type="text" readonly name="inv_total_price" class="inv_total_price" value="">
+            <input type="text" readonly name="inv_total_price" class="inv_total_price" value="'.$billDetails[0]['subtotal'].'">
             </div>
             </div>
 
             <div class="form-group">
             <label class="col-sm-3 control-label">الخصم</label>
             <div class="col-sm-9" >
-            <input type="text" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');"  name="bill_discount"  value="">
+            <input type="text" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');"  name="bill_discount"  value="'.$billDetails[0]['discount'].'">
             </div>
             </div>
 
@@ -1051,7 +1053,7 @@ function template_add_purchase()
             <div class="form-group">
             <label class="col-sm-3 control-label">الضريبة</label>
             <div class="col-sm-9" >
-            <input type="text" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');"  name="bill_tax_amount"  value="">
+            <input type="text" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');"  name="bill_tax_amount"  value="'.$billDetails[0]['tax_amount'].'">
             </div>
             </div>
 
@@ -1062,7 +1064,7 @@ function template_add_purchase()
             <div class="form-group">
             <label class="col-sm-3 control-label">الاجمالى</label>
             <div class="col-sm-9" >
-            <input type="text"  name="bill_total_amount"  readonly value="">
+            <input type="text"  name="bill_total_amount"  readonly value="'.$billDetails[0]['total_price'].'">
             </div>
             </div>
 
@@ -1070,7 +1072,7 @@ function template_add_purchase()
             <!-- #section:plugins/fuelux.wizard.buttons -->
           
     
-            <button type="button" style="text-align:center;" class="btn btn-success btn-next" onclick="add_form_php(\'addbill_form_'.$bill_id.'\',\'1\')">' . $lang[260] . '</button>
+            <button type="button" style="text-align:center;" class="btn btn-success btn-next" onclick="add_form_php(\'addbill_form_'.$bill_id.'\',\'1\')">' . ($bill_id > 0 ? 'تعديل' :  $lang[260]) . '</button>
     
             <!-- /section:plugins/fuelux.wizard.buttons -->
         </div>
@@ -1094,25 +1096,30 @@ function template_add_purchase()
 
             </tr>';
 
-    for ($j = 0; $j < 5; $j++) {
-        echo '<tr>
-            <td>
+        $rowNum = 5;
+        if(count($billDetails) > 5) $rowNum = count($billDetails);
+
+    for ($j = 0; $j < $rowNum; $j++) {
+        echo '
+        <tr>
+        <input type="hidden" name="inventory_action_id" value="'.$billDetails[$j]['inventory_action_id'].'" />
+        <td>
             <select class="form-control" name="item_id[]" >
             <option value="">اختار المنتج</option>';
         for ($i = 0; $i < count($itemData); $i++) {
-            echo '<option value="' . $itemData[$i]['id'] . '">' . $itemData[$i]['item_name'] . '</option>';
+            echo '<option value="' . $itemData[$i]['id'] . '" '.($itemData[$i]['id'] == $billDetails[$j]['item_id'] ? 'selected' : '').'>' . $itemData[$i]['item_name'] . '</option>';
         }
         echo '</select>
         </td>
           <td>
-                <input class="form-control" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');" type="number" name="quantity[]" value="" size="10"/>
+                <input class="form-control" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');" type="number" name="quantity[]" value="'.$billDetails[$j]['quantity'].'" size="10"/>
             </td>
         <td>
-                <input class="form-control" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');" type="text" name="price[]" value="" size="10" />
+                <input class="form-control" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');" type="text" name="price[]" value="'.$billDetails[$j]['price'].'" size="10" />
         </td>
 
         <td>
-            <input class="form-control" readonly type="text" name="total_price[]" value="" size="10" />
+            <input class="form-control" readonly type="text" name="total_price[]" value="'.($billDetails[$j]['quantity'] * $billDetails[$j]['price'] ).'" size="10" />
     </td>
 
           </tr>';
@@ -1124,7 +1131,7 @@ function template_add_purchase()
     
 <script type="text/javascript">
 $(document).ready(function(){
-    $(\'.datepick\').datepicker({
+    $(\'.datepick_'.$bill_id.'\').datepicker({
         dateFormat: \'yy-mm-dd\'	
 
     });
@@ -1208,6 +1215,120 @@ function template_out_inventory()
 
         echo '</table>';
     }
+}
+
+
+
+function template_pur_inv_print()
+{
+    global $data,$c_setting,$billDetails,$accountsData,$itemData;
+    $x =      '    
+
+   
+    <div class="row">
+   
+    <div class="col-xs-12">
+
+    <table class="table d table-bordered table-hover myitems">
+    <tr>
+    <td>رقم الفاتورة</td>
+    <td>'.$billDetails[0]['bill_no'].'</td>
+
+    <td>تاريخ الفاتورة</td>
+    <td>'.$billDetails[0]['bill_date'].'</td>
+    
+
+    <td>المورد</td>
+    <td> ';
+    for ($i = 0; $i < count($accountsData); $i++) {
+        $x .= ($billDetails[0]['account_id'] == $accountsData[$i]['account_id'] ? $accountsData[$i]['account_name'] . ' | ' . $accountsData[$i]['account_company'] : '' ) ;
+    }
+    $x .= '</td>
+    
+    </tr>
+
+    <tr>
+    <td>المجموع</td>
+    <td>'.$billDetails[0]['subtotal'].'</td>
+
+    
+    <td>الخصم</td>
+    <td> '.$billDetails[0]['discount'].'</td>
+
+    
+    <td>الضريبة</td>
+    <td>'.$billDetails[0]['tax_amount'].'</td>
+
+
+    </tr>
+    </table>
+
+   
+               </div>
+
+   
+               <div class="col-xs-4">
+   
+               <div class="form-group">
+               <label class="col-sm-3 control-label">الاجمالى</label>
+               <div class="col-sm-9" >
+              '.$billDetails[0]['total_price'].'
+               </div>
+               </div>
+   
+
+   
+               </div>
+   
+               <div style="clear:both;"></div>
+   
+   </div>
+               <hr/>
+               <div class="row">
+   
+               <div class="col-xs-8" style="margin:auto; float:none;">
+   
+               <table class="table table-striped table-bordered table-hover myitems"  >
+               <tr>
+               <td>المنتج</td>
+               <td>الكمية</td>
+               <td>سعر الوحدة</td>
+               <td>الاجمالى</td>
+   
+               </tr>';
+   
+           $rowNum = count($billDetails);
+   
+       for ($j = 0; $j < $rowNum; $j++) {
+        $x .= '
+           <tr>
+           <td>
+';
+           for ($i = 0; $i < count($itemData); $i++) {
+               $x .= ($itemData[$i]['id'] == $billDetails[$j]['item_id'] ? $itemData[$i]['item_name']  : '') ;
+           }
+           $x .= '
+           </td>
+             <td>
+                   '.$billDetails[$j]['quantity'].'
+               </td>
+           <td>
+                   '.$billDetails[$j]['price'].'
+           </td>
+   
+           <td>
+               '.($billDetails[$j]['quantity'] * $billDetails[$j]['price'] ).'
+       </td>
+   
+             </tr>';
+       }
+       $x .= '  </table>
+   
+         </div>
+         </div>
+
+       ';
+    return $x;
 }
 
 ?>

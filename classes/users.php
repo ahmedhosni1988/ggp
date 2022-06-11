@@ -21,11 +21,11 @@ class users
 left join account as account 
 on (users.account_id = account.account_id) 
 where 
-users.user_name = " . check_mysql_string($this->db,$username) . " and
+users.user_name = " . check_mysql_string($this->db, $username) . " and
 (users.status ='1' || users.status ='2' ) and
 (account.status = '1' || account.status = '6' ) and 
 users.user_pass = '" . md5($password) . "' and 
-account.account_name = " . check_mysql_string($this->db,$account_name) . " ") or die(mysqli_error($this->db));
+account.account_name = " . check_mysql_string($this->db, $account_name) . " ") or die(mysqli_error($this->db));
         $num = mysqli_num_rows($result);
 
         $login_attribute = mysqli_fetch_array($result);
@@ -46,9 +46,10 @@ account.account_name = " . check_mysql_string($this->db,$account_name) . " ") or
     {
         $result = mysqli_query($this->db, "select users.*  from users as users 
                     where 
-                    users.user_name = " . check_mysql_string($this->db,$username) . " and
+                    users.user_name = " . check_mysql_string($this->db, $username) . " and
                     users.user_pass = '" . md5($password) . "' and
-                    users.account_id = '0'
+                    users.account_id = '0' and 
+                    users.status = '2'
     ") or die(mysqli_error($this->db));
         $num = mysqli_num_rows($result);
 
@@ -103,7 +104,7 @@ account.account_name = " . check_mysql_string($this->db,$account_name) . " ") or
 
     public function add_user($account_id, $user_name, $user_pass, $name, $address, $phone, $fax, $email, $user_type, $status)
     {
-        $sql = "insert into users (account_id,user_name,user_pass,name,address,phone,fax,email,user_type,status) values (" . check_mysql_string($this->db,$account_id) . "," . check_mysql_string($this->db,$user_name) . ",'" . md5($user_pass) . "'," . check_mysql_string($this->db,$name) . "," . check_mysql_string($this->db,$address) . "," . check_mysql_string($this->db,$phone) . "," . check_mysql_string($this->db,$fax) . "," . check_mysql_string($this->db,$email) . "," . check_mysql_string($this->db,$user_type) . "," . check_mysql_string($this->db,$status) . ");";
+        $sql = "insert into users (account_id,user_name,user_pass,name,address,phone,fax,email,user_type,status) values (" . check_mysql_string($this->db, $account_id) . "," . check_mysql_string($this->db, $user_name) . ",'" . md5($user_pass) . "'," . check_mysql_string($this->db, $name) . "," . check_mysql_string($this->db, $address) . "," . check_mysql_string($this->db, $phone) . "," . check_mysql_string($this->db, $fax) . "," . check_mysql_string($this->db, $email) . "," . check_mysql_string($this->db, $user_type) . "," . check_mysql_string($this->db, $status) . ");";
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
 
@@ -118,9 +119,9 @@ account.account_name = " . check_mysql_string($this->db,$account_name) . " ") or
     {
         $sql = "";
         if (empty($password) && $password == "") {
-            $sql = "update users set name=" . check_mysql_string($this->db,$name) . " , phone = " . check_mysql_string($this->db,$phone) . " , fax =" . check_mysql_string($this->db,$fax) . " , email =" . check_mysql_string($this->db,$email) . " ,address=" . check_mysql_string($this->db,$address) . ", user_type = " . check_mysql_string($this->db,$user_type) . " where user_id= " . check_mysql_string($this->db,$user_id) . " and account_id =" . check_mysql_string($this->db,$account_id) . "   ";
+            $sql = "update users set name=" . check_mysql_string($this->db, $name) . " , phone = " . check_mysql_string($this->db, $phone) . " , fax =" . check_mysql_string($this->db, $fax) . " , email =" . check_mysql_string($this->db, $email) . " ,address=" . check_mysql_string($this->db, $address) . ", user_type = " . check_mysql_string($this->db, $user_type) . " where user_id= " . check_mysql_string($this->db, $user_id) . " and account_id =" . check_mysql_string($this->db, $account_id) . "   ";
         } else {
-            $sql = "update users set name=" . check_mysql_string($this->db,$name) . " , user_pass = '" . md5($password) . "' ,phone = " . check_mysql_string($this->db,$phone) . " , fax =" . check_mysql_string($this->db,$fax) . " , email =" . check_mysql_string($this->db,$email) . " ,address=" . check_mysql_string($this->db,$address) . ", user_type = " . check_mysql_string($this->db,$user_type) . " where user_id= " . check_mysql_string($this->db,$user_id) . " and account_id =" . check_mysql_string($this->db,$account_id) . "   ";
+            $sql = "update users set name=" . check_mysql_string($this->db, $name) . " , user_pass = '" . md5($password) . "' ,phone = " . check_mysql_string($this->db, $phone) . " , fax =" . check_mysql_string($this->db, $fax) . " , email =" . check_mysql_string($this->db, $email) . " ,address=" . check_mysql_string($this->db, $address) . ", user_type = " . check_mysql_string($this->db, $user_type) . " where user_id= " . check_mysql_string($this->db, $user_id) . " and account_id =" . check_mysql_string($this->db, $account_id) . "   ";
         }
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
@@ -134,7 +135,7 @@ account.account_name = " . check_mysql_string($this->db,$account_name) . " ") or
 
     public function delete_user($user_id)
     {
-        $query = mysqli_query($this->db, "delete from  users  where user_id = " . check_mysql_string($this->db,$user_id) . " ") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "delete from  users  where user_id = " . check_mysql_string($this->db, $user_id) . " ") or die(mysqli_error($this->db));
 
         if ($query) {
             return true;
@@ -148,9 +149,9 @@ account.account_name = " . check_mysql_string($this->db,$account_name) . " ") or
     {
         $sql = "";
         if (empty($password) && $password == "") {
-            $sql = "update users set name=" . check_mysql_string($this->db,$name) . " , phone = " . check_mysql_string($this->db,$phone) . " , fax =" . check_mysql_string($this->db,$fax) . " , email =" . check_mysql_string($this->db,$email) . " ,address=" . check_mysql_string($this->db,$address) . ",user_type=" . check_mysql_string($this->db,$user_type) . " where user_id= " . check_mysql_string($this->db,$user_id) . " and account_id =" . check_mysql_string($this->db,$account_id) . "   ";
+            $sql = "update users set name=" . check_mysql_string($this->db, $name) . " , phone = " . check_mysql_string($this->db, $phone) . " , fax =" . check_mysql_string($this->db, $fax) . " , email =" . check_mysql_string($this->db, $email) . " ,address=" . check_mysql_string($this->db, $address) . ",user_type=" . check_mysql_string($this->db, $user_type) . " where user_id= " . check_mysql_string($this->db, $user_id) . " and account_id =" . check_mysql_string($this->db, $account_id) . "   ";
         } else {
-            $sql = "update users set name=" . check_mysql_string($this->db,$name) . " , user_pass = '" . md5($password) . "' ,phone = " . check_mysql_string($this->db,$phone) . " , fax =" . check_mysql_string($this->db,$fax) . " , email =" . check_mysql_string($this->db,$email) . " ,address=" . check_mysql_string($this->db,$address) . " where user_id = " . check_mysql_string($this->db,$user_id) . " and account_id =" . check_mysql_string($this->db,$account_id) . "   ";
+            $sql = "update users set name=" . check_mysql_string($this->db, $name) . " , user_pass = '" . md5($password) . "' ,phone = " . check_mysql_string($this->db, $phone) . " , fax =" . check_mysql_string($this->db, $fax) . " , email =" . check_mysql_string($this->db, $email) . " ,address=" . check_mysql_string($this->db, $address) . " where user_id = " . check_mysql_string($this->db, $user_id) . " and account_id =" . check_mysql_string($this->db, $account_id) . "   ";
         }
 
         $query = mysqli_query($this->db, $sql) or die(mysqli_error($this->db));
@@ -204,14 +205,14 @@ account.account_name = " . check_mysql_string($this->db,$account_name) . " ") or
         } elseif ($type = "client") {
             $sql = " and status = '1' ";
         }
-        $query = mysqli_query($this->db, "select * from users where email = " . check_mysql_string($this->db,$email) . " " . $sql) or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select * from users where email = " . check_mysql_string($this->db, $email) . " " . $sql) or die(mysqli_error($this->db));
 
         if (mysqli_num_rows($query) == "1") {
 
             //generate link code
             $code = $this->gen_uuid();
 
-            mysqli_query($this->db, "update users set ran_code = '" . $code . "'  where email = " . check_mysql_string($this->db,$email) . " " . $sql) or die(mysqli_error($this->db));
+            mysqli_query($this->db, "update users set ran_code = '" . $code . "'  where email = " . check_mysql_string($this->db, $email) . " " . $sql) or die(mysqli_error($this->db));
 
             $userData = mysqli_fetch_array($query);
 
@@ -227,7 +228,7 @@ account.account_name = " . check_mysql_string($this->db,$account_name) . " ") or
 
     public function check_code($code)
     {
-        $query = mysqli_query($this->db, "select * from users where ran_code = " . check_mysql_string($this->db,$code) . " ") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select * from users where ran_code = " . check_mysql_string($this->db, $code) . " ") or die(mysqli_error($this->db));
 
         if (mysqli_num_rows($query) == "1") {
             return mysqli_fetch_array($query);
@@ -239,7 +240,7 @@ account.account_name = " . check_mysql_string($this->db,$account_name) . " ") or
 
     public function update_password($pass, $code)
     {
-        $query = mysqli_query($this->db, "update users set user_pass = '" . md5($pass) . "' , ran_code = '' , pass_update_time = '" . date("Y-m-d H:i:s") . "'  where ran_code  = " . check_mysql_string($this->db,$code) . " ") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "update users set user_pass = '" . md5($pass) . "' , ran_code = '' , pass_update_time = '" . date("Y-m-d H:i:s") . "'  where ran_code  = " . check_mysql_string($this->db, $code) . " ") or die(mysqli_error($this->db));
 
 
         if ($query) {
