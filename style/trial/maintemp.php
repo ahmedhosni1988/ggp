@@ -2486,7 +2486,7 @@ function accounting_menu()
 
 
 
-    if ($_SESSION['user_type'] == 'accounting') {
+    if ($_SESSION['user_type'] == 'accounting' || $_SESSION['user_type'] == 'accounting_purchase') {
         $x .= '                    <li class="hsub ">
                     <a href="#" class="dropdown-toggle">
                         <i class="menu-icon fa fa-shopping-cart  blue"></i>
@@ -2517,7 +2517,7 @@ function accounting_menu()
                     </ul>
                     </li>';
     }
-    if ($_SESSION['user_type'] == 'accounting') {
+    if ($_SESSION['user_type'] == 'accounting'  || $_SESSION['user_type'] == 'accounting_purchase') {
         $x .=  '                  <li class="">
                     <a href="inventory.php">
                         <i class="menu-icon fa fa-dropbox blue"></i>
@@ -2527,7 +2527,7 @@ function accounting_menu()
                     <b class="arrow"></b>
                    </li>';
     }
-    if ($_SESSION['user_type'] == 'accounting') {
+    if ($_SESSION['user_type'] == 'accounting'  || $_SESSION['user_type'] == 'accounting_sales') {
         $x .=  '              <li class="hsub ">
                     <a href="#" class="dropdown-toggle">
                         <i class="menu-icon fa fa-bar-chart-o blue"></i>
@@ -2589,7 +2589,7 @@ function accounting_menu()
                     </ul>
                     </li>';
     }
-    if ($_SESSION['user_type'] == 'accounting') {
+    if ($_SESSION['user_type'] == 'accounting'  || $_SESSION['user_type'] == 'accounting') {
         $x .=  ' 
                     <li class=" hsub">
                     <a href="#" class="dropdown-toggle">
@@ -2624,7 +2624,7 @@ function accounting_menu()
                     </ul>
                 </li>';
     }
-    if ($_SESSION['user_type'] == 'accounting') {
+    if ($_SESSION['user_type'] == 'accounting'  || $_SESSION['user_type'] == 'accounting_cash') {
         $x .=  ' 
         <li class="hsub ">
         <a href="#" class="dropdown-toggle">
@@ -2658,8 +2658,8 @@ function accounting_menu()
         </li>
 ';
     }
-    if ($_SESSION['user_type'] == 'accounting') {
-        $x .= '<li class="hsub ">
+
+    $x .= '<li class="hsub ">
         <a href="#" class="dropdown-toggle">
             <i class="menu-icon fa fa-search blue"></i>
             <span class="menu-text"> بحث </span>
@@ -2736,7 +2736,7 @@ function accounting_menu()
 
 
                        ';
-    }
+    
                 
     $x .= '</ul><!-- /.nav-list -->
             

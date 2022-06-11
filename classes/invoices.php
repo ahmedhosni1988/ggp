@@ -814,7 +814,7 @@ class invoices
 
     public function get_inv_order_prices($order_id)
     {
-        $query = mysqli_query($this->db, "select * from orders_price where package_id = " . check_mysql_string($this->db,$order_id) . " ") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select * from orders_price where package_id = " . check_mysql_string($this->db, $order_id) . " ") or die(mysqli_error($this->db));
         $order_details = array();
         $i = 0;
         while ($row = mysqli_fetch_assoc($query)) {
@@ -897,22 +897,22 @@ class invoices
         $sql = "";
 
         if ($invoice_no != "") {
-            $sql .= " and invoicehdr.id = " . check_mysql_string($this->db,$invoice_no) . " ";
+            $sql .= " and invoicehdr.id = " . check_mysql_string($this->db, $invoice_no) . " ";
         } else {
             if ($account_id != "") {
-                $sql .= " and invoicehdr.clid = " . check_mysql_string($this->db,$account_id) . " ";
+                $sql .= " and invoicehdr.clid = " . check_mysql_string($this->db, $account_id) . " ";
             }
             if ($due_date != "") {
-                $sql .= " and invoicehdr.duedate <= " . check_mysql_string($this->db,$due_date) . " ";
+                $sql .= " and invoicehdr.duedate <= " . check_mysql_string($this->db, $due_date) . " ";
             }
             if ($billingcode != "") {
-                $sql .= " and account.billing_code <= " . check_mysql_string($this->db,$billingcode) . " ";
+                $sql .= " and account.billing_code <= " . check_mysql_string($this->db, $billingcode) . " ";
             }
             if ($from != '') {
-                $sql .= " and invoicehdr.date >= " . check_mysql_string($this->db,$due_date) . " ";
+                $sql .= " and invoicehdr.date >= " . check_mysql_string($this->db, $due_date) . " ";
             }
             if ($to != '') {
-                $sql .= " and invoicehdr.date <= " . check_mysql_string($this->db,$due_date) . " ";
+                $sql .= " and invoicehdr.date <= " . check_mysql_string($this->db, $due_date) . " ";
             }
         }
 
@@ -943,13 +943,13 @@ class invoices
         $sql = "";
 
         if ($account_id != "") {
-            $sql .= " and invoicehdr.clid = " . check_mysql_string($this->db,$account_id) . " ";
+            $sql .= " and invoicehdr.clid = " . check_mysql_string($this->db, $account_id) . " ";
         }
         if ($invoice_no != "") {
-            $sql .= " and invoicehdr.id = " . check_mysql_string($this->db,$invoice_no) . " ";
+            $sql .= " and invoicehdr.id = " . check_mysql_string($this->db, $invoice_no) . " ";
         }
         if ($due_date != "") {
-            $sql .= " and invoicehdr.duedate <= " . check_mysql_string($this->db,$due_date) . " ";
+            $sql .= " and invoicehdr.duedate <= " . check_mysql_string($this->db, $due_date) . " ";
         }
 
 
@@ -983,7 +983,7 @@ class invoices
 
     public function get_invoice_header($invoice_id)
     {
-        $query = mysqli_query($this->db, "select invoicehdr.*,account.account_taxgroup from invoicehdr inner join account on (account.account_id = invoicehdr.clid) where invoicehdr.id=" . check_mysql_string($this->db,$invoice_id) . "") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select invoicehdr.*,account.account_taxgroup from invoicehdr inner join account on (account.account_id = invoicehdr.clid) where invoicehdr.id=" . check_mysql_string($this->db, $invoice_id) . "") or die(mysqli_error($this->db));
 
         if (mysqli_num_rows($query)) {
             $row = mysqli_fetch_assoc($query);
@@ -999,7 +999,7 @@ class invoices
         $query = mysqli_query($this->db, "select invoicedtl.*,orders_package.*,invoicedtl.id as invoicedtlid   from invoicedtl 
         left join orders_package on (orders_package.id = invoicedtl.waybill )
 
-        where invoicedtl.invoiceno=" . check_mysql_string($this->db,$invoice_id) . " order by lineno") or die(mysqli_error($this->db));
+        where invoicedtl.invoiceno=" . check_mysql_string($this->db, $invoice_id) . " order by lineno") or die(mysqli_error($this->db));
 
 
         $company_details = array();
@@ -1020,7 +1020,7 @@ class invoices
 
     public function search_invoices($invoice_id, $from_date, $to_date, $account_id)
     {
-        $query = mysqli_query($this->db, "select * from invoicehdr  LEFT  outer join cashreceipts  on (cashreceipts.invoiceno = invoicehdr.id ) where invoicehdr.id =" . check_mysql_string($this->db,$invoice_id) . " and invoicehdr.clid = " . check_mysql_string($this->db,$account_id) . " ") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select * from invoicehdr  LEFT  outer join cashreceipts  on (cashreceipts.invoiceno = invoicehdr.id ) where invoicehdr.id =" . check_mysql_string($this->db, $invoice_id) . " and invoicehdr.clid = " . check_mysql_string($this->db, $account_id) . " ") or die(mysqli_error($this->db));
 
 
         $company_details = array();
@@ -1289,11 +1289,11 @@ class invoices
         //	echo $sql;
         $query = mysqli_query($this->db, "select orders.office_name,orders.operation_name,`orders`.`order_size`,`orders`.`pieces`,`orders`.`price_version_account_id`,`orders`.`price_version_system_id`,account.*,invoicehdr.*,account_company as company, 
         (invoicehdr.subtotal + invoicehdr.fsamount + invoicehdr.tax2amount + invoicehdr.tax1amount + invoicehdr.tax3amount + invoicehdr.tax4amount)
-         as invoice_total , orders.order_type , orders.order_status 
+         as invoice_total , orders.order_type , orders.order_status ,orders.order_id
         from invoicehdr 
         left join orders on (`orders`.`order_id` = `invoicehdr`.`order_id`) 
         inner join account on (invoicehdr.clid = account.account_id) 
-        where invoicehdr.clid=account.account_id   " . $sql . " order by invoicehdr.date ASC, id ASC") or die(mysqli_error($this->db));
+        where invoicehdr.clid=account.account_id   " . $sql . " order by invoicehdr.easy_order_id ASC, id ASC") or die(mysqli_error($this->db));
 
         $category = array();
         while ($row = mysqli_fetch_assoc($query)) {
@@ -1375,10 +1375,10 @@ class invoices
     public function get_paid_invoice($from, $to)
     {
         if ($from != '') {
-            $sql .= " and invoicehdr.date >= " . check_mysql_string($this->db,$from) . " ";
+            $sql .= " and invoicehdr.date >= " . check_mysql_string($this->db, $from) . " ";
         }
         if ($to != '') {
-            $sql .= " and invoicehdr.date <= " . check_mysql_string($this->db,$to) . " ";
+            $sql .= " and invoicehdr.date <= " . check_mysql_string($this->db, $to) . " ";
         }
 
         //echo "select *  from invoicehdr where  paid = 'Y'   ".$sql." ";

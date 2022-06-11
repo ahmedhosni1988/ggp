@@ -122,10 +122,9 @@ function template_user_edit()
             <option value="administrator" ' . ($user_data->user_type == 'administrator' ? 'selected' : '') . '>مدير نظام</option>
 
             <option value="accounting" ' . ($user_data->user_type == 'accounting' ? 'selected' : '') . '>محاسب عام</option>
-            <option value="accounting_sales" ' . ($user_data->user_type == 'accounting' ? 'selected' : '') . '>محاسب مبيعات</option>
-            <option value="accounting_purchase" ' . ($user_data->user_type == 'accounting' ? 'selected' : '') . '>محاسب مشتريات</option>
-            <option value="accounting_cash" ' . ($user_data->user_type == 'accounting' ? 'selected' : '') . '>محاسب خزنة</option>
-
+            <option value="accounting_sales" ' . ($user_data->user_type == 'accounting_sales' ? 'selected' : '') . '>محاسب مبيعات</option>
+            <option value="accounting_purchase" ' . ($user_data->user_type == 'accounting_purchase' ? 'selected' : '') . '>محاسب مشتريات</option>
+            <option value="accounting_cash" ' . ($user_data->user_type == 'accounting_cash' ? 'selected' : '') . '>محاسب خزنة</option>
             <option value="smallaccounting" ' . ($user_data->user_type == 'smallaccounting' ? 'selected' : '') . ' >محاسب فرع</option>
 
             </select>

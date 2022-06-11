@@ -512,7 +512,7 @@ class work
         $sql = "select  account.account_company, 
 		concat(orders.office_name,'-',orders.operation_name) as operation_name,
 		orders.easy_order_id,
-		orders.pieces,
+		1,
 		orders_package.length,
 		orders_package.width,
 		((orders_package.length * orders_package.width) /10000) as package_size,
@@ -619,7 +619,8 @@ class work
         orders_package_work.end_time,        
         DATEDIFF(orders_package_work.end_time,orders_package_work.start_time) AS 'productiontime',
         users.name,
-        orders_package.details
+        orders_package.details,
+        orders_package.glassType
 		from orders_package_work
 		inner join orders on (orders.order_id = orders_package_work.order_id) 
 		inner join account on (account.account_id = orders.account_id) 
@@ -962,7 +963,7 @@ class work
     }
     public function get_inv_order_prices($order_id)
     {
-        $query = mysqli_query($this->db, "select * from orders_price where package_id = " . check_mysql_string($this->db,$order_id) . " ") or die(mysqli_error($this->db));
+        $query = mysqli_query($this->db, "select * from orders_price where package_id = " . check_mysql_string($this->db, $order_id) . " ") or die(mysqli_error($this->db));
         $order_details = array();
         $i = 0;
         while ($row = mysqli_fetch_assoc($query)) {

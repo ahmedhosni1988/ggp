@@ -40,6 +40,7 @@ class Excel
         $this->excelobj->getActiveSheet()->setCellValue("O" . "1", "وقت الانتاج");
         $this->excelobj->getActiveSheet()->setCellValue("P" . "1", "المنتج");
         $this->excelobj->getActiveSheet()->setCellValue("Q" . "1", "التفاصيل");
+        $this->excelobj->getActiveSheet()->setCellValue("R" . "1", "نوع");
     }
 
     public function set_scratch_header()

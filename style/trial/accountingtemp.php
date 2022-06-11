@@ -255,15 +255,15 @@ $(document).ready(function (){
 <tr>
 <th>'. $lang[74] . '</th>
 <th>'. $lang['easy_order_id'] . ' </th> 
+<th>رقم النظام </th> 
 <th>'. $lang[693] . '</th>
-<th>اسم المكتب</th>
 <th>اسم العملية</th>
 <th>'. $lang[401] . '</th>
 <th>'. $lang[867] . '</th>
 <th>'. $lang[1020] . '</th>
 <th class="removeprint">'.$lang[177].'</th>
 <th class="removeprint">'.$lang[610].'</th>
-<th class="removeprint">المجموع</th>
+<th >المجموع</th>
 <th class="removeprint"></th>
 </tr>
 </thead>
@@ -379,12 +379,12 @@ $(document).ready(function (){
 
 //             if ($_SESSION['user_type'] == 'accounting') {
 //                 echo '
-// <button class="removeprint btn btn-primary btn-xs" style="width:30px; height:30; margin:2px;" onclick="change_price_version(\''. $proce[$i]['clid'] .'\',\''.$proce[$i]['order_id'].'\',\''.($proce[$i]['price_version_account_id']?$proce[$i]['price_version_account_id']:'').'\')">
-// 		<i class="fa fa-external-link bigger-125 icon-only"></i>
-// </button>
-// <button class=" removeprint btn btn-success btn-xs" style="width:30px; height:30; margin:2px;" onclick="change_price_version(\''. 0 .'\',\''.$proce[$i]['order_id'].'\',\''.($proce[$i]['price_version_system_id']?$proce[$i]['price_version_system_id']:'').'\')">
-// 		<i class="fa fa-external-link bigger-125 icon-only"></i>
-// </button>';
+            // <button class="removeprint btn btn-primary btn-xs" style="width:30px; height:30; margin:2px;" onclick="change_price_version(\''. $proce[$i]['clid'] .'\',\''.$proce[$i]['order_id'].'\',\''.($proce[$i]['price_version_account_id']?$proce[$i]['price_version_account_id']:'').'\')">
+            // 		<i class="fa fa-external-link bigger-125 icon-only"></i>
+            // </button>
+            // <button class=" removeprint btn btn-success btn-xs" style="width:30px; height:30; margin:2px;" onclick="change_price_version(\''. 0 .'\',\''.$proce[$i]['order_id'].'\',\''.($proce[$i]['price_version_system_id']?$proce[$i]['price_version_system_id']:'').'\')">
+            // 		<i class="fa fa-external-link bigger-125 icon-only"></i>
+            // </button>';
 //             }
 
             echo '
@@ -405,11 +405,11 @@ $(document).ready(function (){
 </td>
 
 <td> ' . $proce[$i]['easy_order_id'] . '</td>
+<td> ' . $proce[$i]['order_id'] . '</td>
 
 		<!-- <td>' . ($tab == "open_invoice" ? "<a href=\"#\" onclick = \"cashreceipts_history('" . $proce[$i]['clid'] . "','" . $proce[$i]['acctno'] . "','" . date("Y-m-01", strtotime("-3 Months")) . "')\" \" class=\"removeprint\">$</a>&nbsp; &nbsp; &nbsp; <a href=\"#\" onclick = \"cashreceipts_add('" . $proce[$i]['clid'] . "','" . $proce[$i]['acctno'] . "','" . date("Y-m-d") . "')\" \">" . $proce[$i]['acctno'] . "</a>" : $proce[$i]['acctno']) . '</td> -->
 		
 		<td class="smallprint">' . $proce[$i]['company'] . '</td>
-		<td class="smallprint">' . $proce[$i]['office_name'] . '</td>
 		<td class="smallprint">' . $proce[$i]['operation_name'] . '</td>
 <td class="smallprint">' . $proce[$i]['date'] . '</td>
 <td>' . $proce[$i]['pieces'] . '</td>
@@ -2311,10 +2311,11 @@ function template_cash_recepits_history()
 
 
 
-function template_sales_edit_invoice(){
-	global $lang,$invDetails,$invoiceID,$invLines,$addService,$grpnames ;
+function template_sales_edit_invoice()
+{
+    global $lang,$invDetails,$invoiceID,$invLines,$addService,$grpnames ;
 
-	
+    
 
     echo '    
  <form id="salesinvoice_form_'.$invoiceID.'"  method="post"  action="accounting.php?action=edit_invoice"  class="form-horizontal" >
@@ -2361,11 +2362,10 @@ function template_sales_edit_invoice(){
            <select name="taxgroup">
 		   <option value="0"></option>';
 
-		   for($i=0;$i<count($grpnames);$i++){
-			   echo '<option value="'.$grpnames[$i]['taxgroup_id'].'" '.($grpnames[$i]['taxgroup_id'] == $invDetails['account_taxgroup'] ? 'selected' : '').'>'.$grpnames[$i]['taxgroup_name'].'</option>';
-
-		   }
-	echo '	</select>
+    for ($i=0;$i<count($grpnames);$i++) {
+        echo '<option value="'.$grpnames[$i]['taxgroup_id'].'" '.($grpnames[$i]['taxgroup_id'] == $invDetails['account_taxgroup'] ? 'selected' : '').'>'.$grpnames[$i]['taxgroup_name'].'</option>';
+    }
+    echo '	</select>
 
             </div>
             </div>
@@ -2396,7 +2396,7 @@ function template_sales_edit_invoice(){
           
     
             <button type="button"  style="text-align:center;" class="btn btn-success btn-block" onclick="save_sales_invoice(\'salesinvoice_form_'.$invoiceID.'\',\'0\')">' . ($invoiceID > 0 ? 'حفظ' :  $lang[260]) . '</button>
-			<button type="button"  style="text-align:center;" class="btn btn-danger btn-block" onclick="approver_sales_invoice(\''.$invoiceID.'\')">' . ($invDetails['reviewed'] == 1 ? 'الغاء الاعتماد' :  'اعتماد' ) . '</button>
+			<button type="button"  style="text-align:center;" class="btn btn-danger btn-block" onclick="approver_sales_invoice(\''.$invoiceID.'\')">' . ($invDetails['reviewed'] == 1 ? 'الغاء الاعتماد' :  'اعتماد') . '</button>
 			<button type="button"  style="text-align:center;" class="btn btn-warning btn-block" onclick="add_form_php(\'salesinvoice_form_'.$invoiceID.'\',\'1\')">' . ($invoiceID > 0 ? 'ارسال فاتورة الكترونية' :  $lang[260]) . '</button>
 
             <!-- /section:plugins/fuelux.wizard.buttons -->
@@ -2426,14 +2426,14 @@ function template_sales_edit_invoice(){
 			<td></td>
             </tr>';
 
-        $rowNum = 5;
-        if(count($invLines) > 5) $rowNum = count($invLines);
+    $rowNum = 5;
+    if (count($invLines) > 5) {
+        $rowNum = count($invLines);
+    }
 
     for ($j = 0; $j < $rowNum; $j++) {
-		
-		if($invLines[$j]['chgtype'] == 'A'){
-
-			echo '
+        if ($invLines[$j]['chgtype'] == 'A') {
+            echo '
 			<tr id="row_'.$invLines[$j]['invoicedtlid'].'" >
 			<input type="hidden" name="itemid[]" value="'.$invLines[$j]['invoicedtlid'].'" />
 	
@@ -2455,13 +2455,12 @@ function template_sales_edit_invoice(){
             if ($invDetails['reviewed'] != '1') {
                 echo '			<a onclick="delete_row_details(\''.$invLines[$j]['invoicedtlid'].'\');" style="cursor:pointer;"><span class="ui-icon ace-icon  fa fa-trash-o center bigger-110 blue"></span></a>';
             }
-echo '			</td>
+            echo '			</td>
 	
 	
 	
 			  </tr>';
-
-		}else{
+        } else {
             echo '
         <tr id="row_'.$invLines[$j]['invoicedtlid'].'" >
         <input type="hidden" name="itemid[]" value="'.$invLines[$j]['invoicedtlid'].'" />
@@ -2503,11 +2502,10 @@ echo '			</td>
         </td>
        
 		<td>';
-		if($invDetails['reviewed'] != '1'){
-			echo '	<a onclick="add_row_details(\'row_'.$invLines[$j]['invoicedtlid'].'\',\''.$invLines[$j]['item'].'\',\''.$invLines[$j]['invoicedtlid'].'\','.htmlspecialchars(json_encode($addService)).',\''.$invoiceID.'\');" style="cursor:pointer;"><span class="ui-icon ace-icon fa fa-plus center bigger-110 blue"></span></a>';
-
-		}
-echo '	</td>
+            if ($invDetails['reviewed'] != '1') {
+                echo '	<a onclick="add_row_details(\'row_'.$invLines[$j]['invoicedtlid'].'\',\''.$invLines[$j]['item'].'\',\''.$invLines[$j]['invoicedtlid'].'\','.htmlspecialchars(json_encode($addService)).',\''.$invoiceID.'\');" style="cursor:pointer;"><span class="ui-icon ace-icon fa fa-plus center bigger-110 blue"></span></a>';
+            }
+            echo '	</td>
 
 
 
