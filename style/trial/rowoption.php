@@ -1,7 +1,8 @@
 <?php
 
 
-function show_sales_invoice_option($ro){
+function show_sales_invoice_option($ro)
+{
     for ($i=0;$i<count($ro);$i++) {
         foreach ($ro[$i] as $key => $value) {
             $rou[$key] = $value;
@@ -25,7 +26,6 @@ function show_sales_invoice_option($ro){
 ';
 
     return $x;
-
 }
 function show_account_row_option($ro)
 {
@@ -62,8 +62,29 @@ function show_supplier_row_option($ro)
 }
 
 
-function show_accounting_order_option($ro){
+function show_expensee_row_option($ro)
+{
+    for ($i=0;$i<count($ro);$i++) {
+        foreach ($ro[$i] as $key => $value) {
+            $rou[$key] = $value;
+        }
+    }
 
+    if($rou['reviewed'] == '0'){
+        $x .= '  <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-success btn-xs"  onclick="location.href=\'expenses.php?action=add_edit_expenses&id='.$rou['id'].'\'" >
+        <i class="fa fa-external-link " ></i>
+        </button>
+    ';
+    
+    }
+
+
+    return $x;
+}
+
+
+function show_accounting_order_option($ro)
+{
     for ($i=0;$i<count($ro);$i++) {
         foreach ($ro[$i] as $key => $value) {
             $rou[$key] = $value;
@@ -75,8 +96,7 @@ function show_accounting_order_option($ro){
     </button>
 ';
 
-return $x;
-
+    return $x;
 }
 
 function show_supplier_inv_row_option($ro)
@@ -90,8 +110,7 @@ function show_supplier_inv_row_option($ro)
 
     //فاتورة جدية يمكن اضافتها للمحزن
     if ($rou['bill_status'] == '0') {
-        
-    $x .= '  <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-warning  btn-xs"  onclick="show_edit_inv_suppliers('.$rou['id'].',\''.$rou['bill_no'].'\');" >
+        $x .= '  <button type="button" title="'.$lang['button_editorder'].'" class="btn btn-app  btn-warning  btn-xs"  onclick="show_edit_inv_suppliers('.$rou['id'].',\''.$rou['bill_no'].'\');" >
     <i class="fa fa-wrench   " ></i>
     </button>
 ';
@@ -105,7 +124,6 @@ function show_supplier_inv_row_option($ro)
     <i class="fa fa-trash-o " ></i>
     </button>
 ';
-
     }
 
     //فانورة تمت اضافتها للمخزن
@@ -145,7 +163,7 @@ function template_accounting_console()
 							</h4>			
     </div>
     <div class="col-xs-6" style="padding:10px;">
-    <input type="text" id="search_grid" url="'.$url.(strpos($url,'?') ? '' : '?' ).'&ajax=1"  class=" input-sm" style="float:left; margin-left:20px;"  value=""  placeholder="بحث" >
+    <input type="text" id="search_grid" url="'.$url.(strpos($url, '?') ? '' : '?').'&ajax=1"  class=" input-sm" style="float:left; margin-left:20px;"  value=""  placeholder="بحث" >
     </div>
     </div>
 

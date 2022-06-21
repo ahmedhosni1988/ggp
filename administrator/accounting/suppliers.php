@@ -645,52 +645,6 @@ inner join billing_code on (billing_code.id = suppliers.billing_code)
             echo json_encode($ser);
             break;
 
-        case 'copy_price':
-            if (isset($_POST['account_id_from'])) {
-                if ($_POST['account_id_from'] == $_POST['account_id_to']) {
-                    echo "Cannot Copy Price to same accounts";
-                    return;
-                }
-                if ($_POST['account_id_from'] == "" && $_POST['account_id_to'] == "") {
-                    echo "Please select Both account";
-                    return;
-                }
-
-                mysqli_query($mycon, "delete from account_vec_ser where account_id = '" . $_POST['account_id_to'] . "'") or die(mysqli_error($mycon));
-                mysqli_query($mycon, "delete from account_override where account_id = '" . $_POST['account_id_to'] . "'") or die(mysqli_error($mycon));
-                mysqli_query($mycon, "delete from vehicles_distance_price where account_id = '" . $_POST['account_id_to'] . "'") or die(mysqli_error($mycon));
-                mysqli_query($mycon, "delete from deliveryfees where client_acctno = '" . $_POST['account_id_to'] . "'") or die(mysqli_error($mycon));
-                mysqli_query($mycon, "delete from pickupfees where client_acctno = '" . $_POST['account_id_to'] . "'") or die(mysqli_error($mycon));
-                mysqli_query($mycon, "delete from service_vechicle_distance where account_id = '" . $_POST['account_id_to'] . "'") or die(mysqli_error($mycon));
-                mysqli_query($mycon, "delete from services_distance_ratio where account_id = '" . $_POST['account_id_to'] . "'") or die(mysqli_error($mycon));
-
-
-                $query = mysqli_query($mycon, "insert into account_vec_ser (account_id,services_id,vechile_id,override,type) select  " . $_POST['account_id_to'] . ",services_id,vechile_id,override,type from account_vec_ser where account_id= '" . $_POST['account_id_from'] . "' ") or die(mysqli_error($mycon));
-
-                $query = mysqli_query($mycon, "insert into account_override (account_id,package_id,override,type) select  " . $_POST['account_id_to'] . ",package_id,override,type from account_override where account_id= '" . $_POST['account_id_from'] . "' ") or die(mysqli_error($mycon));
-
-                $query = mysqli_query($mycon, "insert into vehicles_distance_price (account_id,ser_id,vec_id,fees) select  " . $_POST['account_id_to'] . ",ser_id,vec_id,fees from vehicles_distance_price where account_id= '" . $_POST['account_id_from'] . "' ") or die(mysqli_error($mycon));
-
-                $query = mysqli_query($mycon, "insert into deliveryfees (client_acctno,`svc`,`zonefrom`,`zoneto`,`price`,`skid_price`,`chart`,`client_vadjust`) select  " . $_POST['account_id_to'] . ",`svc`,`zonefrom`,`zoneto`,`price`,`skid_price`,`chart`,`client_vadjust` from deliveryfees where client_acctno= '" . $_POST['account_id_from'] . "' ") or die(mysqli_error($mycon));
-
-                $query = mysqli_query($mycon, "insert into pickupfees (client_acctno,`vehicle_id`,`zone`,`fee`,`skid_fee`) select  " . $_POST['account_id_to'] . ",`vehicle_id`,`zone`,`fee`,`skid_fee` from pickupfees where client_acctno= '" . $_POST['account_id_from'] . "' ") or die(mysqli_error($mycon));
-
-                $query = mysqli_query($mycon, "insert into service_vechicle_distance (account_id,`ser_id`,`vec_id`,`distance`,`fees`,`type`,`orders`,`rate`) select  " . $_POST['account_id_to'] . ",`ser_id`,`vec_id`,`distance`,`fees`,`type`,`orders`,`rate` from service_vechicle_distance where account_id= '" . $_POST['account_id_from'] . "' ") or die(mysqli_error($mycon));
-
-                $query = mysqli_query($mycon, "insert into services_distance_ratio (account_id,`name`,`ser_id`,`ratio`,`every`) select  " . $_POST['account_id_to'] . ",`name`,`ser_id`,`ratio`,`every` from services_distance_ratio where account_id= '" . $_POST['account_id_from'] . "' ") or die(mysqli_error($mycon));
-
-                $q = mysqli_query($mycon, "select * from account where account_id = '" . $_POST['account_id_from'] . "' ");
-                $result = mysqli_fetch_array($q);
-
-                $query = mysqli_query($mycon, "update account set price_ovrd_nocharge_weight = '" . $result['price_ovrd_nocharge_weight'] . "',price_ovrd_nocharge_volume = '" . $result['price_ovrd_nocharge_volume'] . "', price_ovrd_extra_weight = '" . $result['price_ovrd_extra_weight'] . "',price_ovrd_extra_volume = '" . $result['price_ovrd_extra_volume'] . "' where account_id = '" . $_POST['account_id_to'] . "'") or die(mysqli_error($mycon));
-
-                echo "Price Copied successfully";
-            } else {
-                $accounts = $account->get_accounts_where($data, $type);
-                $newtemp->load_template('account_copyprice', 5);
-            }
-            break;
-
 
         default:
 

@@ -594,7 +594,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
                     }
     
              
-                    $res = $workClass->get_package($item[0], $item[1]);
+                    $res = $workClass->get_package_live($item[0], $item[1]);
     
                     if ($res == "0") {
                         $arr['error'] = "Not Found";
@@ -646,6 +646,10 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
                     $all = "";
                 }
 
+                if ($_SESSION['user_type'] == '5') {
+                    $all = "1";
+                }
+
                 $res = $workClass->Search_with_Text($item[0], $item[1], $_SESSION['user_type'], $all);
 
                 if ($res == "0") {
@@ -676,7 +680,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
             break;
         case 'finish_order':
             {
-                $newtemp->load_template('finish_order', 4);
+               // $newtemp->load_template('finish_order', 4);
             }
             break;
             case 'printer_order':

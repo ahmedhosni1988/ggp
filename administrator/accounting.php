@@ -1069,7 +1069,9 @@ case 'cashreceipts':
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['clid'] =='' ||  $_POST['pymt_amount'] =='')) {
         echo 'ادخل كل البيانات';
     } elseif (isset($_POST['clid']) && $_POST['clid'] !=='') {
+
         if (is_numeric($_POST['pymt_amount'])) {
+            
             $_POST['system_date']=date("Y-m-d H:i:s");
             $_POST['user_id']=$_SESSION['user_id'];
             $_POST['ppd']='N';

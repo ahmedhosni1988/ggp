@@ -2355,23 +2355,47 @@ function recalac_invoice(formname){
     var total = 0
 
     $('#'+formname+' table.myitems tbody tr').each(function () {
-        //loop through input logic here
+
+      //  var length = $('option:selected',).attr('length');
+
+    
+
+        var element = $(this).find('option:selected'); 
+        
+        var item_width = element.attr("item_width") || 1;
+        var item_height = element.attr("item_height") || 1;
+
+        var size = (item_width*item_height) / 10000;
+
         var qua = $(this).find('input[name="quantity[]"]').val();
+
+
+        if(size > 1) $(this).find('input[name="meters[]"]').val( (size *  qua).toFixed(2) );
+
+
+
+        //console.log(myTag);
+
+        //loop through input logic here
         var pri = $(this).find('input[name="price[]"]').val();
         //end input loop
   
-        if(qua > 0  && pri > 0){
-            console.log(qua*pri);
-            $(this).find('input[name="total_price[]"]').val(qua*pri);
-            subtotal = subtotal + (qua*pri);
-
+        if(size > 0  && pri > 0){
+     
+            $(this).find('input[name="total_price[]"]').val( ( (size *  qua)  * pri ).toFixed(2) );
+            subtotal = subtotal + ((size *  qua)  * pri );
         } 
+
+
+
     });
 
 
     discount = $('#'+formname+' input[name="bill_discount"]').val() || 0;
     taxamount = $('#'+formname+' input[name="bill_tax_amount"]').val() || 0;
     
+
+
 
 
     $('#'+formname+' input[name="inv_total_price"]').val(subtotal);
@@ -2593,3 +2617,33 @@ function save_sales_invoice(form_id, aftersuccess, tabs = 'tabs') {
             
             
             }
+
+
+
+
+            function add_expenses(form_id, aftersuccess, tabs = 'tabs') {
+
+                //alert($('#'+form_id).attr('action'));
+                    if (validate_forms(form_id)) {
+                
+                        var data = $('#' + form_id).serialize();
+                        //alert(data);
+                        var req = $.ajax({
+                            type: "POST",
+                            url: $('#' + form_id).attr('action'),
+                            data: data
+                        });
+                
+                        req.done(function (msg) {
+                            location.href = 'expenses.php';       
+                        });
+                        req.fail(function (jqXHR, textStatus) {
+                            alert("Request failed: " + textStatus);
+                        });
+                
+                
+                    } 
+                
+                
+                }
+                

@@ -41,6 +41,8 @@ class Excel
         $this->excelobj->getActiveSheet()->setCellValue("P" . "1", "المنتج");
         $this->excelobj->getActiveSheet()->setCellValue("Q" . "1", "التفاصيل");
         $this->excelobj->getActiveSheet()->setCellValue("R" . "1", "نوع");
+        $this->excelobj->getActiveSheet()->setCellValue("S" . "1", "التشغيل");
+
     }
 
     public function set_scratch_header()
@@ -56,6 +58,11 @@ class Excel
         $this->excelobj->getActiveSheet()->setCellValue("I" . "1", " السمك");
 
         $this->excelobj->getActiveSheet()->setCellValue("J" . "1", "رقم القطعة");
+
+        $this->excelobj->getActiveSheet()->setCellValue("K" . "1", "التاريخ");
+
+        $this->excelobj->getActiveSheet()->setCellValue("L" . "1", "النوع");
+
     }
 
 

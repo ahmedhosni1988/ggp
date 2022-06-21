@@ -37,7 +37,10 @@ class inventory
 
     public function get_all_items()
     {
-        $query = mysqli_query($this->db, "select inventory_items.id,inventory_items.item_name,inventory_items_color.color_name,inventory_items_company.company_name,package_type.package_name,CONCAT(inventory_items_size.item_width, ' * ',inventory_items_size.item_height) as size
+        $query = mysqli_query($this->db, "select inventory_items.id,inventory_items.item_name,inventory_items_color.color_name,inventory_items_company.company_name,package_type.package_name,
+        CONCAT(inventory_items_size.item_width, ' * ',inventory_items_size.item_height) as size,
+        inventory_items_size.item_width,
+        inventory_items_size.item_height
             from inventory_items 
             inner join inventory_items_color on (inventory_items_color.id = inventory_items.item_color )
             inner join inventory_items_company on (inventory_items_company.id = inventory_items.item_company )
@@ -115,20 +118,19 @@ class inventory
         from inventory_bill 
         inner join suppliers on (suppliers.account_id = inventory_bill.account_id )
         inner join inventory_action on (inventory_action.bill_id = inventory_bill.id) 
-        where inventory_bill.id = '$id' ") or die (mysqli_error($this->db));
+        where inventory_bill.id = '$id' ") or die(mysqli_error($this->db));
 
 
         return build_array($query);
     }
 
-    function delete_purchasing_invoice($id){
+    public function delete_purchasing_invoice($id)
+    {
 
-        //thsi funcction need to check if stock need modfication or not 
-        $query = mysqli_query($this->db,"delete from inventory_action where bill_id = '$id' ");
-        $query = mysqli_query($this->db,"delete from inventory_bill where id = '$id' ");
+        //thsi funcction need to check if stock need modfication or not
+        $query = mysqli_query($this->db, "delete from inventory_action where bill_id = '$id' ");
+        $query = mysqli_query($this->db, "delete from inventory_bill where id = '$id' ");
 
         return true;
-
-    
     }
 }

@@ -41,7 +41,8 @@ function template_operation_report()
 <select name="operation">
 <option value="">كل العمليات</option>
 <option value="2">تقطيع</option>
-<option value="3">شطف وتخليع</option>
+<option value="3">شطف </option>
+<option value="7">تشطيب </option>
 <option value="4">فرن</option>
 <option value="5">تسليمات</option>
 </select>

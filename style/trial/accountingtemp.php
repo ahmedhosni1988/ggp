@@ -1324,11 +1324,16 @@ function template_view_cashreceipts()
 		<td>'.$value['payment_name'].'</td>
 		<td>'.$value['user_name'].'</td>
 		<td>'.$value['date'].'</td>
-		<td><button type="button" class="btn  btn-success btn-xs"
-		onclick=\'show_edit_cashreceipts(`'.$js_array.'`)\'>
-			<i class="fa fa-external-link "></i>
-	   </button>
-	   <button type="button" class="btn btn-info btn-xs"
+		<td>';
+   if($_SESSION['user_type'] == 'administrator'){
+    echo '<button type="button" class="btn  btn-success btn-xs"
+    onclick=\'show_edit_cashreceipts(`'.$js_array.'`)\'>
+        <i class="fa fa-external-link "></i>
+   </button>';
+   }
+
+
+echo '<button type="button" class="btn btn-info btn-xs"
 		onclick=\'print_cash(`'.$value['id'].'`)\'>
 			<i class="fa fa-print bigger-125 icon-only "></i>
 	   </button></td>
@@ -1476,6 +1481,10 @@ function template_cash()
 	</div>
 	</div>
 	
+    <div class="form-group">
+	<label class="col-sm-3 control-label">ملحوظات الدفع</label> 
+	<div class="col-sm-9"><input type="text" name="payment_note" value='.$data['payment_note'].'></div>
+	</div>
 	';
     
     echo '
@@ -1532,7 +1541,14 @@ function template_cashrecipt_print()
 {
     global $data,$c_setting;
     $x = '
-	<div  style="padding-right: 15px;  margin: auto; padding-top: 5px;width:95%;border: 2px solid #00800078;">
+    <style>
+    .h1, .h2, .h3, h1, h2, h3{
+        margin-top : 5px;
+        margin-bottom : 5px;
+
+    }
+    </style>
+	<div  style="padding-right: 15px;  margin: auto; padding-top: 5px; width:523px; height:350px; border: 2px solid #00800078;">
                 <table width="100%"  style="color: gray;font-size: 14px;" dir="rtl">
                 <tr>
                 <td  style="width: 85px;height: 70px;" >
@@ -1552,7 +1568,7 @@ function template_cashrecipt_print()
 				<h3 style="display: inline-block; padding: 2px 5px; min-width: 130px;">'.$data['date'].'</h3>
 				</td>
 				<td style="text-align: right;">   
-				<h2 style="display: inline-block;"> رقم الوصل : </h2>
+				<h2 style="display: inline-block;"> رقم الايصال : </h2>
 				<h3 style=" display: inline-block; padding: 2px 5px; ">'.$data['id'].'</h3>
 				</td>
                 </tr>                
@@ -1573,18 +1589,22 @@ function template_cashrecipt_print()
                 </tr>            
                 <tr>
                 <td colspan="100%" style="padding-left: 30px;">
-                <div style="float:right;">امين الصندوق</div>
-                <div style="float:left;">المراجعة</div>
+                <div style="float:left;">امين الصندوق</div>
+                <div style="float:right;"></div>
                 </td>
                 </tr>                
                 <tr>
                 <td colspan="100%" style="padding-left: 30px;">
-                <div style="float:right;">...........</div>
-                <div style="float:left;">...........</div>
+                <div style="float:left; padding-top:50px;">'.$_SESSION['name'].'</div>
+                <div style="float:right;"></div>
                 </td>
                 </tr>        
-                </tbody></table></div>
+                </tbody>
+                </table>
+                </div>
 	';
+
+    $x = $x .'<hr/>'. $x;
     return $x;
 }
 function template_history_invoice()

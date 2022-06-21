@@ -351,6 +351,31 @@ class work
         }
     }
 
+    public function get_package_live($order_id, $part_no)
+    {
+        $query = mysqli_query($this->db, "select orders_package.*,
+			orders.glass_type,
+			orders.office_name,
+			orders.operation_name,
+			package_type.package_name,
+			orders.account_id,
+            status.statusname as myoperation
+
+           from orders_package 
+		   inner join package_type on (package_type.package_id = orders_package.package_type )
+		   inner join orders_package_work on (orders_package_work.package_id = orders_package.id) 
+           inner join status on (orders_package_work.operation = status.id) 
+		   inner join orders on (orders_package.order_id = orders.order_id) 
+		where  orders_package.easy_order_id = '" . $order_id . "' and orders_package.part_order = '" . $part_no . "' and orders_package_work.status = 2  and orders.order_status = 1 order by orders_package.id desc limit 1  ") or die(mysqli_error($this->db));
+
+
+        if (mysqli_num_rows($query) > 0) {
+            return mysqli_fetch_assoc($query);
+        } else {
+            return "0";
+        }
+    }
+
 
     public function get_outorder_package($package_id)
     {
@@ -468,7 +493,9 @@ class work
 		s.statusname as sta,
         orders_scratch.user_name,
         package_type.package_name,
-        concat(orders_package.easy_order_id,'-',orders_package.part_order)
+        concat(orders_package.easy_order_id,'-',orders_package.part_order),
+        orders_scratch.date_scrache,
+        orders_package.	glassType
 		from orders_scratch 
 		left join status on (status.id = orders_scratch.applied_operation) 
 		inner join status as s on (s.id = orders_scratch.operation_id) 
@@ -620,7 +647,8 @@ class work
         DATEDIFF(orders_package_work.end_time,orders_package_work.start_time) AS 'productiontime',
         users.name,
         orders_package.details,
-        orders_package.glassType
+        orders_package.glassType,
+        orders_package.glassPointing
 		from orders_package_work
 		inner join orders on (orders.order_id = orders_package_work.order_id) 
 		inner join account on (account.account_id = orders.account_id) 
@@ -632,6 +660,7 @@ class work
         if (count($data) > 0) {
             $sql .= " where 1=1 and";
             if (isset($data['operation']) && $data['operation'] != '') {
+            
                 $sql .= " orders_package_work.operation =  '" . $data['operation'] . "' and";
             }
 
@@ -1000,6 +1029,7 @@ class work
 
         mysqli_query($this->db, "delete from orders_package where id = '".$package_id."' ") or die(mysqli_error($this->db));
     }
+    
     public function get_combo_box($name)
     {
         $query = mysqli_query($this->db, "select * from lookup_addtional where type = '$name' ") or die(mysqli_error($this->db));

@@ -1024,7 +1024,7 @@ function template_add_purchase()
             <option value="0">اختار المورد</option>
             ';
     for ($i = 0; $i < count($accountsData); $i++) {
-        echo '<option value="' . $accountsData[$i]['account_id'] . '" '.($billDetails[0]['account_id'] == $accountsData[$i]['account_id'] ? 'selected' : '' ).'  >' . $accountsData[$i]['account_name'] . ' | ' . $accountsData[$i]['account_company'] . '</option>';
+        echo '<option value="' . $accountsData[$i]['account_id'] . '" '.($billDetails[0]['account_id'] == $accountsData[$i]['account_id'] ? 'selected' : '').'  >' . $accountsData[$i]['account_name'] . ' | ' . $accountsData[$i]['account_company'] . '</option>';
     }
     echo '
             </select></div>
@@ -1090,36 +1090,42 @@ function template_add_purchase()
             <table class="table table-striped table-bordered table-hover myitems"  >
             <tr>
             <td>المنتج</td>
-            <td>الكمية</td>
-            <td>سعر الوحدة</td>
+            <td>عدد الالواح</td>
+            <td>اجمالى الامتار</td>
+            <td>سعر المتر</td>
             <td>الاجمالى</td>
 
             </tr>';
 
-        $rowNum = 5;
-        if(count($billDetails) > 5) $rowNum = count($billDetails);
+    $rowNum = 5;
+    if (count($billDetails) > 5) {
+        $rowNum = count($billDetails);
+    }
 
     for ($j = 0; $j < $rowNum; $j++) {
         echo '
         <tr>
         <input type="hidden" name="inventory_action_id" value="'.$billDetails[$j]['inventory_action_id'].'" />
         <td>
-            <select class="form-control" name="item_id[]" >
+            <select class="form-control" name="item_id[]" onchange="recalac_invoice(\'addbill_form_'.$bill_id.'\');" >
             <option value="">اختار المنتج</option>';
         for ($i = 0; $i < count($itemData); $i++) {
-            echo '<option value="' . $itemData[$i]['id'] . '" '.($itemData[$i]['id'] == $billDetails[$j]['item_id'] ? 'selected' : '').'>' . $itemData[$i]['item_name'] . '</option>';
+            echo '<option value="' . $itemData[$i]['id'] . '" item_width="'.$itemData[$i]['item_width'].'" item_height="'.$itemData[$i]['item_height'].'"  '.($itemData[$i]['id'] == $billDetails[$j]['item_id'] ? 'selected' : '').'>' . $itemData[$i]['item_name'] . '</option>';
         }
         echo '</select>
         </td>
           <td>
-                <input class="form-control" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');" type="number" name="quantity[]" value="'.$billDetails[$j]['quantity'].'" size="10"/>
+                <input class="form-control" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');" type="text" name="quantity[]" value="'.$billDetails[$j]['quantity'].'" size="5"/>
+            </td>
+            <td>
+            <input class="form-control" readonly type="text" name="meters[]" value="" size="5" />
             </td>
         <td>
                 <input class="form-control" onblur="recalac_invoice(\'addbill_form_'.$bill_id.'\');" type="text" name="price[]" value="'.$billDetails[$j]['price'].'" size="10" />
         </td>
 
         <td>
-            <input class="form-control" readonly type="text" name="total_price[]" value="'.($billDetails[$j]['quantity'] * $billDetails[$j]['price'] ).'" size="10" />
+            <input class="form-control" readonly type="text" name="total_price[]" value="'.($billDetails[$j]['quantity'] * $billDetails[$j]['price']).'" size="10" />
     </td>
 
           </tr>';
@@ -1241,7 +1247,7 @@ function template_pur_inv_print()
     <td>المورد</td>
     <td> ';
     for ($i = 0; $i < count($accountsData); $i++) {
-        $x .= ($billDetails[0]['account_id'] == $accountsData[$i]['account_id'] ? $accountsData[$i]['account_name'] . ' | ' . $accountsData[$i]['account_company'] : '' ) ;
+        $x .= ($billDetails[0]['account_id'] == $accountsData[$i]['account_id'] ? $accountsData[$i]['account_name'] . ' | ' . $accountsData[$i]['account_company'] : '') ;
     }
     $x .= '</td>
     
@@ -1297,17 +1303,17 @@ function template_pur_inv_print()
    
                </tr>';
    
-           $rowNum = count($billDetails);
+    $rowNum = count($billDetails);
    
-       for ($j = 0; $j < $rowNum; $j++) {
+    for ($j = 0; $j < $rowNum; $j++) {
         $x .= '
            <tr>
            <td>
 ';
-           for ($i = 0; $i < count($itemData); $i++) {
-               $x .= ($itemData[$i]['id'] == $billDetails[$j]['item_id'] ? $itemData[$i]['item_name']  : '') ;
-           }
-           $x .= '
+        for ($i = 0; $i < count($itemData); $i++) {
+            $x .= ($itemData[$i]['id'] == $billDetails[$j]['item_id'] ? $itemData[$i]['item_name']  : '') ;
+        }
+        $x .= '
            </td>
              <td>
                    '.$billDetails[$j]['quantity'].'
@@ -1317,12 +1323,12 @@ function template_pur_inv_print()
            </td>
    
            <td>
-               '.($billDetails[$j]['quantity'] * $billDetails[$j]['price'] ).'
+               '.($billDetails[$j]['quantity'] * $billDetails[$j]['price']).'
        </td>
    
              </tr>';
-       }
-       $x .= '  </table>
+    }
+    $x .= '  </table>
    
          </div>
          </div>

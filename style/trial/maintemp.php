@@ -2646,13 +2646,23 @@ function accounting_menu()
        </li>
 
        <li class="">
-       <a href="index.php?action=orders">
+       <a href="expenses.php">
            <i class="menu-icon glyphicon  glyphicon-home blue"></i>
            <span class="menu-text"> المصروفات </span>
        </a>
 
        <b class="arrow"></b>
        </li>
+
+       <li class="">
+       <a href="expenses.php?action=add_edit_expenses">
+           <i class="menu-icon glyphicon  glyphicon-home blue"></i>
+           <span class="menu-text"> اضافة مصروفات </span>
+       </a>
+
+       <b class="arrow"></b>
+       </li>
+
 
         </ul>
         </li>
@@ -2753,4 +2763,75 @@ function accounting_menu()
        ';
 
     return $x;
+}
+
+
+function template_add_expenses()
+{
+    global $c_setting,$expDetails,$exp_type;
+
+    $id = $expDetails->id ;
+    
+    echo '
+    
+    
+    <form name="add_expense" id="add_expense_' . $id . '" method="post" action="expenses.php?action=add_edit_expenses" class="form-horizontal">
+    
+    <input type="hidden" name="id" value="' . (isset($expDetails->id) ? $expDetails->id : '') . '" />
+    <div class="form-group">
+    <label class="col-sm-3 control-label">التاريخ</label>
+    <div class="col-sm-9"><input type="text" name="action_time" required class="datepick" value="' . (isset($expDetails->action_time) ? date('m/d/Y', strtotime($expDetails->action_time)) : '') . '"   /></div>
+    </div>
+    
+    <div class="form-group">
+    <label class="col-sm-3 control-label">القيمة</label>
+    <div class="col-sm-9"><input type="number" name="amount" required step=".01" value="' . (isset($expDetails->amount) ? $expDetails->amount : '') . '" /></div>
+    </div>
+    
+    <div class="form-group">
+    <label class="col-sm-3 control-label">اسم المستلم</label>
+    <div class="col-sm-9"><input type="text" name="received_person" required value="' . (isset($expDetails->received_person) ? $expDetails->received_person : '') . '" /></div>
+    </div>
+    
+    
+    <div class="form-group">
+    <label class="col-sm-3 control-label">نوع المصروف</label>
+    <div class="col-sm-9">
+<select name="expense_type">
+<option value="">اختار المصروف</option>';
+    for ($i=0;$i<count($exp_type);$i++) {
+        echo '<option value="'.$exp_type[$i]['id'].'" '.($exp_type[$i]['id'] == $expDetails->expense_type ? 'selected'  : '').' >'.$exp_type[$i]['name'].'</option>';
+    }
+    echo '</select>
+    </div>
+    </div>
+    
+    <div class="form-group">
+    <label class="col-sm-3 control-label">الملحوظات</label>
+    <div class="col-sm-9"><textarea name="note" >' . (isset($expDetails->note) ? $expDetails->note : '') . '</textarea></div>
+    </div>
+    
+
+    
+    
+    
+            
+
+    
+    
+    <hr>
+    <div class="form-group"> 
+    <div class="col-sm-9" style="width: 200px; float: none;margin: auto; height:40px;">
+    <button type="button"  style="text-align:center;" class="btn btn-warning btn-block" onclick="add_expenses(\'add_expense_'.$id.'\')">' . ($id > 0 ? 'تعديل' :  'اضافة' ) . '</button>
+
+
+    </div>
+    </div>
+    
+    
+    <div style="clear:both;"></div>
+    
+    </form>
+
+    ';
 }
