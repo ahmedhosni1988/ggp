@@ -154,7 +154,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
         case 'cancel_package':
             if (isset($_POST['id'])) {
-                $part =$db->get_table("orders_package_work  where package_id = '".$_POST['id']."'");
+                $part = $db->get_table("orders_package_work  where package_id = '".$_POST['id']."'");
 
                 if ($part[0]['status'] == "5") {
                     break;
@@ -680,7 +680,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
             break;
         case 'finish_order':
             {
-               // $newtemp->load_template('finish_order', 4);
+               $newtemp->load_template('finish_order', 4);
             }
             break;
             case 'printer_order':

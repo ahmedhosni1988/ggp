@@ -303,7 +303,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
 
         case 'make_Scratche':
             if ($_POST['id']) {
-                $q = mysqli_query($mycon, "select orders_scratch.*,status.statusname from orders_scratch inner join status on(status.id=orders_scratch.operation_id) where  package_id = '" . $_POST['id'] . "' order by id desc  limit 1 ");
+                $q = mysqli_query($mycon, "select orders_scratch.*,status.statusname from orders_scratch inner join status on(status.id=orders_scratch.operation_id) where  orders_scratch.package_id = '" . $_POST['id'] . "' order by id desc  limit 1 ");
 
                 $data = mysqli_fetch_assoc($q);
 
@@ -314,7 +314,7 @@ if ($login['user_type'] != 'administrator' && !empty($_SESSION['logged_in']) && 
         case 'set_Scratche':
             if ($_POST['id']) {
                 $q = mysqli_query($mycon, "update orders_scratch set perosn = '" . mysqli_real_escape_string($mycon, $_POST['perosn']) . "' ,
-             reason	= '" . mysqli_real_escape_string($mycon, $_POST['reason']) . "' , date_work = '" . date("Y-m-d H:i:s") . "'	,applied_operation = '" . $_POST['applied_operation'] . "' ,status = '1' where id = '" . $_POST['id'] . "' ") or die(mysqli_error($mycon));
+             reason	= '" . mysqli_real_escape_string($mycon, $_POST['reason']) . "' , date_work = '" . date("Y-m-d H:i:s") . "'	,applied_operation = '" . $_POST['applied_operation'] . "' ,status = '1' where id = '" . $_POST['id'] . "' and status = '0'  order by id desc  limit 1   ") or die(mysqli_error($mycon));
 
 
                 $query = mysqli_query($mycon, "delete from orders_package_work where package_id = '" . $_POST['package_id'] . "' ");

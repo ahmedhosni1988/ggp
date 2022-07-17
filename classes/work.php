@@ -224,23 +224,29 @@ class work
             if ($pak_id[$i] != '') {
                 $order_id = $this->get_package_orderid($pak_id[$i]);
 
-                $query = mysqli_query($this->db, "insert into orders_scratch (
-				package_id,
-				order_id,
-				operation_id,
-				user_name,
-				user_id,
-				date_scrache) values (
-					'" . $pak_id[$i] . "',
-					'" . $order_id . "',
-					'" . $operation . "',
-					'" . $_SESSION['name'] . "',
-					'" . $_SESSION['user_id'] . "',
-					'" . date('Y-m-d H:i:s') . "'
-				);") or die(mysqli_error($this->db));
+                //Check if package in scratec and still not pass to avoid duplicate ////
+                $m = mysqli_query($this->db, "select * from orders_scratch where package_id = '".$pak_id[$i] ."'  and status = 0 ");
 
-                $query = mysqli_query($this->db, "update orders_package_work set status = 5 where package_id = '" . $pak_id[$i] . "' ") or die(mysqli_error($this->db));
-                $query = mysqli_query($this->db, "update orders_package set scratche = scratche + 1 where id = '" . $pak_id[$i] . "' ") or die(mysqli_error($this->db));
+                if (mysqli_num_rows($m) < 1) {
+                    $query = mysqli_query($this->db, "insert into orders_scratch (
+                        package_id,
+                        order_id,
+                        operation_id,
+                        user_name,
+                        user_id,
+                        date_scrache) values (
+                            '" . $pak_id[$i] . "',
+                            '" . $order_id . "',
+                            '" . $operation . "',
+                            '" . $_SESSION['name'] . "',
+                            '" . $_SESSION['user_id'] . "',
+                            '" . date('Y-m-d H:i:s') . "'
+                        );") or die(mysqli_error($this->db));
+        
+                    $query = mysqli_query($this->db, "update orders_package_work set status = 5 where package_id = '" . $pak_id[$i] . "' ") or die(mysqli_error($this->db));
+                    $query = mysqli_query($this->db, "update orders_package set scratche = scratche + 1 where id = '" . $pak_id[$i] . "' ") or die(mysqli_error($this->db));
+                }
+
 
                 //	$this->add_operation_package($pak_id[$i],"1","1","1");
             }
@@ -660,7 +666,6 @@ class work
         if (count($data) > 0) {
             $sql .= " where 1=1 and";
             if (isset($data['operation']) && $data['operation'] != '') {
-            
                 $sql .= " orders_package_work.operation =  '" . $data['operation'] . "' and";
             }
 
